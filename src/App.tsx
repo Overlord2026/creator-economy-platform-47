@@ -51,6 +51,7 @@ import { HowItWorks } from '@/pages/HowItWorks';
 
 // Creator Economy imports
 const CreatorHub = lazy(() => import('@/pages/marketplace/CreatorHub'));
+const CreatorMarketplace = lazy(() => import('@/pages/marketplace/CreatorMarketplace'));
 const BrandManagement = lazy(() => import('@/pages/tools/BrandManagement'));
 const ComplianceHub = lazy(() => import('@/pages/ComplianceHub'));
 import SolutionsPage from '@/pages/SolutionsPage';
@@ -567,11 +568,13 @@ function App() {
             <Route path="/pros/insurance/other" element={<Navigate to="/personas/insurance" replace />} />
             
             
-            {/* Marketplace Routes */}
-            <Route path="/marketplace" element={<MarketplaceIndex />} />
-            <Route path="/marketplace/creators" element={<Suspense fallback={<div>Loading...</div>}><CreatorHub /></Suspense>} />
-            <Route path="/tools/brand-management" element={<Suspense fallback={<div>Loading...</div>}><BrandManagement /></Suspense>} />
-            <Route path="/compliance" element={<Suspense fallback={<div>Loading...</div>}><ComplianceHub /></Suspense>} />
+          {/* Main Application Routes - Creator Marketplace as Default */}
+          <Route path="/" element={<Navigate to="/marketplace/creators" replace />} />
+          <Route path="/marketplace/creators" element={<CreatorHub />} />
+          <Route path="/marketplace" element={<Suspense fallback={<div>Loading...</div>}><CreatorMarketplace /></Suspense>} />
+          <Route path="/tools/brand-management" element={<BrandManagement />} />
+          <Route path="/compliance" element={<ComplianceHub />} />
+          <Route path="/marketplace/*" element={<MarketplaceIndex />} />
             <Route path="/marketplace/advisors" element={<MarketplaceAdvisors />} />
             <Route path="/marketplace/advisors/:id" element={<AdvisorDetail />} />
             <Route path="/cpas/home" element={<Suspense fallback={<div>Loading...</div>}><CpaHome /></Suspense>} />

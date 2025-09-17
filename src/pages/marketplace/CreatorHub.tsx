@@ -28,6 +28,7 @@ import { CreatorTemplateLibrary } from '@/components/creator/CreatorTemplateLibr
 import { CreatorProfessionalMatching } from '@/components/creator/CreatorProfessionalMatching';
 import { CreatorAnalytics } from '@/components/creator/CreatorAnalytics';
 import { CollaborationHub } from '@/components/creator/CollaborationHub';
+import { BrandPartnershipHub } from '@/components/creator/BrandPartnershipHub';
 
 interface SocialMediaMetrics {
   platform: string;
@@ -181,9 +182,9 @@ export default function CreatorHub() {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-              <TabsTrigger value="social-management">Social Media</TabsTrigger>
-              <TabsTrigger value="brand-protection">Brand Protection</TabsTrigger>
+              <TabsTrigger value="partnerships">Brand Partners</TabsTrigger>
               <TabsTrigger value="collaborations">Collaborations</TabsTrigger>
+              <TabsTrigger value="social-management">Social Media</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="templates">Templates</TabsTrigger>
               <TabsTrigger value="professionals">Professionals</TabsTrigger>
@@ -282,6 +283,72 @@ export default function CreatorHub() {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="social-management" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Share2 className="h-5 w-5" />
+                    Multi-Platform Social Media Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Connected Platforms */}
+                    <div>
+                      <h3 className="font-semibold mb-4">Connected Platforms</h3>
+                      <div className="space-y-3">
+                        {socialMetrics.map((metric) => (
+                          <div key={metric.platform} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <metric.icon className={`h-5 w-5 ${metric.color}`} />
+                              <div>
+                                <p className="font-medium">{metric.platform}</p>
+                                <p className="text-sm text-gray-500">{metric.followers} followers</p>
+                              </div>
+                            </div>
+                            <Badge variant="outline" className="text-green-600 border-green-600">
+                              Connected
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Content Scheduler */}
+                    <div>
+                      <h3 className="font-semibold mb-4">Content Scheduler</h3>
+                      <div className="space-y-3">
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Camera className="h-4 w-4 text-blue-600" />
+                            <span className="font-medium">Workout Tuesday</span>
+                          </div>
+                          <p className="text-sm text-gray-600">Scheduled for Instagram & TikTok</p>
+                          <p className="text-xs text-blue-600 mt-1">Tomorrow at 6:00 AM</p>
+                        </div>
+                        <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Heart className="h-4 w-4 text-purple-600" />
+                            <span className="font-medium">Brand Collaboration</span>
+                          </div>
+                          <p className="text-sm text-gray-600">Nike partnership announcement</p>
+                          <p className="text-xs text-purple-600 mt-1">Thursday at 12:00 PM</p>
+                        </div>
+                        <Button className="w-full" variant="outline">
+                          <Camera className="h-4 w-4 mr-2" />
+                          Schedule New Content
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="partnerships">
+              <BrandPartnershipHub />
             </TabsContent>
 
             <TabsContent value="social-management" className="space-y-6">
