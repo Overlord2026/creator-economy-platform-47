@@ -46,14 +46,14 @@ export default function NILIndex() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-navy">
+    <div className="min-h-screen bg-[#0a0d1e]">
       <div className="container mx-auto px-6 py-12 space-y-12">
         <PageHeader
           title="Creator Economy Hub"
           subtitle="Where creators connect with professionals to build, protect, and monetize their brands."
           primaryCta={
             <Button 
-              className="bg-gradient-to-r from-brand-gold to-brand-goldSoft text-brand-navy font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+              className="bg-gradient-to-r from-[#d4af37] to-[#f1e7c6] text-[#0a0d1e] font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               aria-label="Start creating your brand"
             >
               Start Creating
@@ -63,7 +63,7 @@ export default function NILIndex() {
           secondaryCta={
             <Button 
               variant="outline"
-              className="border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-navy font-medium px-8 py-3 rounded-lg transition-all duration-200"
+              className="border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0a0d1e] font-medium px-8 py-3 rounded-lg transition-all duration-200"
               aria-label="Find professional services"
             >
               <Users className="mr-2 h-4 w-4" />
