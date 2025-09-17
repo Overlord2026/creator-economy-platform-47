@@ -14,53 +14,53 @@ import {
 
 const nilTools = [
   {
-    title: "Creator Brand Builder",
-    description: "Build and manage your personal brand across all platforms",
+    title: "Creator Economy Hub",
+    description: "Access the full creator marketplace and professional network",
     icon: Building,
+    href: "/marketplace/creators",
+    featured: true
+  },
+  {
+    title: "Multi-Platform Social Media Management",
+    description: "Manage Instagram, TikTok, YouTube, Twitter and more from one dashboard",
+    icon: TrendingUp,
     href: "/tools/brand-management"
   },
   {
-    title: "Multi-Platform Analytics",
-    description: "Track performance across Instagram, TikTok, YouTube, and more",
-    icon: TrendingUp,
-    href: "/analytics/multi-platform"
-  },
-  {
-    title: "NIL Valuation Calculator",
-    description: "Estimate your name, image, and likeness value",
+    title: "NIL Valuation & Deal Tracking",
+    description: "Estimate your NIL value and track all monetization deals",
     icon: Calculator,
     href: "/nil/calculator"
   },
   {
-    title: "Professional Matching",
-    description: "Connect with creator economy specialists",
+    title: "Creator Financial Advisors",
+    description: "Connect with advisors who specialize in creator economy",
     icon: Users,
-    href: "/marketplace/professionals",
-    featured: true
+    href: "/marketplace/professionals"
   },
   {
-    title: "Contract Templates",
-    description: "Creator-specific contract templates and compliance tools",
+    title: "Entertainment Attorneys",
+    description: "Legal specialists for influencers, athletes, and content creators",
     icon: FileText,
-    href: "/templates/creator-contracts"
+    href: "/marketplace/attorneys"
   },
   {
-    title: "Brand Protection Suite",
-    description: "Monitor and protect your brand across the internet",
+    title: "Brand Protection & Likeness Monitoring",
+    description: "AI-powered monitoring to protect your brand and likeness across the web",
     icon: Shield,
-    href: "/brand-protection"
+    href: "/tools/brand-management"
   },
   {
-    title: "Multi-State Compliance",
-    description: "Stay compliant with regulations across all 50 states",
+    title: "Multi-State NIL Compliance",
+    description: "Stay compliant with NIL regulations across all 50 states automatically",
     icon: CheckCircle,
     href: "/compliance"
   },
   {
-    title: "Monetization Tracker",
-    description: "Track earnings and optimize revenue streams",
+    title: "Creator Monetization Suite",
+    description: "Track all revenue streams: sponsorships, merchandise, appearances, and more",
     icon: DollarSign,
-    href: "/monetization/tracker"
+    href: "/tools/brand-management"
   }
 ];
 

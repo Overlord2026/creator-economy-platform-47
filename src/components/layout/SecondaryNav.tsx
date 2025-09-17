@@ -17,10 +17,7 @@ export const SecondaryNav: React.FC = () => {
     { label: 'Creators', path: '/marketplace/creators' },
     { label: 'Professionals', path: '/pros' }, 
     { label: 'Brand Tools', path: '/tools/brand-management' },
-    { label: 'Compliance', path: '/compliance' },
-    { label: 'NIL Hub', path: '/nil' },
-    { label: 'Learn', path: '/learn' },
-    { label: 'Solutions', path: '/solutions' }
+    { label: 'Compliance', path: '/compliance' }
   ];
 
   const handleNavigation = (path: string) => {
