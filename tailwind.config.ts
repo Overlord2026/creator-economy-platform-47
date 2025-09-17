@@ -22,6 +22,19 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         
+        // Creator Hub Brand Tokens
+        brand: {
+          navy: '#0a0d1e',
+          navy2: '#101425',
+          slate: '#2b3a4d',
+          slate2: '#34485c',
+          gold: '#d4af37',
+          goldSoft: '#f1e7c6',
+          text: '#f5f7fa',
+          textMuted: '#c6cfda',
+          success: '#22c55e',
+        },
+        
         // BFO Premium Brand Colors (HSL for proper theming)
         bfo: {
           navy: '#0B0F14',
@@ -111,16 +124,18 @@ export default {
           foreground: "hsl(var(--success-foreground))",
         },
       },
+      boxShadow: {
+        soft: '0 6px 18px rgba(0,0,0,.12)',
+        gold: 'inset 0 1px 0 rgba(255,255,255,.2), 0 6px 14px rgba(0,0,0,.18)',
+        card: '0 12px 30px rgba(0,0,0,.25), 0 1px 0 rgba(255,255,255,.06) inset'
+      },
       borderRadius: {
         lg: `var(--radius)`,
         md: `calc(var(--radius) - 2px)`,
         sm: "calc(var(--radius) - 4px)",
         xl: '14px',
-        '2xl': '20px'
-      },
-      boxShadow: {
-        soft: '0 6px 18px rgba(0,0,0,.12)',
-        gold: 'inset 0 1px 0 rgba(255,255,255,.2), 0 6px 14px rgba(0,0,0,.18)',
+        '2xl': '20px',
+        lg2: '1rem'
       },
       fontFamily: {
         sans: ["Inter", "var(--font-sans)", ...fontFamily.sans],
