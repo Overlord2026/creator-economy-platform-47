@@ -1,54 +1,66 @@
 
 export type ProfessionalType = 
-  // Existing types
+  // Creator Economy Financial Advisors
+  | "Creator Financial Advisor"
+  | "NIL Financial Advisor"
+  | "Entertainment Financial Advisor"
+  | "Influencer Financial Advisor"
+  | "Sports Financial Advisor"
+  
+  // Creator Economy Legal Specialists
+  | "Entertainment Attorney"
+  | "NIL Compliance Attorney"
+  | "Brand Protection Attorney"
+  | "Influencer Contract Attorney"
+  | "Intellectual Property Attorney"
+  
+  // Creator Economy Accountants
+  | "Influencer Accountant"
+  | "Entertainment Tax Specialist"
+  | "Creator Business Accountant"
+  | "Multi-State Tax Professional"
+  
+  // Creator Brand & Business Services
+  | "Brand Management Consultant"
+  | "Social Media Business Manager"
+  | "Creator Business Advisor"
+  | "Monetization Strategist"
+  | "Partnership & Sponsorship Specialist"
+  
+  // Creator Insurance & Risk Management
+  | "Creator Liability Insurance Specialist"
+  | "Entertainment Insurance Broker"
+  | "Brand Protection Insurance Agent"
+  
+  // Creator Support Services
+  | "Creator Healthcare Advocate"
+  | "Creator Wealth Manager"
+  | "Digital Asset Manager"
+  | "Creator Estate Planning Specialist"
+  | "Creator Philanthropy Advisor"
+  
+  // Traditional (maintained for existing clients)
   | "Tax Professional / Accountant"
   | "Estate Planning Attorney"
   | "Financial Advisor"
   | "Real Estate Agent / Property Manager"
   | "Insurance / LTC Specialist"
-  | "Mortgage Broker"
-  | "Auto Insurance Provider"
-  | "Physician"
-  | "Dentist"
-  | "Banker"
-  | "Consultant"
-  | "Service Professional"
-  // New wealth segment professional types
-  | "Private Banker / Trust Officer"
-  | "Estate Planning Consultant"
-  | "Business Succession Advisor"
-  | "Insurance & Advanced Planning Specialist"
-  | "Property Manager / Real Estate Specialist"
-  | "Philanthropy Consultant"
-  | "Healthcare Advocate"
-  | "Luxury Concierge / Travel Specialist"
-  | "Divorce / Family Law Advisor"
-  | "Platform Aggregator / MFO"
-  | "Retirement Plan Advisor"
-  | "Private Lender / Credit Specialist"
-  | "Family Investment Club Lead"
-  | "VC / Private Equity Professional"
-  | "Tax Resolution Specialist"
-  | "HR / Benefit Consultant"
-  // New IMO/FMO types
-  | "IMO / Independent Marketing Organization"
-  | "FMO / Field Marketing Organization"
   | "Other";
 
-// Professional segment categorization
+// Creator Economy Professional Segments
 export type ProfessionalSegment = 
-  | 'wealth_management'
-  | 'legal_advisory'
-  | 'tax_compliance'
-  | 'insurance_planning'
-  | 'real_estate'
-  | 'philanthropy'
-  | 'healthcare'
-  | 'luxury_services'
-  | 'investment_management'
-  | 'business_advisory'
-  | 'family_office'
-  | 'imo_fmo_distribution';
+  | 'creator_financial_advisory'
+  | 'creator_legal_services'
+  | 'creator_tax_compliance'
+  | 'creator_brand_management'
+  | 'creator_business_advisory'
+  | 'creator_insurance_risk'
+  | 'nil_compliance_advisory'
+  | 'entertainment_services'
+  | 'influencer_services'
+  | 'creator_wealth_management'
+  | 'digital_asset_management'
+  | 'creator_estate_planning';
 
 export interface Professional {
   id: string;

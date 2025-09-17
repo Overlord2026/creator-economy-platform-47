@@ -12,31 +12,31 @@ export function FreeTierAdvisorBanner() {
       <div className="flex flex-col space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">
-            You're now listed in our Marketplace as a <Badge className="ml-1 bg-gray-600">Free Tier</Badge> Advisor
+            You're now listed in our Creator Economy Marketplace as a <Badge className="ml-1 bg-gray-600">Free Tier</Badge> Professional
           </h2>
         </div>
         
         <p className="text-gray-400">
-          Consumers can discover your services but keep in mind:
+          Creators can discover your specialized services but keep in mind:
         </p>
         
         <ul className="space-y-2 mb-2">
           <li className="flex items-start gap-2">
             <span className="text-[#1EAEDB] font-bold">•</span>
-            <span>You'll appear after paid-tier advisors in search results</span>
+            <span>You'll appear after premium-tier professionals in creator searches</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-[#1EAEDB] font-bold">•</span>
-            <span>You won't have full access to white-labeled Advizon practice management</span>
+            <span>Limited access to creator-specific templates and compliance tools</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-[#1EAEDB] font-bold">•</span>
-            <span>Marketing & lead-gen tools are limited</span>
+            <span>Basic creator matching and discovery features only</span>
           </li>
         </ul>
         
         <p className="text-gray-400 mb-4">
-          Upgrade to Standard or Premium any time to unlock enhanced visibility, robust practice tools, and advanced lead features.
+          Upgrade to Standard or Premium to unlock enhanced creator visibility, specialized tools, and advanced matching features.
         </p>
         
         <div>
@@ -44,7 +44,7 @@ export function FreeTierAdvisorBanner() {
             variant="advisor" 
             onClick={() => navigate("/subscription")}
           >
-            Upgrade Your Advisor Tier
+            Upgrade Your Professional Tier
           </Button>
         </div>
       </div>

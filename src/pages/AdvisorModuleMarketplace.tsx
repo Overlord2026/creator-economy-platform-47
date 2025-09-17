@@ -16,30 +16,30 @@ export default function AdvisorModuleMarketplace() {
         <MarketingFunnelPrompt />
         
         <div className="mb-8 p-6 bg-[#0F0F2D] rounded-lg border border-gray-700">
-          <h2 className="text-2xl font-bold mb-4">Explore our suite of integrated tools to enhance your practice</h2>
+          <h2 className="text-2xl font-bold mb-4">Explore our suite of creator economy tools to enhance your practice</h2>
           <p className="text-gray-400 mb-6">
-            Pick and choose which best fits your business needs.
+            Pick and choose which best fits your creator-focused business needs.
           </p>
           <ul className="space-y-2 mb-6">
             <li className="flex items-start gap-2">
               <span className="text-[#1EAEDB] font-bold">•</span>
-              <span><strong>Catchlight:</strong> Automated lead scoring</span>
+              <span><strong>Creator Templates:</strong> NIL contracts, influencer agreements, compliance docs</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-[#1EAEDB] font-bold">•</span>
-              <span><strong>Finneat:</strong> Intelligent allocations</span>
+              <span><strong>Professional Matching:</strong> AI-powered creator-professional discovery</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-[#1EAEDB] font-bold">•</span>
-              <span><strong>eMoney:</strong> Advanced planning</span>
+              <span><strong>Multi-State Compliance:</strong> Automated compliance across all 50 states</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-[#1EAEDB] font-bold">•</span>
-              <span><strong>GHL:</strong> Digital marketing engine</span>
+              <span><strong>Brand Protection:</strong> Comprehensive IP and likeness protection tools</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-[#1EAEDB] font-bold">•</span>
-              <span><strong>Tax analysis module:</strong> Comprehensive tax planning</span>
+              <span><strong>Creator Analytics:</strong> Performance tracking and monetization insights</span>
             </li>
           </ul>
           

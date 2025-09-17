@@ -18,21 +18,21 @@ export function PremiumTierAdvisorBanner() {
         </div>
         
         <p className="text-gray-400">
-          Upgrade your advisor subscription to unlock:
+          Upgrade your professional subscription to unlock creator-focused tools:
         </p>
         
         <ul className="space-y-2 mb-2">
           <li className="flex items-start gap-2">
             <span className="text-purple-400 font-bold">•</span>
-            <span>Advanced marketing funnels & CRM integrations</span>
+            <span>Creator-specific templates & compliance automation</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-purple-400 font-bold">•</span>
-            <span>Priority listing in our Marketplace</span>
+            <span>Priority listing in Creator Economy Marketplace</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-purple-400 font-bold">•</span>
-            <span>White-labeled practice management and analytics</span>
+            <span>Advanced creator matching & discovery algorithms</span>
           </li>
         </ul>
         
