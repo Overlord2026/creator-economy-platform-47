@@ -14,14 +14,13 @@ export const SecondaryNav: React.FC = () => {
   };
 
   const navItems = [
-    { label: 'Families', path: '/families' },
-    { label: 'Service Pros', path: '/pros' }, 
-    { label: 'NIL', path: '/nil' },
-    { label: 'Load NIL Demo', path: '/nil/demo' },
-    { label: 'Healthcare', path: '/healthcare' },
-    { label: 'Solutions', path: '/solutions' },
+    { label: 'Creators', path: '/marketplace/creators' },
+    { label: 'Professionals', path: '/pros' }, 
+    { label: 'Brand Tools', path: '/tools/brand-management' },
+    { label: 'Compliance', path: '/compliance' },
+    { label: 'NIL Hub', path: '/nil' },
     { label: 'Learn', path: '/learn' },
-    { label: 'Marketplace', path: '/marketplace' }
+    { label: 'Solutions', path: '/solutions' }
   ];
 
   const handleNavigation = (path: string) => {

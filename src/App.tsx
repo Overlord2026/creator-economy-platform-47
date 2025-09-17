@@ -48,6 +48,11 @@ import FixturesPanel from '@/pages/dev/FixturesPanel';
 import Discover from '@/pages/Discover';
 import SearchPage from '@/pages/SearchPage';
 import { HowItWorks } from '@/pages/HowItWorks';
+
+// Creator Economy imports
+const CreatorHub = lazy(() => import('@/pages/marketplace/CreatorHub'));
+const BrandManagement = lazy(() => import('@/pages/tools/BrandManagement'));
+const ComplianceHub = lazy(() => import('@/pages/ComplianceHub'));
 import SolutionsPage from '@/pages/SolutionsPage';
 import SolutionCategoryPage from '@/pages/solutions/SolutionCategoryPage';
 import { Annuities } from '@/pages/solutions/Annuities';
@@ -405,7 +410,7 @@ function App() {
             <Routes>
             <Route path="/" element={
               isAuthenticated ? (
-                <Navigate to="/families" replace />
+                <Navigate to="/marketplace/creators" replace />
               ) : (
                 <MainPageOnboarding onAuthChoice={handleAuthChoice} />
               )
@@ -564,6 +569,9 @@ function App() {
             
             {/* Marketplace Routes */}
             <Route path="/marketplace" element={<MarketplaceIndex />} />
+            <Route path="/marketplace/creators" element={<Suspense fallback={<div>Loading...</div>}><CreatorHub /></Suspense>} />
+            <Route path="/tools/brand-management" element={<Suspense fallback={<div>Loading...</div>}><BrandManagement /></Suspense>} />
+            <Route path="/compliance" element={<Suspense fallback={<div>Loading...</div>}><ComplianceHub /></Suspense>} />
             <Route path="/marketplace/advisors" element={<MarketplaceAdvisors />} />
             <Route path="/marketplace/advisors/:id" element={<AdvisorDetail />} />
             <Route path="/cpas/home" element={<Suspense fallback={<div>Loading...</div>}><CpaHome /></Suspense>} />

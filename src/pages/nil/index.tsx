@@ -1,9 +1,30 @@
 import React from 'react';
 import { Hero } from '@/components/landing/Hero';
 import { ToolsGrid } from '@/components/landing/ToolsGrid';
-import { Calculator, Building, FileText, DollarSign, Shield, TrendingUp } from 'lucide-react';
+import { 
+  Calculator, 
+  Building, 
+  FileText, 
+  DollarSign, 
+  Shield, 
+  TrendingUp, 
+  Users, 
+  CheckCircle 
+} from 'lucide-react';
 
 const nilTools = [
+  {
+    title: "Creator Brand Builder",
+    description: "Build and manage your personal brand across all platforms",
+    icon: Building,
+    href: "/tools/brand-management"
+  },
+  {
+    title: "Multi-Platform Analytics",
+    description: "Track performance across Instagram, TikTok, YouTube, and more",
+    icon: TrendingUp,
+    href: "/analytics/multi-platform"
+  },
   {
     title: "NIL Valuation Calculator",
     description: "Estimate your name, image, and likeness value",
@@ -11,38 +32,35 @@ const nilTools = [
     href: "/nil/calculator"
   },
   {
-    title: "Brand Builder",
-    description: "Build and manage your personal brand",
-    icon: Building,
-    href: "/nil/brand-builder"
+    title: "Professional Matching",
+    description: "Connect with creator economy specialists",
+    icon: Users,
+    href: "/marketplace/professionals",
+    featured: true
   },
   {
     title: "Contract Templates",
-    description: "Professional NIL contract templates and guidance",
+    description: "Creator-specific contract templates and compliance tools",
     icon: FileText,
-    href: "/nil/contracts",
-    comingSoon: true
+    href: "/templates/creator-contracts"
   },
   {
-    title: "Tax Planning",
-    description: "Navigate NIL income tax implications",
-    icon: DollarSign,
-    href: "/nil/tax",
-    comingSoon: true
-  },
-  {
-    title: "Compliance Hub",
-    description: "Stay compliant with NCAA and school regulations",
+    title: "Brand Protection Suite",
+    description: "Monitor and protect your brand across the internet",
     icon: Shield,
-    href: "/nil/compliance",
-    comingSoon: true
+    href: "/brand-protection"
   },
   {
-    title: "Investment Guide",
-    description: "Smart investing strategies for NIL earnings",
-    icon: TrendingUp,
-    href: "/nil/investing",
-    comingSoon: true
+    title: "Multi-State Compliance",
+    description: "Stay compliant with regulations across all 50 states",
+    icon: CheckCircle,
+    href: "/compliance"
+  },
+  {
+    title: "Monetization Tracker",
+    description: "Track earnings and optimize revenue streams",
+    icon: DollarSign,
+    href: "/monetization/tracker"
   }
 ];
 
@@ -55,8 +73,8 @@ export default function NILIndex() {
   return (
     <div className="min-h-screen">
       <Hero
-        title="NIL Athlete Center"
-        subtitle="Navigate name, image, and likeness opportunities with professional-grade tools designed for college athletes"
+        title="Creator Economy Hub"
+        subtitle="Navigate the creator economy with professional-grade tools designed for NIL athletes, influencers, content creators, and entertainment professionals"
         onCtaClick={handleDemoClick}
       />
       <ToolsGrid tools={nilTools} />
