@@ -237,10 +237,11 @@ export default function BrandManagement() {
 
           {/* Main Content Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="assets">Assets</TabsTrigger>
               <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
+              <TabsTrigger value="contracts">Contracts</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="protection">Protection</TabsTrigger>
               <TabsTrigger value="monetization">Monetization</TabsTrigger>
@@ -408,6 +409,123 @@ export default function BrandManagement() {
                         </div>
                       </div>
                     ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="contracts" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Universal Contract Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Active Contracts */}
+                    <div>
+                      <h3 className="font-semibold mb-4">Active Contracts</h3>
+                      <div className="space-y-3">
+                        <div className="p-4 border rounded-lg">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h4 className="font-medium">Nike Partnership Agreement</h4>
+                              <p className="text-sm text-gray-600">Brand Partnership • 12 months</p>
+                            </div>
+                            <Badge className="bg-green-500">Active</Badge>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 text-sm">
+                            <div>
+                              <p className="text-gray-500">Value</p>
+                              <p className="font-semibold">$25,000</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500">Remaining</p>
+                              <p className="font-semibold">8 months</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500">Compliance</p>
+                              <p className="font-semibold text-green-600">✓ 100%</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="p-4 border rounded-lg">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h4 className="font-medium">Supplement Collab Contract</h4>
+                              <p className="text-sm text-gray-600">Influencer Partnership • 6 months</p>
+                            </div>
+                            <Badge className="bg-green-500">Active</Badge>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 text-sm">
+                            <div>
+                              <p className="text-gray-500">Value</p>
+                              <p className="font-semibold">$12,000</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500">Remaining</p>
+                              <p className="font-semibold">4 months</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500">Compliance</p>
+                              <p className="font-semibold text-green-600">✓ 98%</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Contract Templates & Tools */}
+                    <div>
+                      <h3 className="font-semibold mb-4">Contract Templates</h3>
+                      <div className="space-y-3">
+                        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                          <h4 className="font-medium text-blue-900 mb-2">NIL Athlete Templates</h4>
+                          <ul className="text-sm text-blue-800 space-y-1">
+                            <li>• NCAA Compliant Partnership Agreement</li>
+                            <li>• Social Media Endorsement Contract</li>
+                            <li>• Appearance & Event Agreement</li>
+                            <li>• Merchandise Licensing Deal</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                          <h4 className="font-medium text-purple-900 mb-2">Influencer Templates</h4>
+                          <ul className="text-sm text-purple-800 space-y-1">
+                            <li>• Brand Partnership Agreement</li>
+                            <li>• Content Collaboration Contract</li>
+                            <li>• Affiliate Marketing Agreement</li>
+                            <li>• Platform-Specific Terms</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                          <h4 className="font-medium text-orange-900 mb-2">Entertainment Templates</h4>
+                          <ul className="text-sm text-orange-800 space-y-1">
+                            <li>• Music Licensing Agreement</li>
+                            <li>• Performance Contract</li>
+                            <li>• Brand Soundtrack Deal</li>
+                            <li>• Event Appearance Agreement</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium">AI Contract Review</h4>
+                        <p className="text-sm text-gray-600">Automated compliance checking and risk assessment</p>
+                      </div>
+                      <Button className="gap-2">
+                        <Upload className="h-4 w-4" />
+                        Upload Contract for Review
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

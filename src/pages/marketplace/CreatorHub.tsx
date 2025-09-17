@@ -26,6 +26,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { CreatorTemplateLibrary } from '@/components/creator/CreatorTemplateLibrary';
 import { CreatorProfessionalMatching } from '@/components/creator/CreatorProfessionalMatching';
+import { CreatorAnalytics } from '@/components/creator/CreatorAnalytics';
+import { CollaborationHub } from '@/components/creator/CollaborationHub';
 
 interface SocialMediaMetrics {
   platform: string;
@@ -177,10 +179,12 @@ export default function CreatorHub() {
 
           {/* Main Content Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="social-management">Social Media</TabsTrigger>
               <TabsTrigger value="brand-protection">Brand Protection</TabsTrigger>
+              <TabsTrigger value="collaborations">Collaborations</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="templates">Templates</TabsTrigger>
               <TabsTrigger value="professionals">Professionals</TabsTrigger>
             </TabsList>
@@ -411,6 +415,14 @@ export default function CreatorHub() {
 
             <TabsContent value="templates">
               <CreatorTemplateLibrary />
+            </TabsContent>
+
+            <TabsContent value="collaborations">
+              <CollaborationHub />
+            </TabsContent>
+
+            <TabsContent value="analytics">
+              <CreatorAnalytics />
             </TabsContent>
 
             <TabsContent value="professionals">

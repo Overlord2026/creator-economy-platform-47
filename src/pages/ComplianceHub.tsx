@@ -22,10 +22,12 @@ import {
 interface ComplianceItem {
   id: string;
   title: string;
+  category: 'nil' | 'entertainment' | 'influencer' | 'business';
   status: 'compliant' | 'warning' | 'violation';
   description: string;
   lastChecked: string;
   actionRequired?: string;
+  jurisdiction: string[];
 }
 
 interface StateRegulation {
@@ -36,34 +38,114 @@ interface StateRegulation {
 }
 
 const complianceItems: ComplianceItem[] = [
+  // NIL Compliance
   {
     id: '1',
     title: 'FTC Disclosure Requirements',
+    category: 'nil',
     status: 'compliant',
     description: 'All sponsored content properly disclosed',
-    lastChecked: '2 hours ago'
+    lastChecked: '2 hours ago',
+    jurisdiction: ['Federal', 'All States']
   },
   {
     id: '2',
     title: 'NCAA NIL Compliance',
+    category: 'nil',
     status: 'compliant',
     description: 'Current deals comply with NCAA regulations',
-    lastChecked: '1 day ago'
+    lastChecked: '1 day ago',
+    jurisdiction: ['Federal', 'Institution Specific']
   },
+  
+  // Entertainment Industry Compliance
   {
     id: '3',
-    title: 'California NIL Laws',
+    title: 'SAG-AFTRA Union Requirements',
+    category: 'entertainment',
     status: 'warning',
-    description: 'New regulations effective next month',
+    description: 'Union membership required for certain commercial work',
     lastChecked: '3 days ago',
-    actionRequired: 'Review updated contract templates'
+    actionRequired: 'Review union eligibility requirements',
+    jurisdiction: ['California', 'New York', 'Georgia']
   },
   {
     id: '4',
-    title: 'Tax Reporting Requirements',
+    title: 'Music Licensing & Royalties',
+    category: 'entertainment',
     status: 'compliant',
-    description: 'All income properly documented for tax purposes',
-    lastChecked: '1 week ago'
+    description: 'All music usage properly licensed through ASCAP/BMI',
+    lastChecked: '1 week ago',
+    jurisdiction: ['Federal', 'International']
+  },
+  {
+    id: '5',
+    title: 'Film & TV Contract Standards',
+    category: 'entertainment',
+    status: 'compliant',
+    description: 'All contracts comply with industry standards',
+    lastChecked: '5 days ago',
+    jurisdiction: ['California', 'New York']
+  },
+  
+  // Influencer Marketing Compliance
+  {
+    id: '6',
+    title: 'Platform-Specific Disclosure Rules',
+    category: 'influencer',
+    status: 'compliant',
+    description: 'Instagram, TikTok, YouTube disclosures up to date',
+    lastChecked: '1 day ago',
+    jurisdiction: ['Federal', 'Platform Policies']
+  },
+  {
+    id: '7',
+    title: 'Children\'s Online Privacy (COPPA)',
+    category: 'influencer',
+    status: 'warning',
+    description: 'Additional requirements for under-13 audience',
+    lastChecked: '2 days ago',
+    actionRequired: 'Implement age verification for content',
+    jurisdiction: ['Federal']
+  },
+  {
+    id: '8',
+    title: 'International Data Privacy (GDPR)',
+    category: 'influencer',
+    status: 'compliant',
+    description: 'EU audience data handling compliant',
+    lastChecked: '1 week ago',
+    jurisdiction: ['European Union', 'UK']
+  },
+  
+  // Business Leader Compliance
+  {
+    id: '9',
+    title: 'Securities Disclosure Requirements',
+    category: 'business',
+    status: 'compliant',
+    description: 'Public company executive social media compliance',
+    lastChecked: '3 days ago',
+    jurisdiction: ['Federal', 'SEC']
+  },
+  {
+    id: '10',
+    title: 'Professional Licensing Requirements',
+    category: 'business',
+    status: 'compliant',
+    description: 'Licensed professional content compliance',
+    lastChecked: '1 week ago',
+    jurisdiction: ['State Specific']
+  },
+  {
+    id: '11',
+    title: 'Corporate Social Media Policy',
+    category: 'business',
+    status: 'warning',
+    description: 'Company social media guidelines need review',
+    lastChecked: '4 days ago',
+    actionRequired: 'Update corporate policy alignment',
+    jurisdiction: ['Company Policy']
   }
 ];
 
@@ -219,10 +301,12 @@ export default function ComplianceHub() {
 
           {/* Main Content Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="nil-compliance">NIL Compliance</TabsTrigger>
-              <TabsTrigger value="state-regulations">State Regulations</TabsTrigger>
+              <TabsTrigger value="nil-compliance">NIL</TabsTrigger>
+              <TabsTrigger value="entertainment">Entertainment</TabsTrigger>
+              <TabsTrigger value="influencer">Influencer</TabsTrigger>
+              <TabsTrigger value="business">Business</TabsTrigger>
               <TabsTrigger value="reports">Reports</TabsTrigger>
             </TabsList>
 
@@ -358,12 +442,120 @@ export default function ComplianceHub() {
               </Card>
             </TabsContent>
 
+            <TabsContent value="entertainment" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Entertainment Industry Compliance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {complianceItems.filter(item => item.category === 'entertainment').map((item) => (
+                      <div key={item.id} className={`p-4 border rounded-lg ${getStatusColor(item.status)}`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-3">
+                            {getStatusIcon(item.status)}
+                            <h3 className="font-medium">{item.title}</h3>
+                          </div>
+                          <Badge variant="outline">
+                            {item.status.replace('_', ' ').toUpperCase()}
+                          </Badge>
+                        </div>
+                        <p className="text-sm mb-2">{item.description}</p>
+                        <div className="flex items-center justify-between text-xs">
+                          <span>Jurisdictions: {item.jurisdiction.join(', ')}</span>
+                          <span>Last checked: {item.lastChecked}</span>
+                        </div>
+                        {item.actionRequired && (
+                          <p className="text-xs font-medium mt-2">Action: {item.actionRequired}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="influencer" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Influencer Marketing Compliance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {complianceItems.filter(item => item.category === 'influencer').map((item) => (
+                      <div key={item.id} className={`p-4 border rounded-lg ${getStatusColor(item.status)}`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-3">
+                            {getStatusIcon(item.status)}
+                            <h3 className="font-medium">{item.title}</h3>
+                          </div>
+                          <Badge variant="outline">
+                            {item.status.replace('_', ' ').toUpperCase()}
+                          </Badge>
+                        </div>
+                        <p className="text-sm mb-2">{item.description}</p>
+                        <div className="flex items-center justify-between text-xs">
+                          <span>Jurisdictions: {item.jurisdiction.join(', ')}</span>
+                          <span>Last checked: {item.lastChecked}</span>
+                        </div>
+                        {item.actionRequired && (
+                          <p className="text-xs font-medium mt-2">Action: {item.actionRequired}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="business" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Business Leader Compliance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {complianceItems.filter(item => item.category === 'business').map((item) => (
+                      <div key={item.id} className={`p-4 border rounded-lg ${getStatusColor(item.status)}`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-3">
+                            {getStatusIcon(item.status)}
+                            <h3 className="font-medium">{item.title}</h3>
+                          </div>
+                          <Badge variant="outline">
+                            {item.status.replace('_', ' ').toUpperCase()}
+                          </Badge>
+                        </div>
+                        <p className="text-sm mb-2">{item.description}</p>
+                        <div className="flex items-center justify-between text-xs">
+                          <span>Jurisdictions: {item.jurisdiction.join(', ')}</span>
+                          <span>Last checked: {item.lastChecked}</span>
+                        </div>
+                        {item.actionRequired && (
+                          <p className="text-xs font-medium mt-2">Action: {item.actionRequired}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
             <TabsContent value="reports" className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
-                    Compliance Reports
+                    Universal Compliance Reports
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -371,14 +563,14 @@ export default function ComplianceHub() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="p-4 border rounded-lg">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="font-medium">Monthly Compliance Report</h3>
+                          <h3 className="font-medium">Cross-Category Compliance Report</h3>
                           <Button size="sm" variant="outline">
                             <Download className="h-4 w-4 mr-1" />
                             Download
                           </Button>
                         </div>
                         <p className="text-sm text-gray-600">
-                          Comprehensive compliance status for all regulations
+                          Comprehensive compliance across NIL, entertainment, influencer, and business regulations
                         </p>
                         <p className="text-xs text-gray-500 mt-2">
                           Last generated: November 2024
@@ -387,17 +579,49 @@ export default function ComplianceHub() {
                       
                       <div className="p-4 border rounded-lg">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="font-medium">NIL Deal Summary</h3>
+                          <h3 className="font-medium">Multi-State Analysis</h3>
                           <Button size="sm" variant="outline">
                             <Eye className="h-4 w-4 mr-1" />
                             View
                           </Button>
                         </div>
                         <p className="text-sm text-gray-600">
-                          Summary of all active and completed NIL deals
+                          State-by-state compliance analysis for all creator categories
                         </p>
                         <p className="text-xs text-gray-500 mt-2">
                           Updated: 2 hours ago
+                        </p>
+                      </div>
+
+                      <div className="p-4 border rounded-lg">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="font-medium">Contract Template Library</h3>
+                          <Button size="sm" variant="outline">
+                            <FileText className="h-4 w-4 mr-1" />
+                            Access
+                          </Button>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          Compliance-ready contract templates for all creator types
+                        </p>
+                        <p className="text-xs text-gray-500 mt-2">
+                          87 templates available
+                        </p>
+                      </div>
+
+                      <div className="p-4 border rounded-lg">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="font-medium">Risk Assessment Dashboard</h3>
+                          <Button size="sm" variant="outline">
+                            <Shield className="h-4 w-4 mr-1" />
+                            Analyze
+                          </Button>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          AI-powered risk analysis across all compliance categories
+                        </p>
+                        <p className="text-xs text-gray-500 mt-2">
+                          Updated continuously
                         </p>
                       </div>
                     </div>
@@ -405,11 +629,10 @@ export default function ComplianceHub() {
                     <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                       <div className="flex items-center gap-2 mb-2">
                         <Shield className="h-5 w-5 text-blue-600" />
-                        <span className="font-medium text-blue-900">Automated Compliance Monitoring</span>
+                        <span className="font-medium text-blue-900">Universal Compliance Monitoring</span>
                       </div>
                       <p className="text-sm text-blue-800">
-                        Our system continuously monitors regulatory changes and automatically updates your compliance status. 
-                        You'll receive real-time alerts when action is required.
+                        Our AI system monitors regulatory changes across entertainment, influencer marketing, business leadership, and NIL regulations in all 50 states plus federal and international requirements.
                       </p>
                     </div>
                   </div>
