@@ -1,0 +1,3 @@
+# Content‑Free Receipts (template)
+- yyyy-mm-dd | actor: Brand ABC | action: "Offer #842 sent" | proof: SHA256:... | policy: [FTC/School Rule] | anchor: block/time or notarized hash
+- yyyy-mm-dd | actor: Athlete 123 | action: "Disclosure acknowledged" | proof: SHA256:... | anchor: ...
