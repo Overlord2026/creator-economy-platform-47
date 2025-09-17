@@ -11,21 +11,74 @@ export interface PersonaConfig {
 export const PERSONA_CONFIG: PersonaConfig[] = [
   {
     persona: "families",
-    segment: "aspiring",
-    label: "Families — Aspiring",
-    benefit: "One private workspace to build and protect your future.",
-    cta: "Start Aspiring Family workspace",
-    tags: ["family", "aspiring"],
-    demoId: "families-aspiring"
+    segment: "creator-families",
+    label: "Creator Families",
+    benefit: "Build and protect your creative legacy—talent monetization, brand protection, and family wealth in one workspace.",
+    cta: "Start Creator Family workspace",
+    tags: ["family", "creator"],
+    demoId: "families-creator"
   },
   {
-    persona: "families",
-    segment: "retirees",
-    label: "Families — Retirees",
-    benefit: "Retire with confidence—income that lasts, taxes under control, estate buttoned-up, healthspan in view—on one platform.",
-    cta: "Start Retiree Family workspace",
-    tags: ["family", "retiree"],
-    demoId: "families-retirees"
+    persona: "social-media-influencers",
+    label: "Social Media Influencers",
+    benefit: "Monetize your influence—brand partnerships, content licensing, and audience growth—all managed professionally.",
+    cta: "Start Influencer workspace",
+    tags: ["influencer", "social-media", "creator"],
+    demoId: "social-media-influencers"
+  },
+  {
+    persona: "entertainment-industry",
+    segment: "musicians",
+    label: "Entertainment — Musicians",
+    benefit: "Music rights, royalties, touring income, and brand deals—track, protect, and optimize your creative revenue.",
+    cta: "Start Musician workspace",
+    tags: ["entertainment", "musician", "creator"],
+    demoId: "entertainment-musicians"
+  },
+  {
+    persona: "entertainment-industry",
+    segment: "actors",
+    label: "Entertainment — Actors",
+    benefit: "Manage contracts, residuals, licensing deals, and career investments—your talent is your business.",
+    cta: "Start Actor workspace",
+    tags: ["entertainment", "actor", "creator"],
+    demoId: "entertainment-actors"
+  },
+  {
+    persona: "sports-personalities",
+    segment: "retired-athletes",
+    label: "Sports — Retired Athletes",
+    benefit: "Leverage your athletic legacy—speaking, endorsements, coaching, and media opportunities managed professionally.",
+    cta: "Start Retired Athlete workspace",
+    tags: ["sports", "athlete", "creator"],
+    demoId: "sports-retired-athletes"
+  },
+  {
+    persona: "sports-personalities",
+    segment: "commentators",
+    label: "Sports — Media & Commentators",
+    benefit: "Media contracts, brand partnerships, and content creation—amplify your sports expertise into revenue.",
+    cta: "Start Sports Media workspace",
+    tags: ["sports", "media", "creator"],
+    demoId: "sports-commentators"
+  },
+  {
+    persona: "business-leaders",
+    segment: "executives",
+    label: "Business Leaders — Executives",
+    benefit: "Executive speaking, board positions, consulting—monetize your business expertise while protecting your reputation.",
+    cta: "Start Executive workspace",
+    tags: ["business", "executive", "creator"],
+    demoId: "business-executives"
+  },
+  {
+    persona: "business-leaders",
+    segment: "speakers",
+    label: "Business Leaders — Speakers",
+    benefit: "Speaking engagements, thought leadership, and personal branding—build your speaking business with professional support.",
+    cta: "Start Speaker workspace",
+    tags: ["business", "speaker", "creator"],
+    demoId: "business-speakers"
   },
   {
     persona: "advisors",

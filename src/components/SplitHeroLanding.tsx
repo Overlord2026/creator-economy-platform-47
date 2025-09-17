@@ -32,47 +32,50 @@ export const SplitHeroLanding: React.FC = () => {
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-16">
               <h1 className="text-5xl lg:text-7xl font-bold text-foreground mb-6">
-                Choose Your Path
+                Creator Economy Hub
               </h1>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Tailored solutions for families and financial service professionals
+                Comprehensive platform for creators and the professionals who serve them
               </p>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {/* Families Card */}
+              {/* Creators Card */}
               <PersonaCard
-                title="For Families"
+                title="For Creators"
                 actions={
                   <>
                     <a 
-                      href="/families"
+                      href="/creators"
                       className="bfo-cta px-6 py-3 font-medium w-full text-center"
                       onClick={handleFamilyClick}
                     >
-                      See How It Works
+                      Explore Creator Marketplace
                     </a>
                     <a 
-                      href="/families"
+                      href="/creators"
                       className="bfo-cta-secondary px-6 py-3 w-full text-center"
                       onClick={handleFamilyClick}
                     >
-                      Try the Value Calculator
+                      Find Your Niche
                     </a>
                   </>
                 }
               >
                 <h3 className="text-xl font-semibold text-bfo-gold mb-4">
-                  Your Private Family Office—On Your Terms
+                  Monetize Your Talent & Protect Your Brand
                 </h3>
                 <p className="leading-relaxed">
-                  You choose the team. You control the plan. We coordinate investments, tax, estate, insurance, and healthcare—so your family thrives for generations.
+                  From NIL athletes to social media influencers—manage partnerships, protect your likeness, and build wealth with professional support.
                 </p>
+                <div className="text-sm text-white/60 mt-4">
+                  NIL Athletes · Social Media · Entertainment · Sports · Business Leaders
+                </div>
               </PersonaCard>
 
-              {/* Professionals Card */}
+              {/* Creator Professionals Card */}
               <PersonaCard
-                title="For Service Pros"
+                title="For Creator Professionals"
                 actions={
                   <>
                     <a 
@@ -80,26 +83,26 @@ export const SplitHeroLanding: React.FC = () => {
                       className="bfo-cta px-6 py-3 font-medium w-full text-center"
                       onClick={handleProsClick}
                     >
-                      Explore Tools
+                      Explore Professional Tools
                     </a>
                     <a 
                       href="/pros"
                       className="bfo-cta-secondary px-6 py-3 w-full text-center"
                       onClick={handleProsClick}
                     >
-                      Book a Demo
+                      Book Creator Demo
                     </a>
                   </>
                 }
               >
                 <h3 className="text-xl font-semibold text-blue-400 mb-4">
-                  A Growth & Compliance OS for Professionals
+                  Creator Economy Professional Services
                 </h3>
                 <p className="leading-relaxed mb-4">
-                  Win ideal clients, automate follow-ups, coordinate with the family office, and keep audits clean.
+                  Specialized tools for professionals serving creators—compliance, monetization, brand protection, and growth management.
                 </p>
                 <div className="text-sm text-white/60">
-                  Advisors · CPAs · Attorneys · Insurance · Healthcare · Realtors · Bank/Trust
+                  Creator Financial Advisors · Entertainment Attorneys · Brand Protection · Compliance Specialists
                 </div>
               </PersonaCard>
             </div>

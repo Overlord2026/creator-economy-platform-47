@@ -22,10 +22,10 @@ export function HomeHero() {
         <div className="absolute inset-0 pointer-events-none"></div>
         <div className="relative z-10 pointer-events-auto">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground max-w-4xl mx-auto leading-tight">
-            A Growth & Compliance OS for Professionals
+            Creator Economy Professional Services
           </h1>
           <p className="text-muted-foreground text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-            Win ideal clients, automate follow-ups, coordinate with the family office, and keep audits clean.
+            Specialized tools for professionals serving creators—compliance, monetization, and growth management in one platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button 
@@ -54,47 +54,47 @@ export function HomeHero() {
             </Button>
           </div>
           <div className="text-sm text-muted-foreground/80 pt-4">
-            Advisors · CPAs · Attorneys · Insurance · Healthcare · Realtors · Bank/Trust
+            Creator Financial Advisors · Entertainment Attorneys · Brand Protection · Compliance Specialists
           </div>
         </div>
       </section>
     );
   }
 
-  // Families
+  // Creator Families and Individuals
   return (
     <section className="text-center space-y-6 py-16 px-4 relative z-10">
       <div className="absolute inset-0 pointer-events-none"></div>
       <div className="relative z-10 pointer-events-auto">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground max-w-4xl mx-auto leading-tight">
-          Your Private Family Office—On Your Terms
+          Creator Economy Hub—Monetize Your Talent
         </h1>
         <p className="text-muted-foreground text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-          You choose the team. You control the plan. We coordinate investments, tax, estate, insurance, and healthcare—so your family thrives for generations.
+          From NIL athletes to social media influencers—manage brand partnerships, protect your likeness, and build generational wealth with professional support.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Button 
             size="lg" 
             className="px-8 py-3 pointer-events-auto"
             onClick={() => { 
-              analytics.track('hero.cta.clicked', { group: 'family', cta: 'see_how_it_works' });
-              track("hero.cta.clicked", { label: "See How It Works", group: 'family' });
-              scrollToId("how-it-works"); 
+              analytics.track('hero.cta.clicked', { group: 'creator', cta: 'explore_creator_marketplace' });
+              track("hero.cta.clicked", { label: "Explore Creator Marketplace", group: 'creator' });
+              navigate("/creator-marketplace"); 
             }}
           >
-            See How It Works
+            Explore Creator Marketplace
           </Button>
           <Button 
             size="lg" 
             variant="outline" 
             className="px-8 py-3 pointer-events-auto"
             onClick={() => { 
-              analytics.track('hero.cta.clicked', { group: 'family', cta: 'try_value_calculator' });
-              track("hero.cta.clicked", { label: "Try the Value Calculator", group: 'family' });
-              navigate("/tools/value-calculator"); 
+              analytics.track('hero.cta.clicked', { group: 'creator', cta: 'find_creator_professionals' });
+              track("hero.cta.clicked", { label: "Find Creator Professionals", group: 'creator' });
+              navigate("/professionals"); 
             }}
           >
-            Try the Value Calculator
+            Find Creator Professionals
           </Button>
         </div>
         <div className="text-sm text-muted-foreground/80 pt-4">
