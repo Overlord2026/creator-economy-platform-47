@@ -72,7 +72,7 @@ const documentCategories: DocumentCategory[] = [
     id: "mortgage",
     name: "Mortgage Documents",
     icon: InfoIcon,
-    relevantProfessionals: ["Mortgage Broker", "Real Estate Agent / Property Manager"],
+    relevantProfessionals: ["Real Estate Agent / Property Manager"],
     description: "Mortgage agreements, refinancing documents, and loan applications",
     documentTypes: ["financial", "document"]
   }

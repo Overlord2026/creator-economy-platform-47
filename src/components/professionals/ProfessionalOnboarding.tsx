@@ -37,27 +37,54 @@ export function ProfessionalOnboarding({ userRole, professionalType, onComplete 
   // Determine segment based on professional type
   const getSegmentFromType = (type: ProfessionalType): ProfessionalSegment => {
     const typeMap: Record<string, ProfessionalSegment> = {
-      'Private Banker / Trust Officer': 'wealth_management',
-      'Estate Planning Consultant': 'legal_advisory',
-      'Business Succession Advisor': 'business_advisory',
-      'Insurance & Advanced Planning Specialist': 'insurance_planning',
-      'Property Manager / Real Estate Specialist': 'real_estate',
-      'Philanthropy Consultant': 'philanthropy',
-      'Healthcare Advocate': 'healthcare',
-      'Luxury Concierge / Travel Specialist': 'luxury_services',
-      'Divorce / Family Law Advisor': 'legal_advisory',
-      'Platform Aggregator / MFO': 'family_office',
-      'Retirement Plan Advisor': 'wealth_management',
-      'Private Lender / Credit Specialist': 'investment_management',
-      'Family Investment Club Lead': 'investment_management',
-      'VC / Private Equity Professional': 'investment_management',
-      'Tax Resolution Specialist': 'tax_compliance',
-      'HR / Benefit Consultant': 'business_advisory',
-      'IMO / Independent Marketing Organization': 'imo_fmo_distribution',
-      'FMO / Field Marketing Organization': 'imo_fmo_distribution'
+      // Creator Economy Financial Advisors
+      'Creator Financial Advisor': 'creator_financial_advisory',
+      'NIL Financial Advisor': 'creator_financial_advisory', 
+      'Entertainment Financial Advisor': 'creator_financial_advisory',
+      'Influencer Financial Advisor': 'creator_financial_advisory',
+      'Sports Financial Advisor': 'creator_financial_advisory',
+      
+      // Creator Economy Legal Specialists
+      'Entertainment Attorney': 'creator_legal_services',
+      'NIL Compliance Attorney': 'creator_legal_services',
+      'Brand Protection Attorney': 'creator_legal_services',
+      'Influencer Contract Attorney': 'creator_legal_services',
+      'Intellectual Property Attorney': 'creator_legal_services',
+      
+      // Creator Economy Accountants
+      'Influencer Accountant': 'creator_tax_compliance',
+      'Entertainment Tax Specialist': 'creator_tax_compliance',
+      'Creator Business Accountant': 'creator_tax_compliance',
+      'Multi-State Tax Professional': 'creator_tax_compliance',
+      
+      // Creator Brand & Business Services
+      'Brand Management Consultant': 'creator_brand_management',
+      'Social Media Business Manager': 'creator_business_advisory',
+      'Creator Business Advisor': 'creator_business_advisory',
+      'Monetization Strategist': 'creator_brand_management',
+      'Partnership & Sponsorship Specialist': 'creator_brand_management',
+      
+      // Creator Insurance & Risk Management
+      'Creator Liability Insurance Specialist': 'creator_insurance_risk',
+      'Entertainment Insurance Broker': 'creator_insurance_risk',
+      'Brand Protection Insurance Agent': 'creator_insurance_risk',
+      
+      // Creator Support Services
+      'Creator Healthcare Advocate': 'creator_business_advisory',
+      'Creator Wealth Manager': 'creator_wealth_management',
+      'Digital Asset Manager': 'digital_asset_management',
+      'Creator Estate Planning Specialist': 'creator_estate_planning',
+      'Creator Philanthropy Advisor': 'creator_estate_planning',
+      
+      // Traditional (maintained for existing clients)
+      'Tax Professional / Accountant': 'creator_tax_compliance',
+      'Estate Planning Attorney': 'creator_legal_services',
+      'Financial Advisor': 'creator_financial_advisory',
+      'Real Estate Agent / Property Manager': 'creator_business_advisory',
+      'Insurance / LTC Specialist': 'creator_insurance_risk'
     };
     
-    return typeMap[type] || 'wealth_management';
+    return typeMap[type] || 'creator_financial_advisory';
   };
 
   const segment = getSegmentFromType(professionalType);

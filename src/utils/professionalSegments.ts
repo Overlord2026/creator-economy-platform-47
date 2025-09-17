@@ -2,25 +2,25 @@ import { ProfessionalDashboardConfig, ProfessionalSegment } from '@/types/profes
 
 // Professional segment configurations with dashboard layouts, permissions, and onboarding flows
 export const PROFESSIONAL_SEGMENT_CONFIGS: Record<ProfessionalSegment, ProfessionalDashboardConfig> = {
-  wealth_management: {
-    segment: 'wealth_management',
+  creator_financial_advisory: {
+    segment: 'creator_financial_advisory',
     widgets: [
-      'client_overview',
-      'aum_tracking',
-      'referral_pipeline',
-      'compliance_dashboard',
-      'performance_metrics',
-      'document_vault',
-      'meeting_scheduler'
+      'creator_client_overview',
+      'creator_revenue_tracking',
+      'nil_compliance_dashboard',
+      'brand_monetization_metrics',
+      'multi_state_tax_planning',
+      'creator_referral_pipeline',
+      'creator_meeting_scheduler'
     ],
     permissions: [
-      'view_client_data',
-      'manage_portfolios',
-      'access_reporting_tools',
+      'view_creator_data',
+      'manage_creator_portfolios',
+      'access_nil_tools',
+      'multi_state_compliance',
+      'creator_tax_planning',
       'send_secure_messages',
-      'upload_documents',
-      'schedule_meetings',
-      'manage_referrals'
+      'schedule_consultations'
     ],
     referral_settings: {
       accepts_inbound: true,
@@ -28,542 +28,518 @@ export const PROFESSIONAL_SEGMENT_CONFIGS: Record<ProfessionalSegment, Professio
       fee_structure: 'percentage_based'
     },
     onboarding_steps: [
-      'profile_setup',
-      'license_verification',
-      'compliance_review',
-      'aum_documentation',
-      'client_capacity_setup',
-      'fee_structure_config',
-      'referral_preferences'
+      'verify_credentials',
+      'complete_creator_training',
+      'setup_nil_compliance',
+      'configure_multi_state_tracking',
+      'creator_specialization_selection'
     ],
     required_documents: [
-      'ADV_form',
-      'state_licenses',
-      'E&O_insurance',
-      'compliance_manual',
-      'client_agreement_template'
+      'financial_advisor_license',
+      'nil_compliance_certification',
+      'multi_state_registrations',
+      'creator_economy_training_cert'
     ],
     compliance_requirements: [
-      'fiduciary_standard',
-      'state_registration',
-      'continuing_education',
-      'annual_compliance_review'
+      'creator_privacy_protection',
+      'nil_state_compliance',
+      'brand_monetization_ethics',
+      'multi_platform_disclosure'
     ]
   },
 
-  legal_advisory: {
-    segment: 'legal_advisory',
+  creator_legal_services: {
+    segment: 'creator_legal_services',
     widgets: [
-      'case_management',
-      'document_review',
-      'billing_tracker',
-      'referral_network',
-      'compliance_alerts',
-      'client_communications',
-      'trust_administration'
+      'creator_contract_dashboard',
+      'ip_protection_tracking',
+      'compliance_monitoring',
+      'brand_protection_alerts',
+      'creator_case_management',
+      'legal_document_vault',
+      'consultation_scheduler'
     ],
     permissions: [
-      'manage_cases',
-      'access_legal_vault',
-      'review_documents',
-      'manage_trust_accounts',
-      'send_privileged_communications',
-      'generate_legal_reports'
+      'draft_creator_contracts',
+      'manage_ip_portfolios',
+      'multi_state_legal_research',
+      'brand_protection_enforcement',
+      'nil_compliance_review',
+      'entertainment_law_practice'
     ],
     referral_settings: {
       accepts_inbound: true,
       accepts_outbound: true,
-      fee_structure: 'hourly_referral_fee'
+      fee_structure: 'hourly_plus_success'
     },
     onboarding_steps: [
-      'bar_verification',
-      'malpractice_insurance',
-      'specialization_documentation',
-      'retainer_structure_setup',
-      'conflict_checking_system',
-      'client_intake_process'
+      'verify_bar_admission',
+      'entertainment_law_training',
+      'nil_compliance_certification',
+      'ip_protection_specialization',
+      'creator_industry_orientation'
     ],
     required_documents: [
-      'bar_certificate',
-      'malpractice_insurance',
-      'specialization_certifications',
-      'engagement_letter_template',
-      'conflict_waiver_forms'
+      'bar_admission_certificate',
+      'entertainment_law_certification',
+      'ip_law_credentials',
+      'nil_compliance_training'
     ],
     compliance_requirements: [
-      'bar_membership',
-      'cle_requirements',
-      'ethics_training',
-      'trust_account_compliance'
+      'attorney_client_privilege',
+      'creator_confidentiality',
+      'multi_state_legal_compliance',
+      'entertainment_industry_ethics'
     ]
   },
 
-  tax_compliance: {
-    segment: 'tax_compliance',
+  creator_tax_compliance: {
+    segment: 'creator_tax_compliance',
     widgets: [
-      'tax_calendar',
-      'client_organizers',
-      'projection_tools',
-      'compliance_tracker',
-      'document_portal',
-      'tax_planning_scenarios',
-      'multi_state_tracking'
+      'multi_platform_income_tracking',
+      'multi_state_tax_dashboard',
+      'creator_expense_optimization',
+      'quarterly_planning_tools',
+      'brand_depreciation_tracker',
+      'creator_audit_protection',
+      'tax_consultation_calendar'
     ],
     permissions: [
-      'access_tax_documents',
-      'prepare_returns',
-      'manage_extensions',
-      'conduct_tax_planning',
-      'represent_before_irs',
-      'access_tax_research_tools'
+      'multi_state_tax_filing',
+      'creator_income_analysis',
+      'brand_asset_valuation',
+      'quarterly_tax_planning',
+      'audit_defense_services',
+      'expense_optimization_tools'
     ],
     referral_settings: {
       accepts_inbound: true,
       accepts_outbound: true,
-      fee_structure: 'fixed_fee_percentage'
+      fee_structure: 'project_based'
     },
     onboarding_steps: [
-      'cpa_license_verification',
-      'tax_software_setup',
-      'client_capacity_assessment',
-      'specialization_areas',
-      'fee_structure_configuration',
-      'irs_representation_status'
+      'verify_cpa_license',
+      'creator_tax_specialization',
+      'multi_state_registration',
+      'brand_valuation_training',
+      'creator_industry_bootcamp'
     ],
     required_documents: [
       'cpa_license',
-      'continuing_education_certificates',
-      'irs_preparer_tax_id',
-      'engagement_letter_template',
-      'privacy_policy'
+      'creator_tax_certification',
+      'multi_state_registrations',
+      'brand_valuation_credentials'
     ],
     compliance_requirements: [
-      'annual_license_renewal',
-      'continuing_education',
-      'irs_registration',
-      'privacy_compliance'
+      'creator_confidentiality',
+      'multi_state_tax_compliance',
+      'brand_asset_ethics',
+      'creator_income_reporting'
     ]
   },
 
-  insurance_planning: {
-    segment: 'insurance_planning',
+  creator_brand_management: {
+    segment: 'creator_brand_management',
     widgets: [
-      'policy_tracker',
-      'premium_calculator',
-      'needs_analysis',
-      'carrier_comparisons',
-      'claims_management',
-      'commission_tracker',
-      'underwriting_pipeline'
+      'brand_portfolio_dashboard',
+      'monetization_opportunities',
+      'partnership_pipeline',
+      'brand_protection_monitor',
+      'creator_analytics_hub',
+      'sponsorship_tracker',
+      'brand_consultation_scheduler'
     ],
     permissions: [
-      'access_policy_data',
-      'run_illustrations',
-      'submit_applications',
-      'manage_claims',
-      'access_carrier_systems',
-      'generate_proposals'
+      'brand_strategy_development',
+      'partnership_negotiation',
+      'monetization_optimization',
+      'brand_protection_services',
+      'creator_analytics_access',
+      'sponsorship_management'
     ],
     referral_settings: {
       accepts_inbound: true,
       accepts_outbound: true,
-      fee_structure: 'commission_split'
+      fee_structure: 'percentage_plus_retainer'
     },
     onboarding_steps: [
-      'license_verification',
-      'carrier_appointments',
-      'specialization_training',
-      'compliance_review',
-      'client_suitability_process'
+      'brand_management_certification',
+      'creator_economy_training',
+      'partnership_negotiation_skills',
+      'brand_protection_protocols',
+      'monetization_strategy_mastery'
     ],
     required_documents: [
-      'insurance_licenses',
-      'carrier_appointments',
-      'e&o_insurance',
-      'suitability_documentation',
-      'disclosure_forms'
+      'brand_management_certification',
+      'creator_industry_credentials',
+      'partnership_portfolio',
+      'brand_protection_training'
     ],
     compliance_requirements: [
-      'state_licensing',
-      'continuing_education',
-      'suitability_standards',
-      'disclosure_requirements'
+      'brand_confidentiality',
+      'partnership_ethics',
+      'creator_representation_standards',
+      'monetization_transparency'
     ]
   },
 
-  real_estate: {
-    segment: 'real_estate',
+  creator_business_advisory: {
+    segment: 'creator_business_advisory',
     widgets: [
-      'property_portfolio',
-      'market_analytics',
-      'transaction_pipeline',
-      'maintenance_tracker',
-      'tenant_management',
-      'financial_reporting',
-      'investment_analysis'
+      'creator_business_dashboard',
+      'growth_strategy_tools',
+      'business_formation_tracker',
+      'creator_team_management',
+      'business_analytics_hub',
+      'strategic_planning_calendar',
+      'advisory_consultation_portal'
     ],
     permissions: [
-      'manage_properties',
-      'access_market_data',
-      'coordinate_transactions',
-      'manage_leases',
-      'track_maintenance',
-      'generate_reports'
+      'business_strategy_development',
+      'creator_team_advisory',
+      'business_formation_services',
+      'growth_planning_tools',
+      'strategic_partnership_advisory',
+      'business_analytics_access'
     ],
     referral_settings: {
       accepts_inbound: true,
       accepts_outbound: true,
-      fee_structure: 'transaction_based'
+      fee_structure: 'retainer_plus_equity'
     },
     onboarding_steps: [
-      'license_verification',
-      'property_management_setup',
-      'insurance_verification',
-      'vendor_network_setup',
-      'reporting_preferences'
+      'business_advisory_certification',
+      'creator_business_training',
+      'strategic_planning_mastery',
+      'team_management_skills',
+      'creator_industry_expertise'
     ],
     required_documents: [
-      'real_estate_license',
-      'property_management_license',
-      'e&o_insurance',
-      'vendor_agreements',
-      'lease_templates'
+      'business_advisory_credentials',
+      'creator_business_certification',
+      'strategic_planning_portfolio',
+      'team_management_training'
     ],
     compliance_requirements: [
-      'state_licensing',
-      'fair_housing_training',
-      'property_management_compliance',
-      'trust_account_management'
+      'business_confidentiality',
+      'strategic_advisory_ethics',
+      'creator_business_standards',
+      'growth_planning_transparency'
     ]
   },
 
-  philanthropy: {
-    segment: 'philanthropy',
+  creator_insurance_risk: {
+    segment: 'creator_insurance_risk',
     widgets: [
-      'giving_dashboard',
-      'impact_metrics',
-      'foundation_management',
-      'tax_benefit_calculator',
-      'grant_tracking',
-      'donor_engagement',
-      'charity_research'
+      'creator_risk_assessment',
+      'liability_coverage_tracker',
+      'brand_protection_insurance',
+      'creator_claims_management',
+      'risk_mitigation_dashboard',
+      'insurance_consultation_portal',
+      'coverage_optimization_tools'
     ],
     permissions: [
-      'manage_giving_strategies',
-      'access_charity_database',
-      'calculate_tax_benefits',
-      'track_impact_metrics',
-      'manage_daf_accounts',
-      'coordinate_family_giving'
-    ],
-    referral_settings: {
-      accepts_inbound: true,
-      accepts_outbound: false,
-      fee_structure: 'advisory_fee'
-    },
-    onboarding_steps: [
-      'certification_verification',
-      'specialization_setup',
-      'charity_network_integration',
-      'impact_measurement_setup',
-      'family_governance_training'
-    ],
-    required_documents: [
-      'cfp_certification',
-      'philanthropy_training_certificates',
-      'charity_partnerships',
-      'impact_measurement_framework'
-    ],
-    compliance_requirements: [
-      'fiduciary_training',
-      'charity_due_diligence',
-      'impact_reporting',
-      'tax_compliance'
-    ]
-  },
-
-  healthcare: {
-    segment: 'healthcare',
-    widgets: [
-      'health_plan_analysis',
-      'claims_tracking',
-      'provider_network',
-      'wellness_programs',
-      'ltc_planning',
-      'medicare_guidance',
-      'health_savings_optimization'
-    ],
-    permissions: [
-      'analyze_health_plans',
-      'track_claims',
-      'coordinate_care',
-      'manage_health_savings',
-      'provide_medicare_guidance',
-      'plan_long_term_care'
+      'creator_risk_analysis',
+      'liability_insurance_management',
+      'brand_protection_coverage',
+      'claims_processing_services',
+      'risk_mitigation_planning',
+      'insurance_portfolio_management'
     ],
     referral_settings: {
       accepts_inbound: true,
       accepts_outbound: true,
-      fee_structure: 'consultation_fee'
+      fee_structure: 'commission_based'
     },
     onboarding_steps: [
-      'healthcare_background_verification',
-      'insurance_expertise_assessment',
-      'medicare_certification',
-      'privacy_training',
-      'care_coordination_setup'
+      'insurance_license_verification',
+      'creator_risk_specialization',
+      'liability_coverage_training',
+      'brand_protection_certification',
+      'creator_industry_risk_assessment'
     ],
     required_documents: [
-      'healthcare_credentials',
-      'insurance_certifications',
-      'medicare_training_certificates',
-      'hipaa_compliance_documentation'
+      'insurance_license',
+      'creator_risk_certification',
+      'liability_coverage_credentials',
+      'brand_protection_training'
     ],
     compliance_requirements: [
-      'hipaa_compliance',
-      'medicare_certification',
-      'continuing_education',
-      'privacy_standards'
+      'insurance_ethics',
+      'creator_coverage_standards',
+      'risk_assessment_accuracy',
+      'claims_processing_integrity'
     ]
   },
 
-  luxury_services: {
-    segment: 'luxury_services',
+  nil_compliance_advisory: {
+    segment: 'nil_compliance_advisory',
     widgets: [
-      'concierge_requests',
-      'travel_itineraries',
-      'vendor_network',
-      'event_planning',
-      'lifestyle_management',
-      'preference_tracking',
-      'service_coordination'
+      'nil_compliance_dashboard',
+      'multi_state_tracker',
+      'athlete_eligibility_monitor',
+      'nil_deal_pipeline',
+      'compliance_audit_tools',
+      'nil_consultation_scheduler',
+      'regulatory_update_center'
     ],
     permissions: [
-      'manage_concierge_services',
-      'coordinate_travel',
-      'plan_events',
-      'manage_vendor_relationships',
-      'track_preferences',
-      'coordinate_lifestyle_services'
-    ],
-    referral_settings: {
-      accepts_inbound: true,
-      accepts_outbound: false,
-      fee_structure: 'service_fee'
-    },
-    onboarding_steps: [
-      'service_portfolio_setup',
-      'vendor_network_verification',
-      'insurance_coverage_review',
-      'client_preference_system',
-      'emergency_protocols'
-    ],
-    required_documents: [
-      'business_license',
-      'insurance_coverage',
-      'vendor_agreements',
-      'service_contracts',
-      'privacy_agreements'
-    ],
-    compliance_requirements: [
-      'business_licensing',
-      'insurance_coverage',
-      'vendor_compliance',
-      'privacy_protection'
-    ]
-  },
-
-  investment_management: {
-    segment: 'investment_management',
-    widgets: [
-      'portfolio_analytics',
-      'performance_tracking',
-      'risk_management',
-      'deal_pipeline',
-      'due_diligence',
-      'investor_relations',
-      'regulatory_compliance'
-    ],
-    permissions: [
-      'manage_investments',
-      'conduct_due_diligence',
-      'track_performance',
-      'manage_investor_relations',
-      'access_deal_flow',
-      'generate_reports'
+      'nil_compliance_monitoring',
+      'multi_state_regulatory_tracking',
+      'athlete_eligibility_verification',
+      'nil_deal_structuring',
+      'compliance_audit_services',
+      'regulatory_advisory_services'
     ],
     referral_settings: {
       accepts_inbound: true,
       accepts_outbound: true,
-      fee_structure: 'management_fee_carry'
+      fee_structure: 'compliance_fee_plus_success'
     },
     onboarding_steps: [
-      'registration_verification',
-      'investment_strategy_setup',
-      'compliance_review',
-      'investor_qualification',
-      'reporting_framework'
+      'nil_compliance_certification',
+      'multi_state_regulatory_training',
+      'athlete_eligibility_mastery',
+      'nil_deal_structuring_skills',
+      'regulatory_update_protocols'
     ],
     required_documents: [
-      'investment_advisor_registration',
-      'form_adv',
-      'compliance_manual',
-      'investment_management_agreement',
-      'accredited_investor_verification'
+      'nil_compliance_certification',
+      'multi_state_regulatory_credentials',
+      'athlete_eligibility_training',
+      'nil_deal_portfolio'
     ],
     compliance_requirements: [
-      'sec_registration',
-      'fiduciary_duty',
-      'custody_rules',
-      'marketing_restrictions'
+      'nil_regulatory_compliance',
+      'athlete_confidentiality',
+      'multi_state_legal_adherence',
+      'nil_deal_transparency'
     ]
   },
 
-  business_advisory: {
-    segment: 'business_advisory',
+  entertainment_services: {
+    segment: 'entertainment_services',
     widgets: [
-      'business_valuation',
-      'succession_planning',
-      'transaction_pipeline',
-      'due_diligence_tracker',
-      'exit_strategy_planner',
-      'tax_structuring',
-      'deal_analytics'
+      'entertainment_project_dashboard',
+      'talent_management_tools',
+      'entertainment_contract_tracker',
+      'royalty_management_system',
+      'entertainment_analytics_hub',
+      'talent_consultation_portal',
+      'industry_relationship_manager'
     ],
     permissions: [
-      'conduct_valuations',
-      'plan_successions',
-      'manage_transactions',
-      'coordinate_due_diligence',
-      'structure_deals',
-      'provide_tax_guidance'
+      'entertainment_project_management',
+      'talent_representation_services',
+      'contract_negotiation_tools',
+      'royalty_tracking_services',
+      'entertainment_industry_analytics',
+      'talent_advisory_services'
     ],
     referral_settings: {
       accepts_inbound: true,
       accepts_outbound: true,
-      fee_structure: 'success_fee_retainer'
+      fee_structure: 'percentage_plus_retainer'
     },
     onboarding_steps: [
-      'credential_verification',
-      'specialization_assessment',
-      'transaction_experience_review',
-      'fee_structure_setup',
-      'conflict_procedures'
+      'entertainment_industry_certification',
+      'talent_management_training',
+      'contract_negotiation_mastery',
+      'royalty_management_skills',
+      'industry_relationship_building'
     ],
     required_documents: [
-      'professional_credentials',
-      'transaction_experience',
-      'valuation_certifications',
-      'engagement_letter_template',
-      'confidentiality_agreements'
+      'entertainment_industry_credentials',
+      'talent_management_certification',
+      'contract_negotiation_portfolio',
+      'royalty_management_training'
     ],
     compliance_requirements: [
-      'professional_licensing',
-      'continuing_education',
-      'ethics_training',
-      'confidentiality_standards'
+      'entertainment_industry_ethics',
+      'talent_confidentiality',
+      'contract_transparency',
+      'royalty_accuracy'
     ]
   },
 
-  family_office: {
-    segment: 'family_office',
+  influencer_services: {
+    segment: 'influencer_services',
     widgets: [
-      'family_governance',
-      'consolidated_reporting',
-      'multi_entity_management',
-      'next_gen_education',
-      'family_meetings',
-      'investment_committee',
-      'philanthropy_coordination'
+      'influencer_campaign_dashboard',
+      'brand_partnership_tracker',
+      'content_monetization_tools',
+      'influencer_analytics_hub',
+      'campaign_performance_monitor',
+      'influencer_consultation_portal',
+      'brand_relationship_manager'
     ],
     permissions: [
-      'manage_family_governance',
-      'consolidate_reporting',
-      'coordinate_investments',
-      'plan_education',
-      'manage_meetings',
-      'oversee_philanthropy'
+      'influencer_campaign_management',
+      'brand_partnership_services',
+      'content_monetization_optimization',
+      'influencer_analytics_access',
+      'campaign_performance_tracking',
+      'brand_relationship_advisory'
     ],
     referral_settings: {
       accepts_inbound: true,
       accepts_outbound: true,
-      fee_structure: 'asset_based_fee'
+      fee_structure: 'commission_plus_retainer'
     },
     onboarding_steps: [
-      'family_office_setup',
-      'governance_framework',
-      'investment_policy',
-      'reporting_structure',
-      'next_gen_planning',
-      'philanthropy_strategy'
+      'influencer_industry_certification',
+      'brand_partnership_training',
+      'content_monetization_mastery',
+      'analytics_interpretation_skills',
+      'brand_relationship_protocols'
     ],
     required_documents: [
-      'family_office_charter',
-      'investment_policy_statement',
-      'governance_documents',
-      'service_agreements',
-      'compliance_framework'
+      'influencer_industry_credentials',
+      'brand_partnership_certification',
+      'content_monetization_portfolio',
+      'analytics_training_certificate'
     ],
     compliance_requirements: [
-      'family_office_exemption',
-      'fiduciary_standards',
-      'record_keeping',
-      'regulatory_compliance'
+      'influencer_ethics',
+      'brand_partnership_transparency',
+      'content_monetization_standards',
+      'ftc_compliance_adherence'
     ]
   },
 
-  imo_fmo_distribution: {
-    segment: 'imo_fmo_distribution',
+  creator_wealth_management: {
+    segment: 'creator_wealth_management',
     widgets: [
-      'agent_pipeline',
-      'recruiting_metrics',
-      'carrier_marketplace',
-      'production_tracking',
-      'compliance_alerts',
-      'education_center',
-      'event_management',
-      'co_op_marketing'
+      'creator_wealth_dashboard',
+      'income_diversification_tracker',
+      'creator_investment_portfolio',
+      'wealth_preservation_tools',
+      'creator_tax_optimization',
+      'wealth_consultation_scheduler',
+      'financial_goal_tracker'
     ],
     permissions: [
-      'manage_agent_pipeline',
-      'access_recruiting_tools',
-      'view_carrier_products',
-      'track_agent_production',
-      'monitor_compliance',
-      'manage_education_content',
-      'coordinate_events',
-      'run_marketing_campaigns',
-      'access_downline_data'
+      'creator_wealth_planning',
+      'income_diversification_advisory',
+      'investment_portfolio_management',
+      'wealth_preservation_strategies',
+      'tax_optimization_services',
+      'financial_goal_planning'
     ],
     referral_settings: {
       accepts_inbound: true,
       accepts_outbound: true,
-      fee_structure: 'override_commission'
+      fee_structure: 'aum_percentage'
     },
     onboarding_steps: [
-      'imo_fmo_profile_setup',
-      'licensing_verification',
-      'carrier_appointments',
-      'agent_hierarchy_setup',
-      'compliance_framework',
-      'recruiting_process_config',
-      'marketing_materials_setup',
-      'commission_structure_setup'
+      'wealth_management_certification',
+      'creator_income_specialization',
+      'investment_portfolio_training',
+      'wealth_preservation_mastery',
+      'creator_financial_planning'
     ],
     required_documents: [
-      'imo_fmo_license',
-      'carrier_appointments',
-      'e&o_insurance',
-      'agent_hierarchy_documentation',
-      'compliance_manual',
-      'recruiting_agreement_template'
+      'wealth_management_credentials',
+      'creator_income_certification',
+      'investment_portfolio_training',
+      'wealth_preservation_credentials'
     ],
     compliance_requirements: [
-      'state_licensing',
-      'carrier_appointments',
-      'agent_supervision',
-      'continuing_education_oversight',
-      'compliance_monitoring'
+      'wealth_management_ethics',
+      'creator_financial_confidentiality',
+      'investment_fiduciary_standards',
+      'wealth_preservation_transparency'
+    ]
+  },
+
+  digital_asset_management: {
+    segment: 'digital_asset_management',
+    widgets: [
+      'digital_asset_portfolio',
+      'nft_management_dashboard',
+      'crypto_income_tracker',
+      'digital_rights_monitor',
+      'blockchain_analytics_hub',
+      'digital_asset_consultation',
+      'crypto_tax_optimization'
+    ],
+    permissions: [
+      'digital_asset_advisory',
+      'nft_portfolio_management',
+      'crypto_income_optimization',
+      'digital_rights_protection',
+      'blockchain_analytics_access',
+      'crypto_tax_services'
+    ],
+    referral_settings: {
+      accepts_inbound: true,
+      accepts_outbound: true,
+      fee_structure: 'percentage_plus_performance'
+    },
+    onboarding_steps: [
+      'digital_asset_certification',
+      'nft_management_training',
+      'crypto_advisory_mastery',
+      'digital_rights_expertise',
+      'blockchain_analytics_skills'
+    ],
+    required_documents: [
+      'digital_asset_credentials',
+      'nft_management_certification',
+      'crypto_advisory_training',
+      'digital_rights_portfolio'
+    ],
+    compliance_requirements: [
+      'digital_asset_ethics',
+      'crypto_regulatory_compliance',
+      'nft_authenticity_standards',
+      'digital_rights_transparency'
+    ]
+  },
+
+  creator_estate_planning: {
+    segment: 'creator_estate_planning',
+    widgets: [
+      'creator_estate_dashboard',
+      'brand_legacy_planner',
+      'ip_succession_tracker',
+      'creator_trust_management',
+      'estate_tax_optimization',
+      'legacy_consultation_portal',
+      'succession_planning_tools'
+    ],
+    permissions: [
+      'creator_estate_planning',
+      'brand_legacy_advisory',
+      'ip_succession_services',
+      'trust_management_tools',
+      'estate_tax_optimization',
+      'succession_planning_advisory'
+    ],
+    referral_settings: {
+      accepts_inbound: true,
+      accepts_outbound: true,
+      fee_structure: 'project_plus_percentage'
+    },
+    onboarding_steps: [
+      'estate_planning_certification',
+      'creator_legacy_specialization',
+      'ip_succession_training',
+      'trust_management_mastery',
+      'creator_estate_expertise'
+    ],
+    required_documents: [
+      'estate_planning_credentials',
+      'creator_legacy_certification',
+      'ip_succession_training',
+      'trust_management_portfolio'
+    ],
+    compliance_requirements: [
+      'estate_planning_ethics',
+      'creator_legacy_confidentiality',
+      'ip_succession_standards',
+      'trust_management_transparency'
     ]
   }
 };
@@ -575,32 +551,149 @@ export function getProfessionalSegmentConfig(segment: ProfessionalSegment): Prof
 
 export function getSegmentsByRole(userRole: string): ProfessionalSegment[] {
   const segmentMap: Record<string, ProfessionalSegment[]> = {
-    'private_banker': ['wealth_management', 'investment_management'],
-    'estate_planner': ['legal_advisory', 'wealth_management'],
-    'business_succession_advisor': ['business_advisory', 'legal_advisory'],
-    'insurance_specialist': ['insurance_planning', 'wealth_management'],
-    'property_manager': ['real_estate'],
-    'philanthropy_consultant': ['philanthropy'],
-    'healthcare_advocate': ['healthcare'],
-    'luxury_concierge': ['luxury_services'],
-    'family_law_advisor': ['legal_advisory'],
-    'platform_aggregator': ['family_office', 'investment_management'],
-    'retirement_advisor': ['wealth_management', 'insurance_planning'],
-    'private_lender': ['investment_management', 'business_advisory'],
-    'investment_club_lead': ['investment_management'],
-    'vc_pe_professional': ['investment_management', 'business_advisory'],
-    'tax_resolution_specialist': ['tax_compliance', 'legal_advisory'],
-    'hr_benefit_consultant': ['insurance_planning', 'business_advisory'],
-    'imo_executive': ['imo_fmo_distribution'],
-    'fmo_executive': ['imo_fmo_distribution'],
-    'imo_recruiter': ['imo_fmo_distribution'],
-    'fmo_recruiter': ['imo_fmo_distribution']
+    'creator_financial_advisor': ['creator_financial_advisory', 'creator_wealth_management'],
+    'entertainment_attorney': ['creator_legal_services', 'entertainment_services'],
+    'nil_compliance_attorney': ['nil_compliance_advisory', 'creator_legal_services'],
+    'influencer_accountant': ['creator_tax_compliance', 'influencer_services'],
+    'brand_manager': ['creator_brand_management', 'creator_business_advisory'],
+    'creator_business_advisor': ['creator_business_advisory', 'creator_wealth_management'],
+    'creator_insurance_specialist': ['creator_insurance_risk'],
+    'digital_asset_manager': ['digital_asset_management', 'creator_wealth_management'],
+    'creator_estate_planner': ['creator_estate_planning', 'creator_legal_services']
   };
 
-  return segmentMap[userRole] || [];
+  return segmentMap[userRole] || ['creator_financial_advisory'];
 }
 
-export function getDefaultSegmentForRole(userRole: string): ProfessionalSegment | null {
+export function getCreatorSpecialties(segment: ProfessionalSegment): string[] {
+  const specialtyMap: Record<ProfessionalSegment, string[]> = {
+    creator_financial_advisory: [
+      'NIL Financial Planning',
+      'Multi-State Tax Strategy',
+      'Brand Monetization Advisory',
+      'Creator Income Diversification',
+      'Entertainment Industry Wealth Management'
+    ],
+    creator_legal_services: [
+      'NIL Contract Negotiation',
+      'Entertainment Law',
+      'Brand Protection & IP',
+      'Influencer Agreement Drafting',
+      'Multi-State Compliance'
+    ],
+    creator_tax_compliance: [
+      'Multi-Platform Income Reporting',
+      'Multi-State Tax Filing',
+      'Brand Asset Depreciation',
+      'Creator Expense Optimization',
+      'Quarterly Tax Planning'
+    ],
+    creator_brand_management: [
+      'Brand Strategy Development',
+      'Partnership Negotiation',
+      'Monetization Optimization',
+      'Brand Protection Services',
+      'Sponsorship Management'
+    ],
+    creator_business_advisory: [
+      'Creator Business Formation',
+      'Growth Strategy Planning',
+      'Team Management Advisory',
+      'Strategic Partnership Development',
+      'Business Analytics Optimization'
+    ],
+    creator_insurance_risk: [
+      'Creator Liability Coverage',
+      'Brand Protection Insurance',
+      'Entertainment Industry Risk',
+      'IP Insurance Solutions',
+      'Creator Business Coverage'
+    ],
+    nil_compliance_advisory: [
+      'NCAA Compliance Monitoring',
+      'Multi-State NIL Regulations',
+      'Athlete Eligibility Verification',
+      'NIL Deal Structuring',
+      'Regulatory Update Services'
+    ],
+    entertainment_services: [
+      'Talent Management',
+      'Entertainment Project Advisory',
+      'Royalty Management',
+      'Industry Relationship Building',
+      'Entertainment Contract Services'
+    ],
+    influencer_services: [
+      'Brand Partnership Management',
+      'Content Monetization Strategy',
+      'Campaign Performance Optimization',
+      'FTC Compliance Advisory',
+      'Platform Growth Strategy'
+    ],
+    creator_wealth_management: [
+      'Creator Investment Planning',
+      'Income Diversification Strategy',
+      'Wealth Preservation Planning',
+      'Financial Goal Setting',
+      'Creator Retirement Planning'
+    ],
+    digital_asset_management: [
+      'NFT Portfolio Management',
+      'Crypto Income Strategy',
+      'Digital Rights Protection',
+      'Blockchain Analytics',
+      'Crypto Tax Optimization'
+    ],
+    creator_estate_planning: [
+      'Brand Legacy Planning',
+      'IP Succession Strategy',
+      'Creator Trust Management',
+      'Estate Tax Optimization',
+      'Digital Asset Succession'
+    ]
+  };
+
+  return specialtyMap[segment] || [];
+}
+
+export function getSegmentDisplayName(segment: ProfessionalSegment): string {
+  const displayNames: Record<ProfessionalSegment, string> = {
+    creator_financial_advisory: 'Creator Financial Advisory',
+    creator_legal_services: 'Creator Legal Services',
+    creator_tax_compliance: 'Creator Tax & Compliance',
+    creator_brand_management: 'Creator Brand Management',
+    creator_business_advisory: 'Creator Business Advisory',
+    creator_insurance_risk: 'Creator Insurance & Risk',
+    nil_compliance_advisory: 'NIL Compliance Advisory',
+    entertainment_services: 'Entertainment Services',
+    influencer_services: 'Influencer Services',
+    creator_wealth_management: 'Creator Wealth Management',
+    digital_asset_management: 'Digital Asset Management',
+    creator_estate_planning: 'Creator Estate Planning'
+  };
+
+  return displayNames[segment] || segment;
+}
+
+// Default segment configuration factory
+export function createDefaultSegmentConfig(segment: ProfessionalSegment): ProfessionalDashboardConfig {
+  return {
+    segment,
+    widgets: ['dashboard_overview', 'client_management', 'consultation_scheduler'],
+    permissions: ['basic_access', 'client_communication'],
+    referral_settings: {
+      accepts_inbound: true,
+      accepts_outbound: false,
+      fee_structure: 'consultation_based'
+    },
+    onboarding_steps: ['verify_credentials', 'complete_training'],
+    required_documents: ['professional_license'],
+    compliance_requirements: ['basic_ethics', 'client_confidentiality']
+  };
+}
+
+// Legacy function for backward compatibility
+export function getDefaultSegmentForRole(userRole: string): ProfessionalSegment {
   const segments = getSegmentsByRole(userRole);
-  return segments.length > 0 ? segments[0] : null;
+  return segments[0] || 'creator_financial_advisory';
 }
