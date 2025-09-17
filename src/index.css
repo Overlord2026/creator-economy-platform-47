@@ -326,8 +326,8 @@
   }
 
   /* Ensure page background matches the header navy */
-  body { 
-    background-color: #0B2239; 
+  body, html, #root { 
+    background-color: #0a0d1e !important; 
   }
 
   /* Additional kill switches for legacy headers */
@@ -401,8 +401,8 @@
 
   body {
     @apply text-foreground;
-    background: hsl(var(--bfo-bg));
-    color: hsl(var(--bfo-text));
+    background: #0a0d1e !important;
+    color: #f5f7fa !important;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     font-size: 16px;
     transition: all var(--role-transition-duration) cubic-bezier(0.4, 0, 0.2, 1);

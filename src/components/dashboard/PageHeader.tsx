@@ -16,11 +16,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   return (
     <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
       <div className="space-y-2">
-        <h1 className="font-serif text-4xl md:text-5xl font-bold tracking-tight text-[#f5f7fa]">
+        <h1 className="font-serif text-4xl md:text-5xl font-bold tracking-tight" style={{ color: '#f5f7fa' }}>
           {title}
         </h1>
         {subtitle && (
-          <p className="text-lg text-[#c6cfda] max-w-2xl leading-relaxed">
+          <p className="text-lg max-w-2xl leading-relaxed" style={{ color: '#c6cfda' }}>
             {subtitle}
           </p>
         )}
