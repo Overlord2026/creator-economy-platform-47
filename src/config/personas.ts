@@ -1,6 +1,6 @@
 // src/config/personas.ts
 export type PersonaKey =
-  | "advisors" | "accountants" | "attorneys" | "insurance"
+  | "agents" | "advisors" | "accountants" | "attorneys" | "insurance"
   | "medicare" | "realtors" | "consultants"
   | "families_aspiring" | "families_retirees";
 
@@ -8,6 +8,7 @@ export type PersonaLink = { key: PersonaKey; label: string; to: string; blurb?: 
 
 // Service Professionals
 export const PROS: PersonaLink[] = [
+  { key: "agents",      label: "Agents",             to: "/pros/agents", blurb: "Sports/NIL, talent, and brand agents" },
   { key: "advisors",    label: "Financial Advisors", to: "/pros/advisors" },
   { key: "accountants", label: "Accountants",        to: "/pros/accountants" },
   { key: "attorneys",   label: "Attorneys",          to: "/pros/attorneys" },
