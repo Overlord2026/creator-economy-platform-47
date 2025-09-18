@@ -5,30 +5,25 @@ import { Badge } from '@/components/ui/badge';
 import { RefreshCw, Download, Activity, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { EnvVariablesCheck } from './EnvVariablesCheck';
+import { EnvVariablesCheck, EnvFlags } from './EnvVariablesCheck';
 import { StripeApiCheck } from './StripeApiCheck';
 import { DatabaseSchemaCheck } from './DatabaseSchemaCheck';
 import { WebhookRouteCheck } from './WebhookRouteCheck';
 
 interface DiagnosticsData {
-  environment: {
-    STRIPE_SECRET_KEY: boolean;
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: boolean;
-    STRIPE_WEBHOOK_SECRET: boolean;
-    NEXT_PUBLIC_SUPABASE_URL: boolean;
-    SUPABASE_ANON_KEY: boolean;
-  };
-  stripe: {
-    apiConnection: boolean;
+  environment?: EnvFlags;
+  stripe?: {
+    sdkLoaded: boolean;
+    apiOk: boolean;
     statusCode?: number;
     error?: string;
   };
-  database: {
-    profilesStripeColumn: boolean;
-    subscriptionsTable: boolean;
+  database?: {
+    profilesStripeCustomerIdOk: 'GREEN' | 'YELLOW';
+    subsTable: string;
     error?: string;
   };
-  timestamp: string;
+  timestamp?: string;
 }
 
 export function AdminDiagnosticsDashboard() {
@@ -70,9 +65,9 @@ export function AdminDiagnosticsDashboard() {
       ...data,
       exportedAt: new Date().toISOString(),
       summary: {
-        environmentChecks: Object.values(data.environment).filter(Boolean).length,
-        stripeApiConnected: data.stripe.apiConnection,
-        databaseSchemaValid: data.database.profilesStripeColumn
+        environmentChecks: Object.values(data.environment || {}).filter(Boolean).length,
+        stripeApiConnected: data.stripe?.apiOk || false,
+        databaseSchemaValid: data.database?.profilesStripeCustomerIdOk === 'GREEN'
       }
     };
     
@@ -91,10 +86,11 @@ export function AdminDiagnosticsDashboard() {
     if (!data) return { status: 'unknown', count: 0, total: 0 };
     
     const checks = [
-      ...Object.values(data.environment),
-      data.stripe.apiConnection,
-      data.database.profilesStripeColumn
-    ];
+      ...Object.values(data.environment || {}),
+      data.stripe?.sdkLoaded,
+      data.stripe?.apiOk,
+      data.database?.profilesStripeCustomerIdOk === 'GREEN'
+    ].filter(check => check !== undefined);
     
     const passedChecks = checks.filter(Boolean).length;
     const totalChecks = checks.length;

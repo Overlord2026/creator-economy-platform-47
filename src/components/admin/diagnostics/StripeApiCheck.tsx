@@ -5,7 +5,8 @@ import { CheckCircle, XCircle, CreditCard, AlertTriangle } from 'lucide-react';
 
 interface StripeApiCheckProps {
   data?: {
-    apiConnection: boolean;
+    sdkLoaded: boolean;
+    apiOk: boolean;
     statusCode?: number;
     error?: string;
   };
@@ -22,7 +23,7 @@ export function StripeApiCheck({ data, isLoading }: StripeApiCheckProps) {
       return <Badge variant="secondary">Not tested</Badge>;
     }
 
-    if (data.apiConnection && data.statusCode === 200) {
+    if (data.sdkLoaded && data.apiOk) {
       return (
         <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
           <CheckCircle className="w-3 h-3 mr-1" />
@@ -42,7 +43,7 @@ export function StripeApiCheck({ data, isLoading }: StripeApiCheckProps) {
   const getStatusDetails = () => {
     if (!data || isLoading) return null;
 
-    if (data.apiConnection) {
+    if (data.sdkLoaded && data.apiOk) {
       return (
         <div className="text-sm text-green-600">
           ✓ Successfully connected to Stripe API (Status: {data.statusCode})

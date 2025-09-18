@@ -3,23 +3,25 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, Server } from 'lucide-react';
 
+export type EnvFlags = {
+  STRIPE_SECRET_KEY: boolean;
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: boolean;
+  STRIPE_WEBHOOK_SECRET: boolean;
+  NEXT_PUBLIC_SUPABASE_URL: boolean;
+  SUPABASE_ANON_KEY: boolean;
+};
+
 interface EnvVariablesCheckProps {
-  data?: {
-    STRIPE_SECRET_KEY: boolean;
-    STRIPE_PUBLISHABLE_KEY: boolean;
-    STRIPE_WEBHOOK_SECRET: boolean;
-    SUPABASE_URL: boolean;
-    SUPABASE_ANON_KEY: boolean;
-  };
+  data?: EnvFlags;
   isLoading?: boolean;
 }
 
 export function EnvVariablesCheck({ data, isLoading }: EnvVariablesCheckProps) {
   const envVars = [
     { key: 'STRIPE_SECRET_KEY', label: 'Stripe Secret Key', critical: true },
-    { key: 'STRIPE_PUBLISHABLE_KEY', label: 'Stripe Publishable Key', critical: true },
+    { key: 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY', label: 'Stripe Publishable Key', critical: true },
     { key: 'STRIPE_WEBHOOK_SECRET', label: 'Stripe Webhook Secret', critical: true },
-    { key: 'SUPABASE_URL', label: 'Supabase URL', critical: true },
+    { key: 'NEXT_PUBLIC_SUPABASE_URL', label: 'Supabase URL', critical: true },
     { key: 'SUPABASE_ANON_KEY', label: 'Supabase Anon Key', critical: true },
   ];
 

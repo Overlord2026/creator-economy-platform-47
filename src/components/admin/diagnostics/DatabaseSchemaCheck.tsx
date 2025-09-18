@@ -5,8 +5,8 @@ import { CheckCircle, XCircle, Database, AlertTriangle } from 'lucide-react';
 
 interface DatabaseSchemaCheckProps {
   data?: {
-    profilesStripeColumn: boolean;
-    subscriptionsTable: boolean;
+    profilesStripeCustomerIdOk: 'GREEN' | 'YELLOW';
+    subsTable: string;
     error?: string;
   };
   isLoading?: boolean;
@@ -15,16 +15,18 @@ interface DatabaseSchemaCheckProps {
 export function DatabaseSchemaCheck({ data, isLoading }: DatabaseSchemaCheckProps) {
   const schemaChecks = [
     {
-      key: 'profilesStripeColumn',
+      key: 'profilesStripeCustomerIdOk',
       label: 'Profiles Stripe Column',
       description: 'profiles.stripe_customer_id column exists',
-      critical: true
+      critical: true,
+      getValue: (data: any) => data?.profilesStripeCustomerIdOk === 'GREEN'
     },
     {
-      key: 'subscriptionsTable',
+      key: 'subsTable',
       label: 'Subscriptions Table',
-      description: 'advisor_subscriptions table accessible',
-      critical: false
+      description: 'advisor_subscriptions or subscriptions table',
+      critical: false,
+      getValue: (data: any) => data?.subsTable && data.subsTable !== 'missing'
     }
   ];
 
@@ -68,7 +70,7 @@ export function DatabaseSchemaCheck({ data, isLoading }: DatabaseSchemaCheckProp
                   {check.description}
                 </div>
               </div>
-              {getStatusBadge(data?.[check.key as keyof typeof data] as boolean, check.critical)}
+              {getStatusBadge(check.getValue(data), check.critical)}
             </div>
           ))}
           
