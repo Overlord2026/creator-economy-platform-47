@@ -47,6 +47,7 @@ export function AdminPortalLayout({ children }: AdminPortalLayoutProps) {
     { href: '/admin-portal', icon: Home, label: 'Dashboard' },
     { href: '/admin-portal/edge-functions', icon: Zap, label: 'Edge Functions' },
     { href: '/admin-portal/system-health', icon: Monitor, label: 'System Health' },
+    { href: '/admin-portal/diagnostics', icon: Activity, label: 'Diagnostics' },
     { href: '/admin-portal/analytics', icon: BarChart3, label: 'Analytics' },
     { href: '/admin-portal/compliance', icon: Shield, label: 'Compliance' },
     { href: '/admin-portal/users', icon: Users, label: 'Users' },
