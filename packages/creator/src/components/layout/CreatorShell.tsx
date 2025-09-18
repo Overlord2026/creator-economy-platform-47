@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { cn } from 'src/lib/utils';
-import { Button } from 'src/components/ui/button';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 
 export function CreatorShell() {
