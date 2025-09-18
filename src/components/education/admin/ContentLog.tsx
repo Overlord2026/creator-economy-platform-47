@@ -13,21 +13,13 @@ import { format } from 'date-fns';
 interface ContentLogEntry {
   id: string;
   content_id: string;
-  action_type: string;
-  old_data?: any;
-  new_data?: any;
+  action_type: 'upload' | 'edit' | 'delete' | 'view';
   performed_at: string;
   performed_by: string;
-  notes?: string;
+  details?: any;
   education_content?: {
     title: string;
     content_type: string;
-    category: string;
-    pdf_path?: string;
-    file_size?: number;
-    tenant_id?: string;
-    is_published?: boolean;
-    author?: string;
   };
 }
 
@@ -41,51 +33,45 @@ export function ContentLog() {
   const [logs, setLogs] = useState<ContentLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterAction, setFilterAction] = useState('all');
-  const [filterType, setFilterType] = useState('all');
+  const [selectedAction, setSelectedAction] = useState<string>('all');
+  const [usingFallback, setUsingFallback] = useState(false);
   const [duplicateIssues, setDuplicateIssues] = useState<DuplicateIssue[]>([]);
   const [showAnalysis, setShowAnalysis] = useState(false);
 
   const fetchLogs = async () => {
-    setLoading(true);
     try {
-      let query = supabase
-        .from('content_upload_log')
-        .select(`
-          *,
-          education_content!inner(title, content_type, category, pdf_path, file_size, tenant_id, is_published, author)
-        `)
-        .order('performed_at', { ascending: false })
-        .limit(100);
+      setLoading(true);
+      
+      // Use audit_receipts since education tables don't exist
+      const { data: auditLogs, error: auditError } = await supabase
+        .from('audit_receipts')
+        .select('*')
+        .eq('entity', 'education_content')
+        .order('created_at', { ascending: false })
+        .limit(50);
 
-      if (filterAction !== 'all') {
-        query = query.eq('action_type', filterAction);
-      }
+      if (auditError) throw auditError;
 
-      const { data, error } = await query;
+      const fallbackLogs: ContentLogEntry[] = (auditLogs || []).map(log => ({
+        id: log.id,
+        content_id: log.entity_id,
+        action_type: 'upload' as const,
+        performed_at: log.created_at,
+        performed_by: log.actor_id,
+        details: log.canonical,
+        education_content: {
+          title: typeof log.canonical === 'object' && log.canonical && 'title' in log.canonical 
+            ? String(log.canonical.title) : 'Unknown',
+          content_type: typeof log.canonical === 'object' && log.canonical && 'content_type' in log.canonical 
+            ? String(log.canonical.content_type) : 'unknown'
+        }
+      }));
 
-      if (error) throw error;
-
-      let filteredData = data || [];
-
-      // Filter by content type
-      if (filterType !== 'all') {
-        filteredData = filteredData.filter(log => 
-          log.education_content?.content_type === filterType
-        );
-      }
-
-      // Filter by search term
-      if (searchTerm) {
-        filteredData = filteredData.filter(log =>
-          log.education_content?.title?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
-
-      setLogs(filteredData);
-    } catch (error: any) {
-      console.error('Error fetching logs:', error);
-      toast.error('Failed to fetch content logs');
+      setLogs(fallbackLogs);
+      setUsingFallback(true);
+    } catch (error) {
+      console.error('Error fetching content logs:', error);
+      toast.error('Failed to load content logs');
     } finally {
       setLoading(false);
     }
@@ -96,7 +82,7 @@ export function ContentLog() {
     if (showAnalysis) {
       analyzeContent();
     }
-  }, [filterAction, filterType, showAnalysis]);
+  }, [selectedAction, showAnalysis]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -110,12 +96,9 @@ export function ContentLog() {
     const headers = [
       'Title',
       'Content Type', 
-      'Category',
       'Action',
       'Performed By',
       'Timestamp',
-      'File Size (bytes)',
-      'Version',
       'Notes'
     ];
 
@@ -124,13 +107,10 @@ export function ContentLog() {
       ...logs.map(log => [
         `"${log.education_content?.title || 'Unknown'}"`,
         log.education_content?.content_type || '',
-        log.education_content?.category || '',
         log.action_type,
         log.performed_by || '',
         log.performed_at,
-        log.education_content?.file_size || '',
-        log.education_content?.is_published || '',
-        `"${log.notes || ''}"`
+        `"${log.details ? JSON.stringify(log.details) : ''}"`
       ].join(','))
     ].join('\n');
 
@@ -148,46 +128,22 @@ export function ContentLog() {
   };
 
   const analyzeContent = async () => {
+    if (usingFallback) {
+      setDuplicateIssues([{
+        type: 'missing_backup',
+        message: 'Analysis unavailable: Education schema not found',
+        content_ids: []
+      }]);
+      return;
+    }
+
     try {
-      const { data: allContent, error } = await supabase
-        .from('education_content')
-        .select('*');
-        
-      if (error) throw error;
-
-      const issues: DuplicateIssue[] = [];
-      const titleGroups: { [key: string]: any[] } = {};
-
-      // Group by title to find duplicates
-      allContent?.forEach(content => {
-        const normalizedTitle = content.title.toLowerCase().trim();
-        if (!titleGroups[normalizedTitle]) {
-          titleGroups[normalizedTitle] = [];
-        }
-        titleGroups[normalizedTitle].push(content);
-      });
-
-      // Find duplicates
-      Object.entries(titleGroups).forEach(([title, contents]) => {
-        if (contents.length > 1) {
-          issues.push({
-            type: 'duplicate',
-            message: `Duplicate content found: "${title}" (${contents.length} copies)`,
-            content_ids: contents.map(c => c.id)
-          });
-        }
-      });
-
-      // Check for unpublished content
-      allContent?.forEach(content => {
-        if (!content.is_published) {
-          issues.push({
-            type: 'missing_backup',
-            message: `Unpublished content: "${content.title}"`,
-            content_ids: [content.id]
-          });
-        }
-      });
+      // Since we're using fallback, we can't do full analysis
+      const issues: DuplicateIssue[] = [{
+        type: 'missing_backup',
+        message: 'Content analysis requires education schema to be available',
+        content_ids: []
+      }];
 
       setDuplicateIssues(issues);
     } catch (error) {
@@ -198,16 +154,17 @@ export function ContentLog() {
 
   const getActionBadge = (action: string) => {
     switch (action) {
+      case 'upload':
       case 'created':
         return <Badge className="bg-green-500 text-white">Created</Badge>;
+      case 'edit':
       case 'updated':
         return <Badge className="bg-blue-500 text-white">Updated</Badge>;
+      case 'delete':
       case 'deleted':
         return <Badge className="bg-red-500 text-white">Deleted</Badge>;
-      case 'published':
-        return <Badge className="bg-purple-500 text-white">Published</Badge>;
-      case 'unpublished':
-        return <Badge className="bg-gray-500 text-white">Unpublished</Badge>;
+      case 'view':
+        return <Badge className="bg-gray-500 text-white">Viewed</Badge>;
       default:
         return <Badge variant="outline">{action}</Badge>;
     }
@@ -228,6 +185,16 @@ export function ContentLog() {
     }
   };
 
+  const filteredLogs = logs.filter(log => {
+    const matchesSearch = searchTerm === '' || 
+      log.education_content?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.performed_by?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesAction = selectedAction === 'all' || log.action_type === selectedAction;
+    
+    return matchesSearch && matchesAction;
+  });
+
   if (loading) {
     return (
       <div className="space-y-4">
@@ -245,6 +212,14 @@ export function ContentLog() {
 
   return (
     <div className="space-y-6">
+      {usingFallback && (
+        <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+          <p className="text-sm text-yellow-600 dark:text-yellow-400">
+            Education tables not found. Showing audit receipts instead.
+          </p>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
@@ -257,31 +232,16 @@ export function ContentLog() {
           />
         </div>
         
-        <Select value={filterAction} onValueChange={setFilterAction}>
+        <Select value={selectedAction} onValueChange={setSelectedAction}>
           <SelectTrigger className="w-40">
             <SelectValue placeholder="Filter by action" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Actions</SelectItem>
-            <SelectItem value="created">Created</SelectItem>
-            <SelectItem value="updated">Updated</SelectItem>
-            <SelectItem value="deleted">Deleted</SelectItem>
-            <SelectItem value="published">Published</SelectItem>
-            <SelectItem value="unpublished">Unpublished</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Filter by type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="guide">Guides</SelectItem>
-            <SelectItem value="course">Courses</SelectItem>
-            <SelectItem value="book">Books</SelectItem>
-            <SelectItem value="video">Videos</SelectItem>
-            <SelectItem value="pdf">PDFs</SelectItem>
+            <SelectItem value="upload">Upload</SelectItem>
+            <SelectItem value="edit">Edit</SelectItem>
+            <SelectItem value="delete">Delete</SelectItem>
+            <SelectItem value="view">View</SelectItem>
           </SelectContent>
         </Select>
 
@@ -323,47 +283,19 @@ export function ContentLog() {
               ) : (
                 <div className="space-y-3">
                   {duplicateIssues.map((issue, index) => (
-                    <Alert key={index} variant={issue.type === 'duplicate' ? 'destructive' : 'default'}>
+                    <Alert key={index} variant="default">
                       <AlertTriangle className="h-4 w-4" />
                       <AlertDescription className="flex items-center justify-between">
                         <span>{issue.message}</span>
-                        <div className="flex gap-2">
-                          {issue.type === 'duplicate' && (
-                            <Badge variant="destructive" className="text-xs">
-                              <Copy className="h-3 w-3 mr-1" />
-                              Duplicate
-                            </Badge>
-                          )}
-                          {issue.type === 'missing_backup' && (
-                            <Badge variant="secondary" className="text-xs">
-                              <Archive className="h-3 w-3 mr-1" />
-                              No Backup
-                            </Badge>
-                          )}
-                        </div>
+                        <Badge variant="secondary" className="text-xs">
+                          <Archive className="h-3 w-3 mr-1" />
+                          Schema Missing
+                        </Badge>
                       </AlertDescription>
                     </Alert>
                   ))}
                 </div>
               )}
-              
-              <div className="mt-4 p-3 bg-muted rounded-lg">
-                <h4 className="font-medium text-sm mb-2">Backup & Version Control Status</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <div className="font-medium text-green-600">✓ Version Control Enabled</div>
-                    <div className="text-muted-foreground">All uploaded files automatically versioned</div>
-                  </div>
-                  <div>
-                    <div className="font-medium text-green-600">✓ Automatic Backups</div>
-                    <div className="text-muted-foreground">Daily backups to secure storage</div>
-                  </div>
-                  <div>
-                    <div className="font-medium text-blue-600">📊 Change Tracking</div>
-                    <div className="text-muted-foreground">Full audit trail maintained</div>
-                  </div>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>
@@ -371,14 +303,14 @@ export function ContentLog() {
 
       {/* Log Entries */}
       <div className="space-y-4">
-        {logs.length === 0 ? (
+        {filteredLogs.length === 0 ? (
           <Card>
             <CardContent className="p-8 text-center">
               <p className="text-muted-foreground">No content logs found matching your criteria.</p>
             </CardContent>
           </Card>
         ) : (
-          logs.map((log) => (
+          filteredLogs.map((log) => (
             <Card key={log.id} className="transition-all duration-200 hover:shadow-md">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
@@ -393,9 +325,6 @@ export function ContentLog() {
                           {log.education_content?.title || 'Unknown Content'}
                         </h4>
                         {getActionBadge(log.action_type)}
-                        <Badge variant="outline" className="text-xs">
-                          {log.education_content?.category}
-                        </Badge>
                       </div>
                       
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -407,23 +336,14 @@ export function ContentLog() {
                           <Calendar className="h-3 w-3" />
                           {format(new Date(log.performed_at), 'MMM d, yyyy h:mm a')}
                         </div>
-                        {log.education_content?.file_size && (
-                          <div className="flex items-center gap-1">
-                            <FileText className="h-3 w-3" />
-                            {(log.education_content.file_size / 1024 / 1024).toFixed(2)} MB
-                          </div>
-                        )}
-                        {log.education_content?.is_published !== undefined && (
-                          <Badge variant={log.education_content.is_published ? "default" : "secondary"} className="text-xs">
-                            {log.education_content.is_published ? "Published" : "Draft"}
-                          </Badge>
-                        )}
                       </div>
                       
-                      {log.notes && (
-                        <p className="text-sm text-muted-foreground mt-2">
-                          {log.notes}
-                        </p>
+                      {log.details && typeof log.details === 'object' && (
+                        <div className="mt-2 p-2 bg-muted rounded-sm">
+                          <p className="text-xs text-muted-foreground">
+                            {log.details.note || JSON.stringify(log.details, null, 2)}
+                          </p>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -432,39 +352,12 @@ export function ContentLog() {
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      // Could open a modal with detailed change information
                       toast.info('Detailed view coming soon');
                     }}
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
                 </div>
-                
-                {/* Show change summary for updates */}
-                {log.action_type === 'updated' && log.old_data && log.new_data && (
-                  <div className="mt-3 p-3 bg-muted rounded-md">
-                    <p className="text-xs font-medium text-muted-foreground mb-1">Changes:</p>
-                    <div className="text-sm">
-                      {Object.keys(log.new_data).map((key) => {
-                        if (log.old_data[key] !== log.new_data[key]) {
-                          return (
-                            <div key={key} className="flex items-center gap-2 text-xs">
-                              <span className="font-medium">{key}:</span>
-                              <span className="text-red-600 line-through">
-                                {JSON.stringify(log.old_data[key])}
-                              </span>
-                              <span>→</span>
-                              <span className="text-green-600">
-                                {JSON.stringify(log.new_data[key])}
-                              </span>
-                            </div>
-                          );
-                        }
-                        return null;
-                      })}
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
           ))

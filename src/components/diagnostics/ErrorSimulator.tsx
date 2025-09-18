@@ -95,9 +95,9 @@ export function ErrorSimulator() {
 
     // Log the error with appropriate level based on severity
     if (scenario?.severity === 'error') {
-      logger.error(errorMessage, { code: errorCode, details: errorDetails }, 'ErrorSimulator');
+      logger.error(errorMessage, 'ErrorSimulator', { code: errorCode, details: errorDetails });
     } else {
-      logger.warning(errorMessage, { code: errorCode, details: errorDetails }, 'ErrorSimulator');
+      logger.warning(errorMessage, 'ErrorSimulator', { code: errorCode, details: errorDetails });
     }
 
     // Show toast notification

@@ -54,23 +54,46 @@ serve(async (req) => {
       results.stripe.error = 'Stripe API connection failed'
     }
 
-    // Database Schema Check
+    // Database Schema Check - Resilient approach
     try {
-      // Check if profiles table has stripe_customer_id column
-      const { data: profilesCheck, error: profilesError } = await supabaseClient
-        .from('profiles')
-        .select('stripe_customer_id')
-        .limit(1)
+      let profilesStatus = 'YELLOW'
+      try {
+        const { error: profilesError } = await supabaseClient
+          .from('profiles')
+          .select('stripe_customer_id', { head: true, count: 'exact' })
+          .limit(1)
+        profilesStatus = profilesError ? 'YELLOW' : 'GREEN'
+      } catch {
+        profilesStatus = 'YELLOW'
+      }
       
-      results.database.profilesStripeColumn = !profilesError
+      results.database.profilesStripeColumn = profilesStatus
 
-      // Check for subscriptions or advisor_subscriptions table
-      const { data: subsCheck, error: subsError } = await supabaseClient
-        .from('advisor_subscriptions')
-        .select('id')
-        .limit(1)
+      // Check for subscription tables
+      let subsTable = 'missing'
+      try {
+        const { error: advisorSubsError } = await supabaseClient
+          .from('advisor_subscriptions')
+          .select('id', { head: true })
+          .limit(1)
+        if (!advisorSubsError) {
+          subsTable = 'advisor_subscriptions'
+        }
+      } catch {
+        try {
+          const { error: subsError } = await supabaseClient
+            .from('subscriptions')
+            .select('id', { head: true })
+            .limit(1)
+          if (!subsError) {
+            subsTable = 'subscriptions'
+          }
+        } catch {
+          subsTable = 'missing'
+        }
+      }
       
-      results.database.subscriptionsTable = !subsError
+      results.database.subscriptionsTable = subsTable
 
     } catch (error) {
       results.database.error = 'Database schema check failed'

@@ -85,7 +85,7 @@ export function VisualTestingRunner() {
       }))
     };
     
-    logger.info('Starting visual tests with config', { config }, 'VisualTestingRunner');
+    logger.info('Starting visual tests with config', 'VisualTestingRunner', { config });
     toast.info(`Starting visual tests for ${pagesToTest.length} pages x ${viewports.length} device types`);
     
     try {

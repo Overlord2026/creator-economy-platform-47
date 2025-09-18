@@ -22,8 +22,8 @@ export function NetworkFailureSimulator() {
     if (newState) {
       logger.warning(
         `Network simulation activated: ${Math.round(100 - reliability[0])}% failure rate, ${latency[0]}ms latency`,
-        { reliability: reliability[0], latency: latency[0] },
-        'NetworkSimulator'
+        'NetworkSimulator',
+        { reliability: reliability[0], latency: latency[0] }
       );
       
       toast.warning('Network simulation active', {
@@ -36,8 +36,8 @@ export function NetworkFailureSimulator() {
     } else {
       logger.info(
         'Network simulation deactivated',
-        { was_active: true },
-        'NetworkSimulator'
+        'NetworkSimulator',
+        { was_active: true }
       );
       
       toast.success('Network simulation disabled', {
@@ -74,7 +74,7 @@ export function NetworkFailureSimulator() {
   // Simulate a network retry
   const simulateRetry = async () => {
     setRetrying(true);
-    logger.info('Attempting to retry failed network requests', {}, 'NetworkSimulator');
+    logger.info('Attempting to retry failed network requests', 'NetworkSimulator');
     
     try {
       // Simulate a retry operation with a delay
@@ -85,12 +85,12 @@ export function NetworkFailureSimulator() {
         throw new Error('Network retry failed');
       }
       
-      logger.info('Network retry successful', {}, 'NetworkSimulator');
+      logger.info('Network retry successful', 'NetworkSimulator');
       toast.success('Network retry successful', {
         description: 'Previously failed requests have been retried successfully',
       });
     } catch (error) {
-      logger.error('Network retry failed', error, 'NetworkSimulator');
+      logger.error('Network retry failed', 'NetworkSimulator', { error: String(error) });
       toast.error('Network retry failed', {
         description: 'Unable to restore connectivity. Please check your connection.',
       });
