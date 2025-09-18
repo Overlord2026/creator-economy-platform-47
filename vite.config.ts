@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "src"),
       "@advisor": path.resolve(__dirname, "src/features/advisors/platform"),
+      "@creator": path.resolve(__dirname, "packages/creator/src"),
     },
     dedupe: ["react","react-dom","react-dom/client","react/jsx-runtime","react/jsx-dev-runtime"],
   },
