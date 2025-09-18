@@ -74,16 +74,16 @@ export default function EvaluationDashboard() {
 
   const exportToCSV = () => {
     const csvContent = 'Date,Athlete ID,Template,Sport,Role,Overall Score,Notes\n' +
-      mockEvaluations.map(eval => {
-        const overallScore = calculateOverallScore(eval);
+      mockEvaluations.map(evaluation => {
+        const overallScore = calculateOverallScore(evaluation);
         return [
-          new Date(eval.created_at).toLocaleDateString(),
-          eval.athlete_id,
-          eval.template_snapshot.name,
-          eval.template_snapshot.sport,
-          eval.template_snapshot.role,
+          new Date(evaluation.created_at).toLocaleDateString(),
+          evaluation.athlete_id,
+          evaluation.template_snapshot.name,
+          evaluation.template_snapshot.sport,
+          evaluation.template_snapshot.role,
           overallScore.toFixed(1),
-          `"${eval.notes.replace(/"/g, '""')}"`
+          `"${evaluation.notes.replace(/"/g, '""')}"`
         ].join(',');
       }).join('\n');
 

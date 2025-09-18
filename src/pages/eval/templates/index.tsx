@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
 import { Plus, Search, Edit, Trash2, Copy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { CreateTemplateDialog } from './CreateTemplateDialog';
@@ -19,53 +18,54 @@ interface EvalTemplate {
   created_at: string;
 }
 
+// Mock templates data
+const mockTemplates: EvalTemplate[] = [
+  {
+    id: '1',
+    name: 'Quarterback Evaluation',
+    sport: 'Football',
+    role: 'Quarterback',
+    criteria: [
+      { name: 'Arm Strength', description: 'Throwing power and velocity' },
+      { name: 'Accuracy', description: 'Precision in passing' },
+      { name: 'Decision Making', description: 'Quick reads and choices' },
+      { name: 'Leadership', description: 'Command of the huddle' }
+    ],
+    weights: { 'Arm Strength': 25, 'Accuracy': 30, 'Decision Making': 25, 'Leadership': 20 },
+    scale: 10,
+    created_at: '2024-01-15T10:00:00Z'
+  },
+  {
+    id: '2',
+    name: 'Point Guard Assessment',
+    sport: 'Basketball',
+    role: 'Point Guard',
+    criteria: [
+      { name: 'Ball Handling', description: 'Dribbling skills and control' },
+      { name: 'Court Vision', description: 'Ability to see the floor' },
+      { name: 'Speed', description: 'Quickness and agility' }
+    ],
+    weights: { 'Ball Handling': 35, 'Court Vision': 40, 'Speed': 25 },
+    scale: 10,
+    created_at: '2024-01-14T14:30:00Z'
+  }
+];
+
 export default function EvaluationTemplates() {
-  const [templates, setTemplates] = useState<EvalTemplate[]>([]);
+  const [templates, setTemplates] = useState<EvalTemplate[]>(mockTemplates);
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    loadTemplates();
-  }, []);
-
-  const loadTemplates = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('nil_eval_templates')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setTemplates(data || []);
-    } catch (error) {
-      console.error('Error loading templates:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load evaluation templates',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const deleteTemplate = async (id: string) => {
     if (!confirm('Are you sure you want to delete this template?')) return;
 
     try {
-      const { error } = await supabase
-        .from('nil_eval_templates')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
+      // Simulate API call - in mock mode, just remove from state
       setTemplates(templates.filter(t => t.id !== id));
       toast({
         title: 'Success',
-        description: 'Template deleted successfully',
+        description: 'Template deleted successfully (mock mode)',
       });
     } catch (error) {
       console.error('Error deleting template:', error);
@@ -79,25 +79,18 @@ export default function EvaluationTemplates() {
 
   const duplicateTemplate = async (template: EvalTemplate) => {
     try {
-      const { data, error } = await supabase
-        .from('nil_eval_templates')
-        .insert([{
-          name: `${template.name} (Copy)`,
-          sport: template.sport,
-          role: template.role,
-          criteria: template.criteria,
-          weights: template.weights,
-          scale: template.scale,
-        }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setTemplates([data, ...templates]);
+      // Simulate API call - in mock mode, add to state with new ID
+      const newTemplate = {
+        ...template,
+        id: `${Date.now()}`,
+        name: `${template.name} (Copy)`,
+        created_at: new Date().toISOString()
+      };
+      
+      setTemplates([newTemplate, ...templates]);
       toast({
         title: 'Success',
-        description: 'Template duplicated successfully',
+        description: 'Template duplicated successfully (mock mode)',
       });
     } catch (error) {
       console.error('Error duplicating template:', error);
@@ -115,9 +108,15 @@ export default function EvaluationTemplates() {
     template.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) {
-    return <div className="flex items-center justify-center h-64">Loading templates...</div>;
-  }
+  const handleTemplateCreated = (newTemplate: Omit<EvalTemplate, 'id' | 'created_at'>) => {
+    const template: EvalTemplate = {
+      ...newTemplate,
+      id: `${Date.now()}`,
+      created_at: new Date().toISOString()
+    };
+    setTemplates([template, ...templates]);
+    setCreateDialogOpen(false);
+  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -218,10 +217,7 @@ export default function EvaluationTemplates() {
       <CreateTemplateDialog
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
-        onSuccess={() => {
-          setCreateDialogOpen(false);
-          loadTemplates();
-        }}
+        onSuccess={handleTemplateCreated}
       />
     </div>
   );

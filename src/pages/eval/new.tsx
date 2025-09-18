@@ -7,7 +7,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Save, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -21,44 +20,49 @@ interface EvalTemplate {
   scale: number;
 }
 
+// Mock templates data
+const mockTemplates: EvalTemplate[] = [
+  {
+    id: '1',
+    name: 'Quarterback Evaluation',
+    sport: 'Football',
+    role: 'Quarterback',
+    criteria: [
+      { name: 'Arm Strength', description: 'Throwing power and velocity' },
+      { name: 'Accuracy', description: 'Precision in passing' },
+      { name: 'Decision Making', description: 'Quick reads and choices' },
+      { name: 'Leadership', description: 'Command of the huddle' }
+    ],
+    weights: { 'Arm Strength': 25, 'Accuracy': 30, 'Decision Making': 25, 'Leadership': 20 },
+    scale: 10
+  },
+  {
+    id: '2',
+    name: 'Point Guard Assessment',
+    sport: 'Basketball',
+    role: 'Point Guard',
+    criteria: [
+      { name: 'Ball Handling', description: 'Dribbling skills and control' },
+      { name: 'Court Vision', description: 'Ability to see the floor' },
+      { name: 'Speed', description: 'Quickness and agility' }
+    ],
+    weights: { 'Ball Handling': 35, 'Court Vision': 40, 'Speed': 25 },
+    scale: 10
+  }
+];
+
 export default function NewEvaluation() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [templates, setTemplates] = useState<EvalTemplate[]>([]);
+  const [templates] = useState<EvalTemplate[]>(mockTemplates);
   const [selectedTemplate, setSelectedTemplate] = useState<EvalTemplate | null>(null);
   const [athleteId, setAthleteId] = useState(searchParams.get('athleteId') || '');
   const [athleteName, setAthleteName] = useState('');
   const [scores, setScores] = useState<Record<string, number>>({});
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
-  const [templatesLoading, setTemplatesLoading] = useState(true);
-
-  useEffect(() => {
-    loadTemplates();
-  }, []);
-
-  const loadTemplates = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('nil_eval_templates')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setTemplates(data || []);
-    } catch (error) {
-      console.error('Error loading templates:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load evaluation templates',
-        variant: 'destructive',
-      });
-    } finally {
-      setTemplatesLoading(false);
-    }
-  };
 
   const handleTemplateSelect = (templateId: string) => {
     const template = templates.find(t => t.id === templateId);
@@ -110,21 +114,12 @@ export default function NewEvaluation() {
 
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('nil_evaluations')
-        .insert([{
-          athlete_id: athleteId,
-          template_id: selectedTemplate.id,
-          template_snapshot: selectedTemplate,
-          scores,
-          notes,
-        }]);
-
-      if (error) throw error;
+      // Simulate API call - in mock mode, just show success
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast({
         title: 'Success',
-        description: 'Evaluation saved successfully',
+        description: 'Evaluation saved successfully (mock mode)',
       });
       
       navigate('/eval');
@@ -167,10 +162,6 @@ export default function NewEvaluation() {
       </div>
     );
   };
-
-  if (templatesLoading) {
-    return <div className="flex items-center justify-center h-64">Loading templates...</div>;
-  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">

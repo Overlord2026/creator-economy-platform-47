@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -19,7 +18,14 @@ interface Criterion {
 interface CreateTemplateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  onSuccess: (template: {
+    name: string;
+    sport: string;
+    role: string;
+    criteria: Array<{ name: string; description: string }>;
+    weights: Record<string, number>;
+    scale: number;
+  }) => void;
 }
 
 const SPORTS = ['Football', 'Basketball', 'Baseball', 'Soccer', 'Tennis', 'Track & Field', 'Swimming', 'Wrestling'];
@@ -75,22 +81,21 @@ export function CreateTemplateDialog({ open, onOpenChange, onSuccess }: CreateTe
         return acc;
       }, {} as Record<string, number>);
 
-      const { error } = await supabase
-        .from('nil_eval_templates')
-        .insert([{
-          name,
-          sport,
-          role,
-          criteria: criteria.map(c => ({ name: c.name, description: c.description })),
-          weights,
-          scale,
-        }]);
-
-      if (error) throw error;
+      // Simulate API call - in mock mode, just call onSuccess
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       toast({
         title: 'Success',
-        description: 'Evaluation template created successfully',
+        description: 'Evaluation template created successfully (mock mode)',
+      });
+      
+      onSuccess({
+        name,
+        sport,
+        role,
+        criteria: criteria.map(c => ({ name: c.name, description: c.description })),
+        weights,
+        scale,
       });
       
       // Reset form
@@ -104,8 +109,6 @@ export function CreateTemplateDialog({ open, onOpenChange, onSuccess }: CreateTe
         { name: 'Mental Game', description: 'Game IQ, decision making, and focus', weight: 25 },
         { name: 'Leadership', description: 'Communication and team leadership qualities', weight: 25 },
       ]);
-      
-      onSuccess();
     } catch (error) {
       console.error('Error creating template:', error);
       toast({

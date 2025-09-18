@@ -159,6 +159,7 @@ import '@/features/k401/init'; // Initialize provider rules
 const EvaluationDashboard = lazy(() => import('@/pages/eval/index'));
 const EvaluationTemplates = lazy(() => import('@/pages/eval/templates/index'));
 const NewEvaluation = lazy(() => import('@/pages/eval/new'));
+const RosterPlanning = lazy(() => import('@/pages/roster/index'));
 
 // Onboarding Components
 const FamilyOnboarding = lazy(() => import('@/pages/onboarding/FamilyOnboarding'));
@@ -576,6 +577,10 @@ function App() {
           {/* Main Application Routes - Creator Marketplace as Default */}
           <Route path="/" element={<Navigate to="/marketplace/creators" replace />} />
           <Route path="/marketplace/creators" element={<CreatorHub />} />
+          <Route path="/eval" element={<EvaluationDashboard />} />
+          <Route path="/eval/templates" element={<EvaluationTemplates />} />
+          <Route path="/eval/new" element={<NewEvaluation />} />
+          <Route path="/roster" element={<RosterPlanning />} />
           <Route path="/marketplace" element={<Suspense fallback={<div>Loading...</div>}><CreatorMarketplace /></Suspense>} />
           <Route path="/tools/brand-management" element={<BrandManagement />} />
           <Route path="/compliance" element={<ComplianceHub />} />
