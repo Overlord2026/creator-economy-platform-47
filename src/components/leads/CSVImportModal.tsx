@@ -157,12 +157,12 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
         const batch = rowsWithUser.slice(i, i + batchSize);
         
         try {
-          const { error } = await supabase
-            .from('leads')
-            .insert(batch);
+          // Use safeInsert for leads table
+          const { safeInsert } = await import('@/lib/db/safeSupabase');
+          const result = await safeInsert('leads', batch);
 
-          if (error) {
-            errors.push(`Batch ${Math.floor(i / batchSize) + 1}: ${error.message}`);
+          if (!result.ok) {
+            errors.push(`Batch ${Math.floor(i / batchSize) + 1}: ${result.error}`);
           } else {
             successCount += batch.length;
           }

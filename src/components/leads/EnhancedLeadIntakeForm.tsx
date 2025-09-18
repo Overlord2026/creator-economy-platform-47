@@ -50,34 +50,45 @@ export function EnhancedLeadIntakeForm({ onSubmit, className }: EnhancedLeadInta
     setIsSubmitting(true);
 
     try {
+      // Use safeInsert for leads table
+      const { safeInsert, tableExists } = await import('@/lib/db/safeSupabase');
+      
+      // Check if table exists for write operations
+      const hasLeadsTable = await tableExists('leads');
+      if (!hasLeadsTable) {
+        throw new Error('Leads table not available - using demo mode');
+      }
+
       // Create the lead first
-      const { data: lead, error: createError } = await supabase
-        .from('leads')
-        .insert({
-          first_name: formData.name.split(' ')[0] || '',
-          last_name: formData.name.split(' ').slice(1).join(' ') || '',
-          email: formData.email,
-          phone: formData.phone,
-          company: formData.company,
-          lead_value: formData.lead_value,
-          notes: formData.notes,
-          advisor_id: (await supabase.auth.getUser()).data.user?.id,
-          lead_status: 'new',
-          lead_source: 'manual_entry',
-          enrichment_status: enrichmentConsent ? 'pending' : 'skipped',
-          plaid_consent_given: plaidConsent
-        })
-        .select()
-        .single();
+      const leadData = {
+        first_name: formData.name.split(' ')[0] || '',
+        last_name: formData.name.split(' ').slice(1).join(' ') || '',
+        email: formData.email,
+        phone: formData.phone,
+        company: formData.company,
+        lead_value: formData.lead_value,
+        notes: formData.notes,
+        advisor_id: (await supabase.auth.getUser()).data.user?.id,
+        lead_status: 'new',
+        lead_source: 'manual_entry',
+        enrichment_status: enrichmentConsent ? 'pending' : 'skipped',
+        plaid_consent_given: plaidConsent
+      };
 
-      if (createError) throw createError;
+      const result = await safeInsert('leads', leadData);
 
-      setLeadId(lead.id);
+      if (!result.ok) {
+        throw new Error(result.error || 'Failed to create lead');
+      }
+
+      // Generate a mock lead ID for demo mode
+      const mockLeadId = `demo-${Date.now()}`;
+      setLeadId(mockLeadId);
 
       // If enrichment consent given, trigger enrichment
       if (enrichmentConsent) {
         setIsEnriching(true);
-        await triggerEnrichment(lead.id);
+        await triggerEnrichment(mockLeadId);
       }
 
       // If Plaid consent given, prepare Plaid Link

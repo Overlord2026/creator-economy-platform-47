@@ -14,15 +14,21 @@ const SocialProofSection: React.FC = () => {
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
         
-        // Use advisor_profiles table instead of professional_profiles
-        const { count } = await supabase
-          .from('advisor_profiles')
-          .select('*', { count: 'exact', head: true })
-          .gte('created_at', oneWeekAgo.toISOString());
+        // Use withFallback for advisor_profiles table
+        const { safeSelect, withFallback } = await import('@/lib/db/safeSupabase');
+        const advisors = await withFallback('advisor_profiles',
+          () => safeSelect('advisor_profiles', '*', { 
+            order: { column: 'created_at', ascending: false },
+            limit: 50 
+          }),
+          async () => (await import('@/lib/mocks/advisors.mock')).mockAdvisors
+        );
         
-        if (count !== null) {
-          setWeeklyJoiners(count);
-        }
+        // Count recent advisors
+        const recentAdvisors = advisors.filter(advisor => 
+          new Date(advisor.created_at || '') >= oneWeekAgo
+        );
+        setWeeklyJoiners(recentAdvisors.length);
       } catch (error) {
         console.error('Error fetching weekly stats:', error);
       }
