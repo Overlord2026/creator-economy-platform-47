@@ -155,6 +155,11 @@ import NotFound from '@/pages/NotFound';
 import { getFlag } from '@/lib/flags';
 import '@/features/k401/init'; // Initialize provider rules
 
+// Evaluation System Imports
+const EvaluationDashboard = lazy(() => import('@/pages/eval/index'));
+const EvaluationTemplates = lazy(() => import('@/pages/eval/templates/index'));
+const NewEvaluation = lazy(() => import('@/pages/eval/new'));
+
 // Onboarding Components
 const FamilyOnboarding = lazy(() => import('@/pages/onboarding/FamilyOnboarding'));
 const AdvisorOnboarding = lazy(() => import('@/pages/onboarding/AdvisorOnboarding'));
