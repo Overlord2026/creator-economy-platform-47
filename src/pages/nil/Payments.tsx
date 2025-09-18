@@ -4,11 +4,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { DollarSign, Lock, Unlock, Receipt, CheckCircle } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DollarSign, Lock, Unlock, Receipt, CheckCircle, CreditCard, Plus } from 'lucide-react';
 import { hold, release, getEscrowAccounts, EscrowAccount } from '@/features/nil/payments/api';
 import { getOffers } from '@/features/nil/offers/store';
 import { acceptNofM } from '@/features/anchor/providers';
 import { toast } from 'sonner';
+import { PayoutSummaryCards } from '@/components/nil/payouts/PayoutSummaryCards';
+import { PayoutLedgerTable } from '@/components/nil/payouts/PayoutLedgerTable';
+import { RecordPayoutModal } from '@/components/nil/payouts/RecordPayoutModal';
+import { PayoutMethodModal } from '@/components/nil/payouts/PayoutMethodModal';
+import { getPayoutLedger, initializeDemoPayoutData } from '@/features/nil/payouts/api';
 
 export default function PaymentsPage() {
   const [escrowAccounts, setEscrowAccounts] = React.useState<EscrowAccount[]>([]);
@@ -17,11 +23,18 @@ export default function PaymentsPage() {
     amount: 0
   });
   const [isReleasing, setIsReleasing] = React.useState<string | null>(null);
+  const [payoutLedger, setPayoutLedger] = React.useState(getPayoutLedger());
+  const [recordPayoutOpen, setRecordPayoutOpen] = React.useState(false);
+  const [payoutMethodOpen, setPayoutMethodOpen] = React.useState(false);
+  
+  const athleteId = 'athlete_demo_001'; // In real app, get from auth/context
 
   const offers = React.useMemo(() => getOffers(), []);
 
   React.useEffect(() => {
     setEscrowAccounts(getEscrowAccounts());
+    initializeDemoPayoutData();
+    setPayoutLedger(getPayoutLedger());
   }, []);
 
   const handleHoldFunds = () => {
@@ -68,11 +81,45 @@ export default function PaymentsPage() {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Payments & Escrow</h1>
+        <h1 className="text-3xl font-bold mb-2">Payments & Wallet</h1>
         <p className="text-muted-foreground">
-          Manage secure payments and escrow for NIL deals
+          Manage payments, escrow, and payout methods for NIL deals
         </p>
       </div>
+
+      <Tabs defaultValue="payouts" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="payouts">Payouts & Ledger</TabsTrigger>
+          <TabsTrigger value="escrow">Escrow</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="payouts" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Payout Management</h2>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline"
+                onClick={() => setPayoutMethodOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <CreditCard className="w-4 h-4" />
+                Add Method
+              </Button>
+              <Button 
+                onClick={() => setRecordPayoutOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Record Payout
+              </Button>
+            </div>
+          </div>
+
+          <PayoutSummaryCards entries={payoutLedger} />
+          <PayoutLedgerTable entries={payoutLedger} athleteId={athleteId} />
+        </TabsContent>
+
+        <TabsContent value="escrow" className="space-y-6">
 
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="space-y-6">
@@ -232,6 +279,22 @@ export default function PaymentsPage() {
           </Card>
         </div>
       </div>
+        </TabsContent>
+      </Tabs>
+
+      <RecordPayoutModal
+        isOpen={recordPayoutOpen}
+        onClose={() => setRecordPayoutOpen(false)}
+        athleteId={athleteId}
+        onPayoutRecorded={() => setPayoutLedger(getPayoutLedger())}
+      />
+
+      <PayoutMethodModal
+        isOpen={payoutMethodOpen}
+        onClose={() => setPayoutMethodOpen(false)}
+        athleteId={athleteId}
+        onMethodAdded={() => {}}
+      />
     </div>
   );
 }
