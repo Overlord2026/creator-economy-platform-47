@@ -22,7 +22,7 @@ interface BrandingContextType {
 }
 
 const defaultBranding: BrandingData = {
-  name: 'Boutique Family Office',
+  name: 'Creator Economy Hub',
   logo_url: null,
   colors: {
     primary: '#0b1a33',

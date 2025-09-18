@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Logo } from "@/components/ui/Logo";
+import CreatorHubLogo from "@/components/brand/CreatorHubLogo";
 import { PROS, FAMILIES } from "@/config/personas";
 
 function useRouteClose(setOpen: (v: boolean) => void) {
@@ -16,11 +16,8 @@ export default function HeaderNav() {
     <header className="w-full border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50" role="banner">
       <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2" aria-label="Boutique Family Office - Home">
-          <Logo variant="tree" className="h-8 w-auto" />
-          <span className="hidden sm:inline-block font-bold text-foreground">
-            Boutique Family Office
-          </span>
+        <Link to="/" className="flex items-center space-x-2" aria-label="Creator Economy Hub - Home">
+          <CreatorHubLogo variant="lockup" className="h-8 w-auto" />
         </Link>
 
         {/* Desktop menus */}

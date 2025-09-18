@@ -2,6 +2,11 @@
 
 ## Latest Changes
 
+### feat/brand-swap - BFO → CreatorHub Branding
+- **Status**: ✅ Complete
+- **Solution**: Swapped all Boutique Family Office branding for CreatorHub while maintaining dark navy/gold theme. Created new logo assets, updated navigation components, changed page metadata, and preserved design system.
+- **Files**: CreatorHubLogo.tsx (new component), creatorhub-icon.svg, creatorhub-lockup.svg, favicon.svg, HeaderNav.tsx, Navigation.tsx, BrandingContext.tsx, index.html
+
 ### feat/advisor-intake - ROI Tracker Scaffold with Charts/Tables
 - **Status**: ✅ Complete
 - **Solution**: Implemented ROI Tracker with KPI strip (Spend, Conversion Rate, New Prospects, New AUM), bar/line charts using recharts, sortable channel performance table (Facebook, LinkedIn, Google, Webinars, Seminars), mocked data selectors
