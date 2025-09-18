@@ -51,30 +51,45 @@ export function SWAGLeadScoreLandingPage() {
     setIsCalculating(true);
 
     try {
-      // Create lead
-      const { data: lead, error } = await supabase
-        .from('leads')
-        .insert({
-          first_name: formData.name.split(' ')[0] || '',
-          last_name: formData.name.split(' ').slice(1).join(' ') || '',
-          email: formData.email,
-          phone: formData.phone,
-          advisor_id: '00000000-0000-0000-0000-000000000000', // Public lead
-          lead_status: 'new',
-          lead_source: 'swag_landing_page',
-          enrichment_status: enrichmentConsent ? 'pending' : 'skipped',
-          plaid_consent_given: plaidConsent
-        })
-        .select()
-        .single();
+      // Use safeInsert for leads table
+      const { safeInsert, tableExists } = await import('@/lib/db/safeSupabase');
+      
+      // Check if table exists for write operations
+      const hasLeadsTable = await tableExists('leads');
+      if (!hasLeadsTable) {
+        throw new Error('Leads table not available - using demo mode');
+      }
 
-      if (error) throw error;
+      const result = await safeInsert('leads', {
+        first_name: formData.name.split(' ')[0] || '',
+        last_name: formData.name.split(' ').slice(1).join(' ') || '',
+        email: formData.email,
+        phone: formData.phone,
+        advisor_id: '00000000-0000-0000-0000-000000000000', // Public lead
+        lead_status: 'new',
+        lead_source: 'swag_landing_page',
+        enrichment_status: enrichmentConsent ? 'pending' : 'skipped',
+        plaid_consent_given: plaidConsent
+      });
+
+      if (!result.ok) {
+        throw new Error(result.error || 'Failed to create lead');
+      }
+
+      // Generate mock lead for demo mode
+      const mockLead = {
+        id: `demo-${Date.now()}`,
+        first_name: formData.name.split(' ')[0] || '',
+        last_name: formData.name.split(' ').slice(1).join(' ') || '',
+        email: formData.email,
+        phone: formData.phone
+      };
 
       // Calculate SWAG Score
       if (enrichmentConsent) {
         const { data: enrichmentData } = await supabase.functions.invoke('lead-enrichment', {
           body: {
-            lead_id: lead.id,
+            lead_id: mockLead.id,
             email: formData.email,
             name: formData.name
           }

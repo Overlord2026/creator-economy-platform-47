@@ -11,14 +11,14 @@ import { DatabaseSchemaCheck } from './DatabaseSchemaCheck';
 import { WebhookRouteCheck } from './WebhookRouteCheck';
 
 interface DiagnosticsData {
-  environment?: EnvFlags;
+  env?: EnvFlags;
   stripe?: {
     sdkLoaded: boolean;
     apiOk: boolean;
     statusCode?: number;
     error?: string;
   };
-  database?: {
+  db?: {
     profilesStripeCustomerIdOk: 'GREEN' | 'YELLOW';
     subsTable: string;
     error?: string;
@@ -65,9 +65,9 @@ export function AdminDiagnosticsDashboard() {
       ...data,
       exportedAt: new Date().toISOString(),
       summary: {
-        environmentChecks: Object.values(data.environment || {}).filter(Boolean).length,
+        environmentChecks: Object.values(data.env || {}).filter(Boolean).length,
         stripeApiConnected: data.stripe?.apiOk || false,
-        databaseSchemaValid: data.database?.profilesStripeCustomerIdOk === 'GREEN'
+        databaseSchemaValid: data.db?.profilesStripeCustomerIdOk === 'GREEN'
       }
     };
     
@@ -86,10 +86,10 @@ export function AdminDiagnosticsDashboard() {
     if (!data) return { status: 'unknown', count: 0, total: 0 };
     
     const checks = [
-      ...Object.values(data.environment || {}),
+      ...Object.values(data.env || {}),
       data.stripe?.sdkLoaded,
       data.stripe?.apiOk,
-      data.database?.profilesStripeCustomerIdOk === 'GREEN'
+      data.db?.profilesStripeCustomerIdOk === 'GREEN'
     ].filter(check => check !== undefined);
     
     const passedChecks = checks.filter(Boolean).length;
@@ -161,9 +161,9 @@ export function AdminDiagnosticsDashboard() {
 
       {/* Individual diagnostic components */}
       <div className="grid gap-6 md:grid-cols-2">
-        <EnvVariablesCheck data={data?.environment} isLoading={isLoading} />
+        <EnvVariablesCheck data={data?.env} isLoading={isLoading} />
         <StripeApiCheck data={data?.stripe} isLoading={isLoading} />
-        <DatabaseSchemaCheck data={data?.database} isLoading={isLoading} />
+        <DatabaseSchemaCheck data={data?.db} isLoading={isLoading} />
         <WebhookRouteCheck />
       </div>
     </div>

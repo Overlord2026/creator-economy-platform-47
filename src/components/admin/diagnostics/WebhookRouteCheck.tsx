@@ -1,8 +1,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Webhook, RefreshCw } from 'lucide-react';
-import StatusPill from './StatusPill';
 
 export function WebhookRouteCheck() {
   const [status, setStatus] = React.useState<'GREEN'|'RED'|'YELLOW'>('YELLOW');
@@ -26,6 +26,22 @@ export function WebhookRouteCheck() {
     run(); 
   }, []);
 
+  const getStatusBadge = () => {
+    if (isChecking) {
+      return <Badge variant="secondary">Checking...</Badge>;
+    }
+    
+    return status === 'GREEN' ? (
+      <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+        Available
+      </Badge>
+    ) : (
+      <Badge variant="destructive">
+        Not Found
+      </Badge>
+    );
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -44,7 +60,7 @@ export function WebhookRouteCheck() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <StatusPill status={status} />
+              {getStatusBadge()}
               <span className="text-xs text-muted-foreground">
                 Status: {code || '—'}
               </span>
