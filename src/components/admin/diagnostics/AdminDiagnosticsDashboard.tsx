@@ -13,9 +13,9 @@ import { WebhookRouteCheck } from './WebhookRouteCheck';
 interface DiagnosticsData {
   environment: {
     STRIPE_SECRET_KEY: boolean;
-    STRIPE_PUBLISHABLE_KEY: boolean;
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: boolean;
     STRIPE_WEBHOOK_SECRET: boolean;
-    SUPABASE_URL: boolean;
+    NEXT_PUBLIC_SUPABASE_URL: boolean;
     SUPABASE_ANON_KEY: boolean;
   };
   stripe: {

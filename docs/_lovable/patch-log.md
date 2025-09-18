@@ -138,5 +138,10 @@
 - [ ] Sidebar navigation works (7 platform pages)
 - [ ] ProsHub shows "Access Platform" for Financial Advisors
 - [ ] Family routes remain unchanged
-- [ ] Hard reload works, no React duplicate errors
-- [ ] Typecheck and build pass
+- fix(build): finalize schema-aware education fallbacks; disable uploads when education_* absent; fallback reads to audit_receipts
+- feat(diag): env check uses NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY; add webhook HEAD test card; no secrets printed
+
+### Recent Changes
+
+- fix(build): finalize schema-aware education fallbacks; disable uploads when education_* absent; fallback reads to audit_receipts
+- feat(diag): diagnostics env uses NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY; resilient DB checks; no secret values printed
