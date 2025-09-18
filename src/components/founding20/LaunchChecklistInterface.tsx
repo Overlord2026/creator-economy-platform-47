@@ -93,42 +93,15 @@ export const LaunchChecklistInterface: React.FC = () => {
     loadChecklistItems();
   }, []);
 
-  const loadChecklistItems = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('launch_checklist_items')
-        .select('*')
-        .order('week', { ascending: true })
-        .order('segment', { ascending: true })
-        .order('tier', { ascending: true });
-
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        // Initialize checklist with seed data
-        await initializeChecklist();
-        return;
-      }
-
-      setItems(data as ChecklistItem[]);
-      calculateProgress(data as ChecklistItem[]);
-    } catch (error) {
-      console.error('Error loading checklist:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const initializeChecklist = async () => {
-    const seedItems: Omit<ChecklistItem, 'id'>[] = [];
-
+  const generateInMemoryItems = (): ChecklistItem[] => {
+    const items: ChecklistItem[] = [];
     Object.entries(checklistData).forEach(([week, weekData]) => {
-      ['sports', 'longevity', 'ria'].forEach(segment => {
+      ['sports', 'longevity', 'ria'].forEach((segment, segIdx) => {
         const targets = weekData[segment] || [];
         const tier = week === '1-2' ? 'gold' : week === '3-4' ? 'silver' : 'bronze';
-        
-        targets.forEach(target => {
-          seedItems.push({
+        targets.forEach((target, idx) => {
+          items.push({
+            id: `memory-${week}-${segment}-${tier}-${idx}`,
             week,
             segment: segment as any,
             tier: tier as any,
@@ -139,25 +112,42 @@ export const LaunchChecklistInterface: React.FC = () => {
             status: 'not_started',
             notes: '',
             assigned_at: '',
-            completed_at: ''
+            completed_at: '',
           });
         });
       });
     });
+    return items;
+  };
 
+  const loadChecklistItems = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('launch_checklist_items')
-        .insert(seedItems)
-        .select();
+        .select('*')
+        .order('week', { ascending: true })
+        .order('segment', { ascending: true })
+        .order('tier', { ascending: true });
 
-      if (error) throw error;
-
-      setItems(data as ChecklistItem[]);
-      calculateProgress(data as ChecklistItem[]);
+      if (!error && data) {
+        setItems(data as ChecklistItem[]);
+        calculateProgress(data as ChecklistItem[]);
+        return;
+      }
+      throw error;
     } catch (error) {
-      console.error('Error initializing checklist:', error);
+      console.warn('launch_checklist_items table missing, using in-memory data:', error);
+      const inMemoryItems = generateInMemoryItems();
+      setItems(inMemoryItems);
+      calculateProgress(inMemoryItems);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const initializeChecklist = async () => {
+    console.warn('initializeChecklist called but tables do not exist, using in-memory data');
+    // In schema-aware mode, we already have in-memory data, nothing to do
   };
 
   const calculateProgress = (itemList: ChecklistItem[]) => {

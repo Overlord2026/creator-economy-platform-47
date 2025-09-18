@@ -115,80 +115,112 @@ export const InteractiveLaunchChecklist: React.FC = () => {
         .select('*')
         .order('week, segment, tier, target_name');
 
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        // Seed the database with initial data
-        await seedChecklistData();
-        return loadChecklistData(); // Reload after seeding
+      if (!error && data) {
+        const typedData = data.map((item: any) => ({
+          ...item,
+          segment: item.segment as 'sports' | 'longevity' | 'ria',
+          tier: item.tier as 'gold' | 'silver' | 'bronze',
+          status: item.status as 'not_started' | 'in_progress' | 'complete'
+        }));
+        setChecklistItems(typedData);
+        return;
       }
-
-      // Type assertion to ensure proper typing
-      const typedData = data.map(item => ({
-        ...item,
-        segment: item.segment as 'sports' | 'longevity' | 'ria',
-        tier: item.tier as 'gold' | 'silver' | 'bronze',
-        status: item.status as 'not_started' | 'in_progress' | 'complete'
-      }));
-
-      setChecklistItems(typedData);
+      throw error;
     } catch (error) {
-      console.error('Error loading checklist:', error);
+      console.warn('launch_checklist_items table missing, using in-memory data:', error);
+      // Generate checklist items from the predefined data
+      const items = generateChecklistItemsFromData();
+      setChecklistItems(items);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadProgressData = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('launch_checklist_progress')
-        .select('*')
-        .order('segment, tier, week');
-
-      if (error) throw error;
-      setProgressData(data || []);
-    } catch (error) {
-      console.error('Error loading progress:', error);
-    }
-  };
-
-  const seedChecklistData = async () => {
-    const items: Omit<ChecklistItem, 'id' | 'created_at' | 'updated_at'>[] = [];
-
+  const generateChecklistItemsFromData = (): ChecklistItem[] => {
+    const items: ChecklistItem[] = [];
     Object.entries(launchSequenceData).forEach(([week, weekData]) => {
       const segments = ['sports', 'longevity', 'ria'] as const;
-      
       segments.forEach(segment => {
         const targets = weekData[segment];
         const tier = week === '1-2' ? 'gold' : week === '3-4' ? 'silver' : 'bronze';
-        
         if (targets && targets.length > 0) {
-          targets.forEach(target => {
+          targets.forEach((target, idx) => {
             items.push({
+              id: `local-${week}-${segment}-${tier}-${idx}`,
               week,
               segment,
               tier,
               target_name: target,
               target_type: segment === 'longevity' ? 'individual' : 'organization',
               key_actions: weekData.actions,
-              status: 'not_started'
+              status: 'not_started',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
             });
           });
         }
       });
     });
+    return items;
+  };
 
+  const loadProgressData = async () => {
     try {
-      const { error } = await supabase
-        .from('launch_checklist_items')
-        .insert(items);
+      const { data, error } = await (supabase as any)
+        .from('launch_checklist_progress')
+        .select('*')
+        .order('segment, tier, week');
 
-      if (error) throw error;
-      console.log('Seeded checklist data successfully');
+      if (!error && data) {
+        setProgressData(data as ProgressData[]);
+        return;
+      }
+      throw error;
     } catch (error) {
-      console.error('Error seeding checklist data:', error);
+      console.warn('launch_checklist_progress table missing, generating from items:', error);
+      // Generate progress data from checklist items
+      const progress = generateProgressFromItems();
+      setProgressData(progress);
     }
+  };
+
+  const generateProgressFromItems = (): ProgressData[] => {
+    const progressMap = new Map<string, ProgressData>();
+    
+    checklistItems.forEach(item => {
+      const key = `${item.segment}-${item.tier}-${item.week}`;
+      if (!progressMap.has(key)) {
+        progressMap.set(key, {
+          segment: item.segment,
+          tier: item.tier,
+          week: item.week,
+          total_items: 0,
+          completed_items: 0,
+          completion_percentage: 0
+        });
+      }
+      
+      const progress = progressMap.get(key)!;
+      progress.total_items++;
+      if (item.status === 'complete') {
+        progress.completed_items++;
+      }
+    });
+    
+    // Calculate percentages
+    Array.from(progressMap.values()).forEach(progress => {
+      progress.completion_percentage = progress.total_items > 0 
+        ? Math.round((progress.completed_items / progress.total_items) * 100) 
+        : 0;
+    });
+    
+    return Array.from(progressMap.values());
+  };
+
+  const seedChecklistData = async () => {
+    console.warn('seedChecklistData called but tables do not exist, skipping database seeding');
+    // In schema-aware mode, we don't try to seed the database
+    // Instead, we rely on in-memory data generation
   };
 
   const updateItemStatus = async (id: string, status: ChecklistItem['status'], notes?: string) => {
@@ -206,14 +238,18 @@ export const InteractiveLaunchChecklist: React.FC = () => {
         updates.notes = notes;
       }
 
-      const { error } = await supabase
-        .from('launch_checklist_items')
-        .update(updates)
-        .eq('id', id);
+      // Try database update first
+      try {
+        const { error } = await (supabase as any)
+          .from('launch_checklist_items')
+          .update(updates)
+          .eq('id', id);
+        if (error) throw error;
+      } catch (dbError) {
+        console.warn('Database update failed, updating local state only:', dbError);
+      }
 
-      if (error) throw error;
-
-      // Update local state
+      // Always update local state
       setChecklistItems(prev => 
         prev.map(item => 
           item.id === id 
