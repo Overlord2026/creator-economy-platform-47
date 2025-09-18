@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppCards } from '@/components/dashboard/AppCards';
-import { AccountingOSCards } from '@/components/dashboard/AccountingOSCards';
+// Removed broken AccountingOSCards import
 import { TasksAndMessages } from '@/components/dashboard/TasksAndMessages';
 import { DashboardErrorBoundary } from '@/components/dashboard/DashboardErrorBoundary';
 import { motion } from "framer-motion";
@@ -16,7 +16,7 @@ export const DashboardContent: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <AccountingOSCards />
+            {/* AccountingOSCards removed due to schema mismatch */}
           </motion.div>
         </DashboardErrorBoundary>
 

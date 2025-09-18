@@ -26,72 +26,27 @@ export const DynamicLandingController: React.FC<{ children: React.ReactNode }> =
         return;
       }
 
-      // Extract routing parameters
-      const segment = params.get("segment") || userProfile?.client_segment;
-      const isNewLogin = params.get("newLogin") === "true";
-      const utm_campaign = params.get("utm_campaign") || userProfile?.utm_campaign;
-      const advisorId = params.get("advisor_id") || userProfile?.advisor_id;
+      // Extract basic routing parameters
       const role = userProfile?.role;
+      const isNewLogin = params.get("newLogin") === "true";
       
-      // Track this visit
-      trackUserVisit(userProfile.id, {
-        segment,
-        utm_campaign,
-        advisor_id: advisorId,
-        is_new_login: isNewLogin,
-        path: location.pathname
-      });
-
       // Route based on user role first
       if (role === "advisor" || role === "admin" || role === "system_administrator") {
-        navigate("/advisor-dashboard", { replace: true });
+        navigate("/creator", { replace: true });
         return;
       }
 
       // For first time login, go to onboarding
       if (isNewLogin) {
-        navigate("/onboarding", { 
-          replace: true,
-          state: { 
-            segment, 
-            advisor_id: advisorId,
-            utm_campaign 
-          }
-        });
+        navigate("/onboarding", { replace: true });
         return;
       }
 
-      // For existing users, route based on segment
-      if (segment) {
-        // Define segment-specific landing pages
-        const segmentRoutes: Record<string, string> = {
-          "physician": "/health-dashboard",
-          "executive": "/compensation-dashboard",
-          "entrepreneur": "/business-dashboard",
-          "athlete": "/wealth-dashboard"
-        };
-
-        const targetRoute = segmentRoutes[segment] || "/client-dashboard";
-        navigate(targetRoute, { replace: true });
-        return;
-      }
-
-      // Default landing for authenticated users without specific routing needs
-      navigate("/client-dashboard", { replace: true });
+      // Default landing for authenticated users
+      navigate("/creator", { replace: true });
     }
   }, [isLoading, isAuthenticated, userProfile, location.pathname, navigate, location.search]);
 
-  const trackUserVisit = async (userId: string, metadata: any) => {
-    try {
-      await supabase.from('user_events').insert({
-        user_id: userId,
-        event_type: 'page_visit',
-        event_data: metadata
-      });
-    } catch (error) {
-      console.error('Error tracking user visit:', error);
-    }
-  };
 
   return <>{children}</>;
 };

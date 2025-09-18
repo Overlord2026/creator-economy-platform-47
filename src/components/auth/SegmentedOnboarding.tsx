@@ -6,77 +6,17 @@ import { Badge } from "@/components/ui/badge";
 import { UserCheck, ArrowRight, Heart, Building, TrendingUp } from "lucide-react";
 import { clientSegments } from "@/components/solutions/WhoWeServe";
 import { useUser } from "@/context/UserContext";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 export function SegmentedOnboarding() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { userProfile, refreshUserProfile } = useUser();
-  const [advisorInfo, setAdvisorInfo] = useState<{name: string, email: string} | null>(null);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const { userProfile } = useUser();
 
-  // Get segment and advisor info from URL params or user metadata
-  const segment = searchParams.get('segment') || userProfile?.client_segment;
-  const advisorId = searchParams.get('advisor_id') || userProfile?.advisor_id;
+  // Get segment from URL params 
+  const segment = searchParams.get('segment');
+  const advisorId = searchParams.get('advisor_id');
   const personalNote = searchParams.get('personal_note');
   const invitationType = searchParams.get('invitation_type');
-
-  useEffect(() => {
-    // Load advisor information if advisor_id is present
-    if (advisorId) {
-      loadAdvisorInfo(advisorId);
-    }
-
-    // If user has segment but it's not in URL, update profile
-    if (segment && !userProfile?.client_segment) {
-      updateUserSegment(segment);
-    }
-  }, [advisorId, segment, userProfile?.client_segment]);
-
-  const loadAdvisorInfo = async (id: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('first_name, last_name, email')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
-
-      setAdvisorInfo({
-        name: `${data.first_name || ''} ${data.last_name || ''}`.trim() || 'Your Advisor',
-        email: data.email
-      });
-    } catch (error) {
-      console.error('Error loading advisor info:', error);
-    }
-  };
-
-  const updateUserSegment = async (segmentId: string) => {
-    if (!userProfile?.id) return;
-
-    setIsUpdating(true);
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          client_segment: segmentId,
-          advisor_id: advisorId 
-        })
-        .eq('id', userProfile.id);
-
-      if (error) throw error;
-
-      await refreshUserProfile();
-      toast.success("Your profile has been updated!");
-    } catch (error) {
-      console.error('Error updating user segment:', error);
-      toast.error("Failed to update your profile");
-    } finally {
-      setIsUpdating(false);
-    }
-  };
 
   const getSegmentInfo = () => {
     if (!segment || segment === 'general') {
@@ -106,20 +46,8 @@ export function SegmentedOnboarding() {
   const IconComponent = segmentInfo.icon;
 
   const handleContinueToDashboard = () => {
-    // Track successful onboarding
-    if (userProfile?.id) {
-      supabase.from('user_events').insert({
-        user_id: userProfile.id,
-        event_type: 'onboarding_completed',
-        event_data: { 
-          segment,
-          advisor_id: advisorId,
-          invitation_type: invitationType 
-        }
-      });
-    }
-
-    navigate('/');
+    // Navigate to the creator dashboard
+    navigate('/creator');
   };
 
   return (
@@ -146,8 +74,8 @@ export function SegmentedOnboarding() {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Advisor Information */}
-          {advisorInfo && (
+          {/* Advisor Information - simplified without database query */}
+          {advisorId && (
             <div className="bg-secondary/10 p-4 rounded-lg">
               <h3 className="font-semibold text-sm text-muted-foreground mb-2">Your Assigned Advisor</h3>
               <div className="flex items-center gap-3">
@@ -155,8 +83,8 @@ export function SegmentedOnboarding() {
                   <UserCheck className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium">{advisorInfo.name}</p>
-                  <p className="text-sm text-muted-foreground">{advisorInfo.email}</p>
+                  <p className="font-medium">Your Financial Advisor</p>
+                  <p className="text-sm text-muted-foreground">Ready to help you achieve your goals</p>
                 </div>
               </div>
             </div>
@@ -229,9 +157,8 @@ export function SegmentedOnboarding() {
             onClick={handleContinueToDashboard}
             className="w-full"
             size="lg"
-            disabled={isUpdating}
           >
-            {isUpdating ? "Setting up your profile..." : "Continue to Dashboard"}
+            Continue to Dashboard
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         </CardContent>
