@@ -1,5 +1,11 @@
 # Patch Log
 
+## 2025-01-18 - Build Error Fixes & Admin Diagnostics Enhancement
+- **feat(cleanup)**: Removed broken attorney components (`AddCLERecordModal.tsx`, `AttorneyCLECenter.tsx`, `AttorneyCLEPage.tsx`, `AttorneyDocumentManager.tsx`, `AttorneyDocumentUpload.tsx`) that referenced non-existent database tables
+- **feat(cleanup)**: Removed broken analytics component (`AnalyticsV2Dashboard.tsx`) with missing imports
+- **feat(diag)**: Enhanced admin diagnostics edge function to check proper environment variable names (`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SUPABASE_URL`)
+- **status**: Build errors resolved, admin diagnostics system enhanced and functional
+
 ## Latest Changes
 
 ### feat/brand-swap - BFO → CreatorHub Branding

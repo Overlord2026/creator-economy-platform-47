@@ -27,9 +27,9 @@ serve(async (req) => {
     // Environment Variables Check
     results.environment = {
       STRIPE_SECRET_KEY: !!Deno.env.get('STRIPE_SECRET_KEY'),
-      STRIPE_PUBLISHABLE_KEY: !!Deno.env.get('STRIPE_PUBLISHABLE_KEY'),
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: !!Deno.env.get('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'),
       STRIPE_WEBHOOK_SECRET: !!Deno.env.get('STRIPE_WEBHOOK_SECRET'),
-      SUPABASE_URL: !!Deno.env.get('SUPABASE_URL'),
+      NEXT_PUBLIC_SUPABASE_URL: !!Deno.env.get('NEXT_PUBLIC_SUPABASE_URL'),
       SUPABASE_ANON_KEY: !!Deno.env.get('SUPABASE_ANON_KEY'),
     }
 
