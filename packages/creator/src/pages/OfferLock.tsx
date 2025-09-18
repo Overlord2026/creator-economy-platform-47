@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { getCurrentOffer, setOfferChecks, signOffer } from '@creator/state/offer.mock';
-import { getCompliance, allPassed } from '@creator/state/compliance.mock';
-import { addProof } from '@creator/state/proofs.mock';
-import { makeProof } from '@creator/components/ProofSlip';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../src/components/ui/card';
+import { Button } from '../../../src/components/ui/button';
+import { Alert, AlertDescription } from '../../../src/components/ui/alert';
+import { Badge } from '../../../src/components/ui/badge';
+import { getCurrentOffer, setOfferChecks, signOffer } from '../state/offer.mock';
+import { getCompliance, allPassed } from '../state/compliance.mock';
+import { addProof } from '../state/proofs.mock';
+import { makeProof } from '../components/ProofSlip';
 import { AlertTriangle, CheckCircle2, Lock, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 

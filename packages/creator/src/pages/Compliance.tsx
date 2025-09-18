@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../src/components/ui/card';
+import { Button } from '../../../src/components/ui/button';
+import { Badge } from '../../../src/components/ui/badge';
+import { Switch } from '../../../src/components/ui/switch';
+import { Label } from '../../../src/components/ui/label';
 import { 
   getCompliance, 
   setTraining, 
   setDisclosure, 
   setFtcLabels, 
   allPassed 
-} from '@creator/state/compliance.mock';
-import { addProof } from '@creator/state/proofs.mock';
-import { makeProof } from '@creator/components/ProofSlip';
+} from '../state/compliance.mock';
+import { addProof } from '../state/proofs.mock';
+import { makeProof } from '../components/ProofSlip';
 import { CheckCircle2, ArrowRight, Shield, FileText, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 

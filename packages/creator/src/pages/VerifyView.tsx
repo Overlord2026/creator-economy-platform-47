@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { getCurrentOffer } from '@creator/state/offer.mock';
-import { getProofs, isEscrowComplete } from '@creator/state/proofs.mock';
-import { ProofSlip } from '@creator/components/ProofSlip';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../src/components/ui/card';
+import { Button } from '../../../src/components/ui/button';
+import { Badge } from '../../../src/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../../src/components/ui/dialog';
+import { getCurrentOffer } from '../state/offer.mock';
+import { getProofs, isEscrowComplete } from '../state/proofs.mock';
+import { ProofSlip } from '../components/ProofSlip';
 import { QrCode, Copy, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 

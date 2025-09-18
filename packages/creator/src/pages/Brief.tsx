@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { createBrief } from '@creator/state/offer.mock';
-import { addProof } from '@creator/state/proofs.mock';
-import { makeProof } from '@creator/components/ProofSlip';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../src/components/ui/card';
+import { Button } from '../../../src/components/ui/button';
+import { Input } from '../../../src/components/ui/input';
+import { Label } from '../../../src/components/ui/label';
+import { Textarea } from '../../../src/components/ui/textarea';
+import { createBrief } from '../state/offer.mock';
+import { addProof } from '../state/proofs.mock';
+import { makeProof } from '../components/ProofSlip';
 import { toast } from 'sonner';
 
 export function Brief() {
