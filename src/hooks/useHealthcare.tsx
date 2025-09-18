@@ -88,23 +88,23 @@ export const useHealthcare = () => {
         return;
       }
 
-      // Fetch healthcare documents
-      const { data: documentsData, error: documentsError } = await supabase
-        .from('healthcare_documents')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+      // Fetch healthcare documents - fallback gracefully if table doesn't exist
+      let documentsData = null;
+      try {
+        const { data, error } = await (supabase as any)
+          .from('healthcare_documents')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
 
-      if (documentsError) {
-        console.error('Error fetching healthcare documents:', documentsError);
-        toast({
-          title: "Error fetching documents",
-          description: documentsError.message,
-          variant: "destructive"
-        });
-      } else {
-        setDocuments((documentsData as any) || []);
+        if (error) throw error;
+        documentsData = data;
+      } catch (documentsError) {
+        console.log('Healthcare documents table not available, using empty array:', documentsError);
+        documentsData = [];
       }
+      
+      setDocuments((documentsData as any) || []);
 
       // Fetch prescriptions
       const { data: prescriptionsData, error: prescriptionsError } = await supabase

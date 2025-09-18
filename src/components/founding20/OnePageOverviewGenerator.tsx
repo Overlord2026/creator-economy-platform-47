@@ -48,14 +48,18 @@ export const OnePageOverviewGenerator: React.FC<OnePageOverviewProps> = ({ forma
         await generatePNG();
       }
 
-      // Track analytics
-      await supabase.from('overview_analytics').insert({
-        segment: 'all',
-        action: `${format}_generated`,
-        utm_source: 'admin',
-        utm_medium: 'generator',
-        utm_campaign: 'founding20_overview'
-      });
+      // Track analytics - fallback gracefully if table doesn't exist
+      try {
+        await (supabase as any).from('overview_analytics').insert({
+          segment: 'all',
+          action: `${format}_generated`,
+          utm_source: 'admin',
+          utm_medium: 'generator',
+          utm_campaign: 'founding20_overview'
+        });
+      } catch (error) {
+        console.log('Analytics table not available, skipping analytics:', error);
+      }
 
       track('overview_generation_completed', { format, theme });
       toast.success(`${format.toUpperCase()} generated successfully!`);

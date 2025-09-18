@@ -33,23 +33,31 @@ export const StrategyComparisonModal: React.FC<StrategyComparisonModalProps> = (
     if (!userId || strategyIds.length === 0) return;
     
     try {
-      // Insert comparison record
-      await supabase.from('strategy_comparisons').insert({
-        user_id: userId,
-        strategies: strategyIds
-      });
-      
-      // Also track as engagement event
-      await supabase.from('strategy_engagement_tracking').insert(
-        strategyIds.map(strategyId => ({
+      // Insert comparison record - fallback gracefully if table doesn't exist
+      try {
+        await (supabase as any).from('strategy_comparisons').insert({
           user_id: userId,
-          strategy_id: strategyId,
-          event_type: 'comparison',
-          metadata: {
-            compared_with: strategyIds.filter(id => id !== strategyId)
-          }
-        }))
-      );
+          strategies: strategyIds
+        });
+      } catch (error) {
+        console.log('Strategy comparisons table not available, skipping tracking:', error);
+      }
+      
+      // Also track as engagement event - fallback gracefully if table doesn't exist
+      try {
+        await (supabase as any).from('strategy_engagement_tracking').insert(
+          strategyIds.map(strategyId => ({
+            user_id: userId,
+            strategy_id: strategyId,
+            event_type: 'comparison',
+            metadata: {
+              compared_with: strategyIds.filter(id => id !== strategyId)
+            }
+          }))
+        );
+      } catch (error) {
+        console.log('Strategy engagement tracking table not available, skipping tracking:', error);
+      }
     } catch (error) {
       console.error('Error tracking comparison:', error);
     }

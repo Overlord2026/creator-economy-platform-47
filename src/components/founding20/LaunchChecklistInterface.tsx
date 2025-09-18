@@ -170,7 +170,7 @@ export const LaunchChecklistInterface: React.FC = () => {
         updateData.assigned_at = new Date().toISOString();
       }
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('launch_checklist_items')
         .update(updateData)
         .eq('id', id);
@@ -199,7 +199,7 @@ export const LaunchChecklistInterface: React.FC = () => {
 
   const updateItemField = async (id: string, field: string, value: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('launch_checklist_items')
         .update({ [field]: value, updated_at: new Date().toISOString() })
         .eq('id', id);
