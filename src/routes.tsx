@@ -29,6 +29,8 @@ import { LoanStatusPage } from "./pages/lending/LoanStatusPage";
 import { PartnerComparisonPage } from "./pages/lending/PartnerComparisonPage";
 import { AdvisorLendingDashboard } from "./pages/lending/AdvisorLendingDashboard";
 import { AdminRoute } from "./components/auth/AdminRoute";
+import { AdminPortal } from "./pages/AdminPortal";
+import { AdminDiagnostics } from "./pages/admin/AdminDiagnostics";
 
 // Legal pages
 import { PrivacyPolicyPage } from "./pages/legal/PrivacyPolicyPage";
@@ -627,6 +629,14 @@ export const router = createBrowserRouter([
         </Routes>
       </div>
     )
+  },
+  {
+    path: "/admin-portal",
+    element: <AdminPortal />
+  },
+  {
+    path: "/admin-portal/diagnostics",
+    element: <AdminDiagnostics />
   },
   {
     path: "/admin/*",
