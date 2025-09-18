@@ -1,0 +1,16 @@
+Type,Name,Path,Notes
+asset,favicon.ico,public/favicon.ico,Site favicon
+asset,favicon.png,public/favicon.png,PNG favicon
+asset,Brand logos,public/brand/,Brand assets and logos directory
+asset,manifest.json,public/manifest.json,PWA manifest file
+asset,robots.txt,public/robots.txt,Search engine directives
+asset,sitemap.xml,public/sitemap.xml,Site structure for SEO
+asset,Grid background,public/grid.svg,Background pattern asset
+asset,Placeholder image,public/placeholder.svg,Default placeholder graphic
+asset,Campaign sample data,public/campaigns-sample.csv,Sample data for testing
+asset,Leads sample data,public/leads-sample.csv,Sample lead data
+asset,Service worker,public/sw.js,Progressive web app service worker
+asset,Monte Carlo worker,public/montecarlo-worker.js,Financial calculation worker
+asset,Feature flags,public/feature-flags.json,Client-side feature configuration
+asset,Sound assets,public/sounds/,Audio files directory
+asset,Uploaded files,public/lovable-uploads/,User uploaded content directory

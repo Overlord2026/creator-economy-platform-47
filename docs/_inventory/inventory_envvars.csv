@@ -1,0 +1,25 @@
+EnvVar,UsedInPaths,Notes
+STRIPE_SECRET_KEY,supabase/functions/,Required for Stripe API calls
+STRIPE_PUBLISHABLE_KEY,src/config/,Client-side Stripe integration
+STRIPE_WEBHOOK_SECRET,supabase/functions/,Webhook signature verification
+VITE_SUPABASE_URL,src/integrations/supabase/client.ts,Supabase project URL
+VITE_SUPABASE_ANON_KEY,src/integrations/supabase/client.ts,Supabase anonymous key
+VITE_SUPABASE_PUBLISHABLE_KEY,.env,Alternative Supabase key reference
+VITE_SUPABASE_PROJECT_ID,.env,Supabase project identifier
+SUPABASE_SERVICE_ROLE_KEY,supabase/functions/,Server-side Supabase operations
+PLAID_CLIENT_ID,supabase/functions/,Plaid API access
+PLAID_SECRET,supabase/functions/,Plaid API authentication
+PLAID_ENV,supabase/functions/,Plaid environment (sandbox/production)
+RESEND_API_KEY,supabase/functions/,Email service authentication
+OPENAI_API_KEY,supabase/functions/,AI features and content generation
+ZOOM_CLIENT_ID,src/components/testing/,Video conferencing integration
+ZOOM_CLIENT_SECRET,supabase/functions/,Zoom API authentication
+VITE_DIAG_ENABLED,src/pages/admin/,Enable diagnostics page access
+VITE_ADMIN_TOOLS_ENABLED,src/components/admin/,Admin tool visibility
+VITE_APP_MOCK_MODE,src/config/,Enable mock data mode
+VITE_PUBLIC_DISCOVER_ENABLED,src/config/,Feature flag for discovery
+VITE_GOOGLE_CLIENT_ID,src/components/testing/,Google OAuth integration
+VITE_FACEBOOK_APP_ID,src/components/testing/,Facebook API integration
+VITE_FACEBOOK_ACCESS_TOKEN,src/components/testing/,Facebook API authentication
+NODE_ENV,src/components/,Environment detection (development/production)
+VITE_ZOOM_CLIENT_ID,src/components/testing/,Zoom client configuration

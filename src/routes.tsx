@@ -31,6 +31,7 @@ import { AdvisorLendingDashboard } from "./pages/lending/AdvisorLendingDashboard
 import { AdminRoute } from "./components/auth/AdminRoute";
 import { AdminPortal } from "./pages/AdminPortal";
 import { AdminDiagnostics } from "./pages/admin/AdminDiagnostics";
+import { AdminInventory } from "./pages/admin/AdminInventory";
 
 // Legal pages
 import { PrivacyPolicyPage } from "./pages/legal/PrivacyPolicyPage";
@@ -637,6 +638,10 @@ export const router = createBrowserRouter([
   {
     path: "/admin-portal/diagnostics",
     element: <AdminDiagnostics />
+  },
+  {
+    path: "/admin-portal/inventory",
+    element: <AdminInventory />
   },
   {
     path: "/admin/*",

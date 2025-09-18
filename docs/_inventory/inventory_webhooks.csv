@@ -1,0 +1,11 @@
+Provider,Route,Method,Present (Y/N),FilePath
+Stripe,/api/stripe/webhook,POST,N,Missing - needs implementation
+Stripe,/api/stripe/customer-portal,POST,N,Handled via Supabase edge function
+Plaid,/api/plaid/webhook,POST,N,Missing - needs implementation  
+Plaid,/api/plaid/link-token,POST,N,Handled via Supabase edge function
+Resend,/api/resend/webhook,POST,N,Missing - needs implementation
+Zoom,/api/zoom/webhook,POST,N,Missing - needs implementation
+Supabase,/functions/v1/admin-diagnostics,POST,Y,supabase/functions/admin-diagnostics/index.ts
+Supabase,/functions/v1/customer-portal,POST,Y,supabase/functions/customer-portal/index.ts
+Supabase,/functions/v1/plaid-create-link-token,POST,U,supabase/functions/plaid-create-link-token/index.ts
+Supabase,/functions/v1/leads-invite,POST,U,supabase/functions/leads-invite/index.ts
