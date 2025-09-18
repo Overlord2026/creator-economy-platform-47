@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../src/components/ui/card';
-import { Button } from '../../../src/components/ui/button';
-import { Input } from '../../../src/components/ui/input';
-import { Label } from '../../../src/components/ui/label';
-import { Textarea } from '../../../src/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
+import { Button } from 'src/components/ui/button';
+import { Input } from 'src/components/ui/input';
+import { Label } from 'src/components/ui/label';
+import { Textarea } from 'src/components/ui/textarea';
 import { createBrief } from '../state/offer.mock';
 import { addProof } from '../state/proofs.mock';
 import { makeProof } from '../components/ProofSlip';

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../src/components/ui/card';
-import { Button } from '../../../src/components/ui/button';
-import { Badge } from '../../../src/components/ui/badge';
-import { Alert, AlertDescription } from '../../../src/components/ui/alert';
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
+import { Button } from 'src/components/ui/button';
+import { Badge } from 'src/components/ui/badge';
+import { Alert, AlertDescription } from 'src/components/ui/alert';
 import { addProof, getProofs } from '../state/proofs.mock';
 import { makeProof } from '../components/ProofSlip';
 import { DollarSign, CheckCircle2, ArrowLeft, Wallet } from 'lucide-react';
