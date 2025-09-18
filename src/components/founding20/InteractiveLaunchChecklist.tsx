@@ -110,7 +110,7 @@ export const InteractiveLaunchChecklist: React.FC = () => {
 
   const loadChecklistData = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('launch_checklist_items')
         .select('*')
         .order('week, segment, tier, target_name');

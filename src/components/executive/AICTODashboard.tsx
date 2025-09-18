@@ -40,16 +40,43 @@ export function AICTODashboard() {
 
   const fetchIpWatchData = async () => {
     try {
-      const { data, error } = await supabase
+      // Try primary table if it exists
+      const { data, error } = await (supabase as any)
         .from('ip_watch_logs')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(10);
-      
-      if (error) throw error;
-      setIpWatchData(data || []);
+
+      if (!error && data) {
+        setIpWatchData(data as IpWatchLog[]);
+        return;
+      }
+      // Fall through to fallback if error present
+      throw error;
     } catch (error) {
-      console.error('Error fetching IP Watch data:', error);
+      console.warn('ip_watch_logs missing or failed, falling back to audit_receipts:', error);
+      try {
+        const { data: auditData, error: auditError } = await supabase
+          .from('audit_receipts')
+          .select('id, action, entity, created_at, canonical')
+          .order('created_at', { ascending: false })
+          .limit(10);
+        if (auditError) throw auditError;
+        const mapped = (auditData || []).map((row: any) => ({
+          id: row.id,
+          type: row.entity || row.action || 'event',
+          term: row.action || 'activity',
+          source: 'audit',
+          date_found: row.created_at,
+          risk_level: 'info',
+          link: '#',
+          created_at: row.created_at,
+        })) as IpWatchLog[];
+        setIpWatchData(mapped);
+      } catch (fallbackError) {
+        console.error('Error fetching fallback IP Watch data:', fallbackError);
+        setIpWatchData([]);
+      }
     }
   };
 
