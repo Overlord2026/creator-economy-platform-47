@@ -1,0 +1,2 @@
+export const RUNTIME_REPO = __RUNTIME_REPO__;
+export const RUNTIME_BRANCH = __RUNTIME_BRANCH__;

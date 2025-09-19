@@ -74,10 +74,12 @@ const ComingSoonWaitlist: React.FC<ComingSoonWaitlistProps> = ({ productType }) 
     setLoading(true);
 
     try {
-      // Submit to waitlist
-      const { error } = await supabase
-        .from('analytics_events')
-        .insert({
+      // Submit to waitlist using safe helpers
+      const { tableExists, safeInsert } = await import('@/lib/db/safeSupabase');
+      const hasTable = await tableExists('analytics_events');
+      
+      if (hasTable) {
+        const result = await safeInsert('analytics_events', {
           event_type: 'waitlist_signup',
           event_category: 'marketing',
           event_data: {
@@ -90,7 +92,8 @@ const ComingSoonWaitlist: React.FC<ComingSoonWaitlistProps> = ({ productType }) 
           }
         });
 
-      if (error) throw error;
+        if (!result.ok) throw new Error(result.error);
+      }
 
       // Send confirmation email via edge function
       await supabase.functions.invoke('crm-notification-system', {

@@ -128,28 +128,40 @@ export const ConsentManager: React.FC = () => {
     if (!user) return;
 
     try {
+      const { tableExists, safeUpdate, safeInsert } = await import('@/lib/db/safeSupabase');
+      const hasTable = await tableExists('user_consent');
+      
+      if (!hasTable) {
+        toast({
+          title: "Feature Unavailable",
+          description: "Consent management is not available in this environment",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Withdraw any existing consent for this type
-      await supabase
-        .from('user_consent')
-        .update({ 
+      await safeUpdate('user_consent', 
+        { 
           is_active: false, 
           withdrawn_at: new Date().toISOString() 
-        })
-        .eq('user_id', user.id)
-        .eq('consent_type', consentType)
-        .eq('is_active', true);
-
-      // Insert new consent
-      const { error } = await supabase
-        .from('user_consent')
-        .insert({
+        },
+        {
           user_id: user.id,
           consent_type: consentType,
-          version: version,
           is_active: true
-        });
+        }
+      );
 
-      if (error) throw error;
+      // Insert new consent
+      const result = await safeInsert('user_consent', {
+        user_id: user.id,
+        consent_type: consentType,
+        version: version,
+        is_active: true
+      });
+
+      if (!result.ok) throw new Error(result.error);
 
       toast({
         title: "Consent Updated",
@@ -171,17 +183,31 @@ export const ConsentManager: React.FC = () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
-        .from('user_consent')
-        .update({ 
+      const { tableExists, safeUpdate } = await import('@/lib/db/safeSupabase');
+      const hasTable = await tableExists('user_consent');
+      
+      if (!hasTable) {
+        toast({
+          title: "Feature Unavailable",
+          description: "Consent management is not available in this environment",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const result = await safeUpdate('user_consent',
+        { 
           is_active: false, 
           withdrawn_at: new Date().toISOString() 
-        })
-        .eq('user_id', user.id)
-        .eq('consent_type', consentType)
-        .eq('is_active', true);
+        },
+        {
+          user_id: user.id,
+          consent_type: consentType,
+          is_active: true
+        }
+      );
 
-      if (error) throw error;
+      if (!result.ok) throw new Error(result.error);
 
       toast({
         title: "Consent Withdrawn",

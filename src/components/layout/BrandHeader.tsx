@@ -5,6 +5,7 @@ import RunNILDemo from '@/components/demos/RunNILDemo';
 import { ChevronLeft, ChevronRight, Home, VolumeX, Volume2, TestTube } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useAudio } from '@/context/AudioContext';
+import { RUNTIME_REPO, RUNTIME_BRANCH } from "@/config/runtime";
 
 const Logo = () => (
   <Link to="/" className="flex items-center gap-3">
@@ -82,8 +83,18 @@ const MuteLindaToggle = () => {
 };
 
 function BrandHeader() {
+  const appName = import.meta.env.VITE_APP_NAME || 'Family Office Marketplace';
+  const isProd = import.meta.env.MODE === 'production';
+  
   return (
     <header className="sticky top-0 z-50 bfo-header bfo-no-blur">
+      {/* Non-prod header badge */}
+      {!isProd && (
+        <div className="pointer-events-none fixed right-3 top-2 z-50 rounded border px-2 py-0.5 text-xs opacity-60 bg-background/70 backdrop-blur">
+          {appName} • {RUNTIME_REPO}@{RUNTIME_BRANCH}
+        </div>
+      )}
+      
       <div className="mx-auto flex h-[56px] items-center gap-3 px-4">
         <Logo />
         <NavigationButtons />

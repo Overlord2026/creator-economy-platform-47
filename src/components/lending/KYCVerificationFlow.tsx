@@ -67,15 +67,16 @@ export const KYCVerificationFlow: React.FC<KYCVerificationFlowProps> = ({
   const fetchVerifications = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('kyc_verifications')
-        .select('*')
-        .eq('entity_type', entityType)
-        .eq('entity_id', entityId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setVerifications(data || []);
+      const { withFallback, safeSelect } = await import('@/lib/db/safeSupabase');
+      
+      const data = await withFallback('kyc_verifications',
+        () => safeSelect('kyc_verifications', '*', { 
+          order: { column: 'created_at', ascending: false } 
+        }),
+        async () => []
+      );
+      
+      setVerifications(data as KYCVerification[]);
     } catch (error) {
       console.error('Error fetching KYC verifications:', error);
       toast({
