@@ -73,11 +73,25 @@ export const AdvisorOnboardingFlow = () => {
   const checkOnboardingStatus = async () => {
     if (!userProfile?.id) return;
 
-    const { data: advisorData } = await supabase
-      .from('advisor_profiles')
-      .select('*')
-      .eq('user_id', userProfile.id)
-      .single();
+   let advisorData: any = null;
+
+if (hasProfiles) {
+  const rows = await safeQueryOptionalTable('advisor_profiles', (q) =>
+    q.select('*').eq('user_id', userProfile?.id).limit(1)
+  );
+  advisorData = Array.isArray(rows) ? rows[0] : null;
+}
+
+if (advisorData) {
+  setAdvisorProfile((prev) => ({
+    ...prev,
+    ...advisorData,
+    specialties: Array.isArray(advisorData.specialties) ? advisorData.specialties : [],
+  }));
+} else {
+  // No table or no row: show welcome/fallback
+  setShowWelcome(true);
+}
 
     // Check if onboarding needs to be shown (simplified check)
     if (!advisorData?.bio || !advisorData?.firm_name) {
@@ -105,21 +119,18 @@ export const AdvisorOnboardingFlow = () => {
 
     const allCompleted = Object.values(newData).every(Boolean);
 
-    if (allCompleted) {
-      await supabase
-        .from('advisor_profiles')
-        .update({ bio: advisorProfile.bio })
-        .eq('user_id', userProfile?.id);
+  if (allCompleted) {
+  if (await tableExists('advisor_profiles')) {
+    await safeUpdate('advisor_profiles', { bio: advisorProfile.bio }, { user_id: userProfile?.id });
+  }
 
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-      toast.success("🎉 Your advisor profile is ready! Start inviting clients.");
-    }
-  };
-
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 }
+  });
+  toast.success("🎉 Your advisor profile is ready! Start inviting clients.");
+}
   const onboardingSteps = [
     {
       id: 'profile',
@@ -326,18 +337,18 @@ export const AdvisorOnboardingFlow = () => {
 // Step Components
 const ProfileSetupStep = ({ profile, onUpdate, onComplete }: any) => {
   const [localProfile, setLocalProfile] = useState(profile);
+const handleSave = async () => {
+  if (await tableExists('advisor_profiles')) {
+    await safeInsertOptionalTable('advisor_profiles', {
+      user_id: userProfile?.id,
+      ...localProfile,
+    });
+  }
 
-  const handleSave = async () => {
-    // Save to database
-    await supabase
-      .from('advisor_profiles')
-      .upsert(localProfile);
-    
-    onUpdate(localProfile);
-    onComplete();
-    toast.success('Profile updated successfully!');
-  };
-
+  onUpdate(localProfile);
+  onComplete();
+  toast.success('Profile updated successfully!');
+};
   return (
     <div className="space-y-6">
       <div className="grid md:grid-cols-2 gap-6">
