@@ -130,17 +130,9 @@ export function AdditionalInfoForm({ onSave }: { onSave: () => void }) {
         toast.success("Additional information saved in demo mode");
         onSave();
       }
-
-      if (error) {
-        console.error("Database operation error:", error);
-        toast.error("Failed to save additional information");
-      } else {
-        console.log("Additional info saved successfully");
-        toast.success("Additional information saved successfully");
-        onSave();
-      }
     } catch (error) {
-      console.error("Unexpected error saving additional info:", error);
+      console.error("Unexpected error:", error);
+      toast.error("An unexpected error occurred");
       toast.error("An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
