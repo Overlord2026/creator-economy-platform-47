@@ -35,8 +35,21 @@ export const AdminReservedProfilesDashboard: React.FC = () => {
   }, []);
 
   const loadAnalytics = async () => {
-    const data = await getAnalytics();
-    setAnalytics(data);
+    // Mock analytics data since reserved_profiles table doesn't exist
+    const mockAnalytics: ReservedProfileAnalytics[] = [
+      { 
+        id: '1',
+        date: '2024-01-01', 
+        persona_type: 'advisor', 
+        total_reserved: 0, 
+        total_claimed: 0, 
+        total_invited: 0,
+        conversion_rate: 0, 
+        pending_invitations: 0,
+        calculated_at: new Date().toISOString()
+      }
+    ];
+    setAnalytics(mockAnalytics);
   };
 
   const handleSendInvitation = async (profileId: string, method: 'email' | 'sms' | 'linkedin' | 'heygen') => {

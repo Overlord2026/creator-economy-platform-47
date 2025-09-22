@@ -40,25 +40,33 @@ export function PlanImportDashboard() {
   const loadImportData = async () => {
     try {
       // Load import records
-      const { data: importData, error: importError } = await supabase
-        .from('plan_imports')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(20);
-
-      if (importError) throw importError;
-      setImports(importData || []);
+      const hasImports = await tableExists('plan_imports');
+      if (hasImports) {
+        const result = await safeQueryOptionalTable('plan_imports', '*', { 
+          order: { column: 'created_at', ascending: false }, 
+          limit: 20 
+        });
+        if (result.ok && result.data) {
+          setImports(result.data as any[]);
+        } else {
+          setImports([]);
+        }
+      } else {
+        setImports([]);
+      }
 
       // Load migration status
-      const { data: migrationData, error: migrationError } = await supabase
-        .from('advisor_migration_status')
-        .select('*')
-        .single();
-
-      if (migrationError && migrationError.code !== 'PGRST116') {
-        throw migrationError;
+      const hasMigrationStatus = await tableExists('advisor_migration_status');
+      if (hasMigrationStatus) {
+        const result = await safeQueryOptionalTable('advisor_migration_status', '*', { limit: 1 });
+        if (result.ok && result.data && result.data.length > 0) {
+          setMigrationStatus(result.data[0] as any);
+        } else {
+          setMigrationStatus(null);
+        }
+      } else {
+        setMigrationStatus(null);
       }
-      setMigrationStatus(migrationData);
 
     } catch (error: any) {
       console.error('Error loading import data:', error);

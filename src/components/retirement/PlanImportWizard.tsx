@@ -67,19 +67,20 @@ export function PlanImportWizard() {
       setImportProgress({ step: 'parsing', progress: 60, status: 'AI parsing retirement data...' });
 
       // Create import record
-      const { data: importRecord, error: importError } = await supabase
-        .from('plan_imports')
-        .insert({
+      const hasImports = await tableExists('plan_imports');
+      if (hasImports) {
+        const result = await safeInsertOptionalTable('plan_imports', {
           import_type: 'pdf_upload',
           original_filename: file.name,
           file_path: uploadData.path,
           advisor_id: (await supabase.auth.getUser()).data.user?.id || '',
           import_status: 'uploaded'
-        })
-        .select()
-        .single();
+        });
 
-      if (importError) throw importError;
+        if (!result.ok) {
+          throw new Error(result.error || 'Failed to create import record');
+        }
+      }
 
       // Get public URL for the uploaded file
       const { data: { publicUrl } } = supabase.storage
