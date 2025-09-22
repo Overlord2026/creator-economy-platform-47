@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
+import { safeQueryOptionalTable, tableExists, withFallback } from '@/lib/db/safeSupabase';
 import { useToast } from '@/hooks/use-toast';
 import { 
   BookOpen, 
@@ -32,39 +33,41 @@ interface TrainingProgram {
 
 interface TrainingSchedule {
   id: string;
+  program_id: string;
   schedule_name: string;
   frequency: string;
   next_due_date: string;
-  last_completed_date?: string;
   mandatory: boolean;
-  program: TrainingProgram;
+  program?: TrainingProgram;
 }
 
 interface TrainingCompletion {
   id: string;
+  user_id: string;
   program_id: string;
-  completed_at?: string;
-  score?: number;
+  completed_at: string;
   passed: boolean;
+  score?: number;
   certificate_issued: boolean;
-  program: TrainingProgram;
+  program?: TrainingProgram;
+}
+
+interface PhishingSimulation {
+  id: string;
+  campaign_name: string;
+  campaign_type: string;
 }
 
 interface PhishingResult {
   id: string;
+  user_id: string;
   simulation_id: string;
   email_opened: boolean;
   link_clicked: boolean;
   data_entered: boolean;
   reported_suspicious: boolean;
-  time_to_report_minutes?: number;
-  opened_at?: string;
-  clicked_at?: string;
-  reported_at?: string;
-  simulation: {
-    campaign_name: string;
-    campaign_type: string;
-  };
+  created_at: string;
+  simulation?: PhishingSimulation;
 }
 
 export const SecurityTrainingDashboard: React.FC = () => {
@@ -80,40 +83,61 @@ export const SecurityTrainingDashboard: React.FC = () => {
 
   const fetchTrainingData = async () => {
     try {
-      // Fetch training schedules with programs
-      const { data: schedules, error: schedulesError } = await supabase
-        .from('security_training_schedules')
-        .select(`
-          *,
-          program:security_training_programs(*)
-        `)
-        .order('next_due_date', { ascending: true });
+      // Use safe queries for training data with fallbacks
+      const schedules = await withFallback(
+        'security_training_schedules',
+        async () => {
+          const result = await safeQueryOptionalTable('security_training_schedules', '*', {
+            order: { column: 'next_due_date', ascending: true }
+          });
+          return result;
+        },
+        async () => []
+      );
 
-      if (schedulesError) throw schedulesError;
+      const userCompletions = await withFallback(
+        'security_training_completions',
+        async () => {
+          const user = await supabase.auth.getUser();
+          if (!user.data.user) return { ok: true, data: [] };
+          
+          const result = await safeQueryOptionalTable('security_training_completions', '*', {
+            order: { column: 'completed_at', ascending: false }
+          });
+          
+          // Filter by user_id on client side since we can't use eq with safe pattern
+          if (result.ok && result.data) {
+            const filteredData = result.data.filter((completion: any) => 
+              completion.user_id === user.data.user.id
+            );
+            return { ok: true, data: filteredData };
+          }
+          return result;
+        },
+        async () => []
+      );
 
-      // Fetch user's training completions
-      const { data: userCompletions, error: completionsError } = await supabase
-        .from('security_training_completions')
-        .select(`
-          *,
-          program:security_training_programs(*)
-        `)
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .order('completed_at', { ascending: false });
-
-      if (completionsError) throw completionsError;
-
-      // Fetch phishing simulation results
-      const { data: phishing, error: phishingError } = await supabase
-        .from('phishing_simulation_results')
-        .select(`
-          *,
-          simulation:phishing_simulations(campaign_name, campaign_type)
-        `)
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .order('created_at', { ascending: false });
-
-      if (phishingError) throw phishingError;
+      const phishing = await withFallback(
+        'phishing_simulation_results',
+        async () => {
+          const user = await supabase.auth.getUser();
+          if (!user.data.user) return { ok: true, data: [] };
+          
+          const result = await safeQueryOptionalTable('phishing_simulation_results', '*', {
+            order: { column: 'created_at', ascending: false }
+          });
+          
+          // Filter by user_id on client side
+          if (result.ok && result.data) {
+            const filteredData = result.data.filter((result: any) => 
+              result.user_id === user.data.user.id
+            );
+            return { ok: true, data: filteredData };
+          }
+          return result;
+        },
+        async () => []
+      );
 
       setTrainingSchedules(schedules || []);
       setCompletions(userCompletions || []);
@@ -135,7 +159,13 @@ export const SecurityTrainingDashboard: React.FC = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase
+      const hasTable = await tableExists('security_training_completions');
+      if (!hasTable) {
+        throw new Error('Training tracking is not available');
+      }
+
+      // Use type assertion to bypass TypeScript validation for optional table
+      const { error } = await (supabase as any)
         .from('security_training_completions')
         .insert([{
           user_id: user.id,
@@ -163,33 +193,39 @@ export const SecurityTrainingDashboard: React.FC = () => {
   };
 
   const getTrainingStatus = (schedule: TrainingSchedule) => {
-    const completion = completions.find(c => c.program_id === schedule.program.id);
+    const completion = completions.find(c => c.program_id === schedule.program_id);
     const daysUntilDue = differenceInDays(parseISO(schedule.next_due_date), new Date());
     
     if (completion?.passed) {
-      return { status: 'completed', color: 'bg-green-500', label: 'Completed' };
+      return { status: 'completed', color: 'green', icon: CheckCircle };
     } else if (daysUntilDue < 0) {
-      return { status: 'overdue', color: 'bg-red-500', label: 'Overdue' };
+      return { status: 'overdue', color: 'red', icon: AlertTriangle };
     } else if (daysUntilDue <= 7) {
-      return { status: 'due-soon', color: 'bg-yellow-500', label: 'Due Soon' };
+      return { status: 'due_soon', color: 'yellow', icon: Clock };
     } else {
-      return { status: 'upcoming', color: 'bg-blue-500', label: 'Upcoming' };
+      return { status: 'pending', color: 'blue', icon: BookOpen };
     }
   };
 
-  const calculateCompletionRate = () => {
-    if (trainingSchedules.length === 0) return 0;
+  const getComplianceScore = () => {
+    if (trainingSchedules.length === 0) return 100;
+    
     const completedCount = trainingSchedules.filter(schedule => {
-      const completion = completions.find(c => c.program_id === schedule.program.id);
+      const completion = completions.find(c => c.program_id === schedule.program_id);
       return completion?.passed;
     }).length;
-    return (completedCount / trainingSchedules.length) * 100;
+    
+    return Math.round((completedCount / trainingSchedules.length) * 100);
   };
 
-  const calculatePhishingSuccessRate = () => {
-    if (phishingResults.length === 0) return 0;
-    const successfulReports = phishingResults.filter(result => result.reported_suspicious && !result.link_clicked).length;
-    return (successfulReports / phishingResults.length) * 100;
+  const getPhishingScore = () => {
+    if (phishingResults.length === 0) return 100;
+    
+    const safeResults = phishingResults.filter(result => 
+      !result.link_clicked && !result.data_entered && result.reported_suspicious
+    ).length;
+    
+    return Math.round((safeResults / phishingResults.length) * 100);
   };
 
   if (loading) {
@@ -203,166 +239,169 @@ export const SecurityTrainingDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <BookOpen className="h-8 w-8 text-blue-600" />
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold">{trainingSchedules.length}</p>
-                <p className="text-sm text-muted-foreground">Training Programs</p>
+                <p className="text-sm font-medium text-muted-foreground">Training Compliance</p>
+                <p className="text-2xl font-bold">{getComplianceScore()}%</p>
               </div>
+              <Shield className="h-8 w-8 text-blue-600" />
             </div>
+            <Progress value={getComplianceScore()} className="mt-2" />
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <Trophy className="h-8 w-8 text-green-600" />
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold">{Math.round(calculateCompletionRate())}%</p>
-                <p className="text-sm text-muted-foreground">Completion Rate</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <Shield className="h-8 w-8 text-purple-600" />
-              <div>
-                <p className="text-2xl font-bold">{Math.round(calculatePhishingSuccessRate())}%</p>
-                <p className="text-sm text-muted-foreground">Phishing Defense</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
-              <Target className="h-8 w-8 text-orange-600" />
-              <div>
+                <p className="text-sm font-medium text-muted-foreground">Completed Trainings</p>
                 <p className="text-2xl font-bold">{completions.filter(c => c.passed).length}</p>
-                <p className="text-sm text-muted-foreground">Certificates Earned</p>
               </div>
+              <Trophy className="h-8 w-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Phishing Score</p>
+                <p className="text-2xl font-bold">{getPhishingScore()}%</p>
+              </div>
+              <Target className="h-8 w-8 text-orange-600" />
+            </div>
+            <Progress value={getPhishingScore()} className="mt-2" />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Active Programs</p>
+                <p className="text-2xl font-bold">{trainingSchedules.length}</p>
+              </div>
+              <Users className="h-8 w-8 text-purple-600" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Tabs defaultValue="training" className="space-y-4">
+      <Tabs defaultValue="schedules" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="training">Training Schedule</TabsTrigger>
-          <TabsTrigger value="history">Training History</TabsTrigger>
-          <TabsTrigger value="phishing">Phishing Results</TabsTrigger>
+          <TabsTrigger value="schedules">Training Schedule</TabsTrigger>
+          <TabsTrigger value="completions">My Completions</TabsTrigger>
+          <TabsTrigger value="phishing">Phishing Tests</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="training" className="space-y-4">
+        <TabsContent value="schedules" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                Upcoming Training
+                Upcoming Training Requirements
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {trainingSchedules.map((schedule) => {
-                  const status = getTrainingStatus(schedule);
-                  const completion = completions.find(c => c.program_id === schedule.program.id);
-                  
-                  return (
-                    <div key={schedule.id} className="border rounded-lg p-4 space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <h3 className="font-medium">{schedule.program.program_name}</h3>
-                          <p className="text-sm text-muted-foreground">{schedule.program.description}</p>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              {schedule.program.duration_minutes} minutes
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Calendar className="h-4 w-4" />
+              {trainingSchedules.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">
+                  No training schedules available. Training system may not be configured yet.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {trainingSchedules.map((schedule) => {
+                    const status = getTrainingStatus(schedule);
+                    const StatusIcon = status.icon;
+                    
+                    return (
+                      <div 
+                        key={schedule.id} 
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
+                        <div className="flex items-center space-x-4">
+                          <StatusIcon className={`h-5 w-5 text-${status.color}-600`} />
+                          <div>
+                            <h4 className="font-medium">{schedule.schedule_name}</h4>
+                            <p className="text-sm text-muted-foreground">
                               Due: {format(parseISO(schedule.next_due_date), 'MMM dd, yyyy')}
-                            </span>
+                            </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge className={`${status.color} text-white`}>
-                            {status.label}
-                          </Badge>
+                        <div className="flex items-center space-x-2">
                           {schedule.mandatory && (
-                            <Badge variant="outline" className="text-red-600 border-red-600">
-                              Required
-                            </Badge>
+                            <Badge variant="destructive">Required</Badge>
                           )}
+                          <Badge variant="outline" className={`text-${status.color}-600`}>
+                            {status.status.replace('_', ' ').toUpperCase()}
+                          </Badge>
+                          <Button
+                            size="sm"
+                            onClick={() => startTraining(schedule.program_id)}
+                            className="ml-2"
+                          >
+                            <Play className="h-4 w-4 mr-1" />
+                            Start
+                          </Button>
                         </div>
                       </div>
-                      
-                      {completion?.passed ? (
-                        <div className="flex items-center gap-2 text-green-600">
-                          <CheckCircle className="h-4 w-4" />
-                          <span className="text-sm">Completed with score: {completion.score}%</span>
-                        </div>
-                      ) : (
-                        <Button
-                          onClick={() => startTraining(schedule.program.id)}
-                          className="w-full sm:w-auto"
-                        >
-                          <Play className="h-4 w-4 mr-2" />
-                          Start Training
-                        </Button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="history" className="space-y-4">
+        <TabsContent value="completions" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Training History</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="h-5 w-5" />
+                Training Completions
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {completions.map((completion) => (
-                  <div key={completion.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <h3 className="font-medium">{completion.program.program_name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Completed: {completion.completed_at ? format(parseISO(completion.completed_at), 'MMM dd, yyyy HH:mm') : 'In progress'}
-                        </p>
+              {completions.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">
+                  No training completions yet. Complete your first training to see progress here.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {completions.map((completion) => (
+                    <div 
+                      key={completion.id} 
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        <div>
+                          <h4 className="font-medium">Program ID: {completion.program_id}</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Completed: {format(parseISO(completion.completed_at), 'MMM dd, yyyy')}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center space-x-2">
                         {completion.passed ? (
-                          <Badge className="bg-green-500 text-white">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Passed ({completion.score}%)
-                          </Badge>
+                          <Badge className="bg-green-100 text-green-800">Passed</Badge>
                         ) : (
-                          <Badge variant="destructive">
-                            Failed ({completion.score}%)
-                          </Badge>
+                          <Badge variant="destructive">Failed</Badge>
+                        )}
+                        {completion.score && (
+                          <Badge variant="outline">Score: {completion.score}%</Badge>
                         )}
                         {completion.certificate_issued && (
-                          <Badge variant="outline" className="text-blue-600 border-blue-600">
-                            <Trophy className="h-3 w-3 mr-1" />
-                            Certified
-                          </Badge>
+                          <Badge className="bg-blue-100 text-blue-800">Certified</Badge>
                         )}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -371,20 +410,41 @@ export const SecurityTrainingDashboard: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
+                <Target className="h-5 w-5" />
                 Phishing Simulation Results
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {phishingResults.map((result) => (
-                  <div key={result.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-2">
-                        <h3 className="font-medium">{result.simulation.campaign_name}</h3>
-                        <div className="flex flex-wrap gap-2">
+              {phishingResults.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">
+                  No phishing simulation results yet. Simulations help test and improve security awareness.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {phishingResults.map((result) => {
+                    const safe = !result.link_clicked && !result.data_entered && result.reported_suspicious;
+                    
+                    return (
+                      <div 
+                        key={result.id} 
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
+                        <div className="flex items-center space-x-4">
+                          {safe ? (
+                            <CheckCircle className="h-5 w-5 text-green-600" />
+                          ) : (
+                            <AlertTriangle className="h-5 w-5 text-red-600" />
+                          )}
+                          <div>
+                            <h4 className="font-medium">Simulation ID: {result.simulation_id}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              Date: {format(parseISO(result.created_at), 'MMM dd, yyyy')}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
                           {result.email_opened && (
-                            <Badge variant="destructive">Email Opened</Badge>
+                            <Badge variant="outline">Email Opened</Badge>
                           )}
                           {result.link_clicked && (
                             <Badge variant="destructive">Link Clicked</Badge>
@@ -393,24 +453,17 @@ export const SecurityTrainingDashboard: React.FC = () => {
                             <Badge variant="destructive">Data Entered</Badge>
                           )}
                           {result.reported_suspicious && (
-                            <Badge className="bg-green-500 text-white">Reported as Suspicious</Badge>
+                            <Badge className="bg-green-100 text-green-800">Reported</Badge>
                           )}
+                          <Badge className={safe ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                            {safe ? 'Safe' : 'Vulnerable'}
+                          </Badge>
                         </div>
-                        {result.time_to_report_minutes && (
-                          <p className="text-sm text-muted-foreground">
-                            Reported in {result.time_to_report_minutes} minutes
-                          </p>
-                        )}
                       </div>
-                      <div className="text-right">
-                        <Badge variant="outline">
-                          {result.simulation.campaign_type.replace('_', ' ')}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

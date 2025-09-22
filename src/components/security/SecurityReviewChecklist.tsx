@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
+import { safeQueryOptionalTable, safeInsertOptionalTable, tableExists, withFallback } from '@/lib/db/safeSupabase';
 import { useToast } from '@/hooks/use-toast';
 import { ClipboardCheck, AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react';
 
@@ -55,43 +56,74 @@ export const SecurityReviewChecklist: React.FC<SecurityReviewChecklistProps> = (
 
   const fetchChecklist = async () => {
     try {
-      const { data, error } = await supabase
-        .from('security_review_checklists')
-        .select('*')
-        .eq('checklist_type', checklistType)
-        .eq('is_active', true)
-        .order('version', { ascending: false })
-        .limit(1)
-        .single();
+      // Use withFallback pattern to handle missing table gracefully
+      const checklistData = await withFallback(
+        'security_review_checklists',
+        async () => {
+          const result = await safeQueryOptionalTable('security_review_checklists', '*', {
+            order: { column: 'version', ascending: false },
+            limit: 1
+          });
+          
+          if (result.ok && result.data && result.data.length > 0) {
+            const data = result.data[0] as any;
+            // Filter by checklist_type and is_active if those fields exist
+            if (data.checklist_type === checklistType && data.is_active !== false) {
+              return { ok: true, data: [data] };
+            }
+          }
+          return { ok: false, data: [] };
+        },
+        async () => {
+          // Fallback to default checklist when table doesn't exist
+          return [{
+            id: 'default',
+            checklist_name: `Default ${checklistType.replace('_', ' ')} Checklist`,
+            checklist_type: checklistType,
+            checklist_items: [
+              { id: '1', item: 'Review code for security vulnerabilities', required: true },
+              { id: '2', item: 'Verify input validation and sanitization', required: true },
+              { id: '3', item: 'Check authentication and authorization logic', required: true },
+              { id: '4', item: 'Review error handling and logging', required: false }
+            ],
+            mandatory_items: ['1', '2', '3'],
+            version: 1
+          }];
+        }
+      );
 
-      if (error) throw error;
+      if (checklistData.length > 0) {
+        const data = checklistData[0];
+        
+        // Parse the JSON checklist items
+        let parsedItems: ChecklistItem[] = [];
+        try {
+          parsedItems = Array.isArray(data.checklist_items) 
+            ? (data.checklist_items as any[]).map((item: any) => ({
+                id: item.id || '',
+                item: item.item || '',
+                required: item.required || false
+              }))
+            : [];
+        } catch (error) {
+          console.error('Error parsing checklist items:', error);
+        }
 
-      // Parse the JSON checklist items
-      let parsedItems: ChecklistItem[] = [];
-      try {
-        parsedItems = Array.isArray(data.checklist_items) 
-          ? (data.checklist_items as any[]).map((item: any) => ({
-              id: item.id || '',
-              item: item.item || '',
-              required: item.required || false
-            }))
-          : [];
-      } catch (error) {
-        console.error('Error parsing checklist items:', error);
+        const processedChecklistData = {
+          ...data,
+          checklist_items: parsedItems
+        };
+        setChecklist(processedChecklistData);
+        
+        // Initialize responses
+        const initialResponses: Record<string, boolean> = {};
+        processedChecklistData.checklist_items.forEach((item: ChecklistItem) => {
+          initialResponses[item.id] = false;
+        });
+        setResponses(initialResponses);
+      } else {
+        throw new Error('No checklist data available');
       }
-
-      const checklistData = {
-        ...data,
-        checklist_items: parsedItems
-      };
-      setChecklist(checklistData);
-      
-      // Initialize responses
-      const initialResponses: Record<string, boolean> = {};
-      checklistData.checklist_items.forEach((item: ChecklistItem) => {
-        initialResponses[item.id] = false;
-      });
-      setResponses(initialResponses);
     } catch (error) {
       console.error('Error fetching checklist:', error);
       toast({
@@ -161,20 +193,24 @@ export const SecurityReviewChecklist: React.FC<SecurityReviewChecklistProps> = (
         notes: notes.trim() || null
       };
 
-      const { data, error } = await supabase
-        .from('security_review_completions')
-        .insert([reviewData])
-        .select()
-        .single();
+      // Use safe insert for review completions
+      const hasCompletionsTable = await tableExists('security_review_completions');
+      if (!hasCompletionsTable) {
+        console.warn('Security review completions table not available');
+        throw new Error('Security review completion feature is not available');
+      }
 
-      if (error) throw error;
+      const result = await safeInsertOptionalTable('security_review_completions', [reviewData]);
+      if (!result.ok) {
+        throw new Error(result.error || 'Failed to submit review');
+      }
 
       toast({
         title: 'Security Review Completed',
         description: `Review for "${reviewSubject}" has been submitted successfully.`,
       });
 
-      onComplete?.(data.id);
+      onComplete?.('review-completed');
     } catch (error) {
       console.error('Error submitting review:', error);
       toast({

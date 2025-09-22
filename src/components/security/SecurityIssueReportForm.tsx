@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
+import { safeInsertOptionalTable, tableExists } from '@/lib/db/safeSupabase';
 import { useToast } from '@/hooks/use-toast';
 import { AlertTriangle, Shield, FileText, Users } from 'lucide-react';
 
@@ -90,11 +91,17 @@ export const SecurityIssueReportForm: React.FC<SecurityIssueReportFormProps> = (
         anonymized: data.anonymized
       };
 
-      const { error } = await supabase
-        .from('security_issue_reports')
-        .insert([reportData]);
+      // Check if security reports table exists and use safe insert
+      const hasReportsTable = await tableExists('security_issue_reports');
+      if (!hasReportsTable) {
+        console.warn('Security issue reports table not available');
+        throw new Error('Security reporting feature is not available');
+      }
 
-      if (error) throw error;
+      const result = await safeInsertOptionalTable('security_issue_reports', [reportData]);
+      if (!result.ok) {
+        throw new Error(result.error || 'Failed to submit report');
+      }
 
       toast({
         title: 'Security Issue Reported',

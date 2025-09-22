@@ -64,9 +64,11 @@ export const AdminAccessGuard: React.FC<AdminAccessGuardProps> = ({
       let serverProfile = null;
       
       if (hasProfiles) {
-        const result = await safeQueryOptionalTable('profiles', 'role,two_factor_enabled');
+        const result = await safeQueryOptionalTable('profiles', 'role,two_factor_enabled', {
+          limit: 1
+        });
         if (result.ok && result.data) {
-          serverProfile = result.data.find((p: any) => p.id === user.id);
+          serverProfile = result.data.find((p: any) => p.user_id === user.id);
         }
       }
 
@@ -267,17 +269,24 @@ export const useAdminAccess = (requiredRoles: string[] = ['admin', 'system_admin
       }
 
       try {
-        // Server-side verification
-        const { data: serverProfile, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
+        // Server-side verification using safe pattern
+        const hasProfiles = await tableExists('profiles');
+        if (!hasProfiles) {
+          // Fallback to user profile if profiles table doesn't exist
+          setHasAccess(userProfile?.role ? requiredRoles.includes(userProfile.role) : false);
+          return;
+        }
 
-        if (error || !serverProfile) {
-          setHasAccess(false);
+        const result = await safeQueryOptionalTable('profiles', 'role', { limit: 1 });
+        if (result.ok && result.data) {
+          const serverProfile = result.data.find((p: any) => p.user_id === user.id);
+          if (serverProfile) {
+            setHasAccess(requiredRoles.includes(serverProfile.role));
+          } else {
+            setHasAccess(false);
+          }
         } else {
-          setHasAccess(requiredRoles.includes(serverProfile.role));
+          setHasAccess(false);
         }
       } catch (error) {
         console.error('Admin access check error:', error);
