@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,9 +9,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Users, Plus, Mail, UserCheck, UserX, Shield } from 'lucide-react';
 import { useFamilyVault } from '@/hooks/useFamilyVault';
-import type { Database } from '@/integrations/supabase/types';
 
-type VaultMember = Database['public']['Tables']['vault_members']['Row'];
+// Mock type for non-existent table
+type VaultMember = {
+  id: string;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  permission_level: string;
+  status: string;
+  created_at: string;
+  invited_at?: string;
+  accepted_at?: string;
+};
 
 interface VaultMembersProps {
   vaultId: string;

@@ -1,10 +1,21 @@
+'use client';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Eye, Download, Upload, UserPlus, Settings, AlertCircle } from 'lucide-react';
-import type { Database } from '@/integrations/supabase/types';
 
-type VaultAccessLog = Database['public']['Tables']['vault_access_logs']['Row'];
+// Mock type for non-existent table
+type VaultAccessLog = {
+  id: string;
+  user_id: string;
+  action_type: string;
+  resource_type?: string;
+  created_at: string;
+  metadata?: Record<string, any>;
+  user_email?: string;
+  ip_address?: string;
+  user_agent?: string;
+};
 
 interface VaultAuditLogProps {
   vaultId: string;

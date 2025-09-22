@@ -1,6 +1,7 @@
+'use client';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Logo } from '@/components/ui/Logo';
+import Logo from '@/components/ui/Logo';
 import { withTrademarks } from '@/utils/trademark';
 import { Loader2 } from 'lucide-react';
 

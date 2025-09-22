@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Copy, Loader2 } from "lucide-react";
+import { safeQueryOptionalTable } from "@/lib/db/safeSupabase";
 
 interface ConsentToken {
   id: string;

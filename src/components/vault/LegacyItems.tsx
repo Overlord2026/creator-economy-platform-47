@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,10 +8,29 @@ import { LeaveMessageWizard } from './LeaveMessageWizard';
 import { SecureFileUpload } from './SecureFileUpload';
 import { VaultCTASection } from './VaultCTASection';
 import { useFamilyVault } from '@/hooks/useFamilyVault';
-import type { Database } from '@/integrations/supabase/types';
 
-type LegacyItem = Database['public']['Tables']['legacy_items']['Row'];
-type VaultMember = Database['public']['Tables']['vault_members']['Row'];
+// Mock types for non-existent tables
+type LegacyItem = {
+  id: string;
+  title: string;
+  description?: string;
+  item_type: string;
+  content_url?: string;
+  created_at: string;
+  created_by: string;
+  status?: string;
+  file_size?: number;
+  duration_seconds?: number;
+  is_encrypted?: boolean;
+};
+
+type VaultMember = {
+  id: string;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  role: string;
+};
 
 interface LegacyItemsProps {
   vaultId: string;

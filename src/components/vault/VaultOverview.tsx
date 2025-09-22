@@ -1,12 +1,36 @@
+'use client';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Heart, Users, FileText, Calendar } from 'lucide-react';
-import type { Database } from '@/integrations/supabase/types';
 
-type FamilyVault = Database['public']['Tables']['family_vaults']['Row'];
-type VaultMember = Database['public']['Tables']['vault_members']['Row'];
-type LegacyItem = Database['public']['Tables']['legacy_items']['Row'];
+// Mock types for non-existent tables
+type FamilyVault = {
+  id: string;
+  name: string;
+  description?: string;
+  created_at: string;
+  user_id: string;
+  family_motto?: string;
+  family_values?: string[];
+};
+
+type VaultMember = {
+  id: string;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  status: string;
+};
+
+type LegacyItem = {
+  id: string;
+  title: string;
+  status: string;
+  created_at: string;
+  description?: string;
+  item_type: string;
+};
 
 interface VaultOverviewProps {
   vault: FamilyVault;
