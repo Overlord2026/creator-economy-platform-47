@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Calculator, DollarSign, Calendar, TrendingDown, Save, BarChart3 } from 'lucide-react';
 import { tableExists, safeInsert, withFallback, safeSelect } from '@/lib/db/safeSupabase';
 import { mockLoanScenarios, type LoanScenario } from '@/lib/mocks/loanScenarios.mock';
-import { FallbackBanner } from '@/components/common/FallbackBanner';
+import FallbackBanner from '@/components/common/FallbackBanner';
 import { supabase } from '@/integrations/supabase/client';
 
 interface ScenarioResults {

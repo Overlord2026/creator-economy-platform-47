@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { mockInvestmentCategories, type InvestmentCategory } from '@/lib/mocks/investmentCategories.mock';
-import { FallbackBanner } from '@/components/common/FallbackBanner';
+import FallbackBanner from '@/components/common/FallbackBanner';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 

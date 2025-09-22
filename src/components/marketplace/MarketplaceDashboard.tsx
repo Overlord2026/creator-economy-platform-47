@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { mockInvestmentCategories, type InvestmentCategory } from '@/lib/mocks/investmentCategories.mock';
-import { FallbackBanner } from '@/components/common/FallbackBanner';
+import FallbackBanner from '@/components/common/FallbackBanner';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Product {

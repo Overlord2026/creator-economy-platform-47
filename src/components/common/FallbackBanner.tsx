@@ -1,21 +1,18 @@
+'use client';
 import React from 'react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react';
 
 interface FallbackBannerProps {
   active: boolean;
-  table?: string;
+  table: string;
+  className?: string;
 }
 
-export function FallbackBanner({ active, table }: FallbackBannerProps) {
+export default function FallbackBanner({ active, table, className = '' }: FallbackBannerProps) {
   if (!active) return null;
-
+  
   return (
-    <Alert className="mb-4 border-yellow-300 bg-yellow-50 text-yellow-800">
-      <AlertTriangle className="h-4 w-4" />
-      <AlertDescription>
-        {table ? `${table} table not found` : 'Database table not available'} - using demo data (writes disabled)
-      </AlertDescription>
-    </Alert>
+    <aside className={`mb-3 rounded-md border border-yellow-400/40 bg-yellow-300/10 px-3 py-2 text-xs text-yellow-200 ${className}`}>
+      This view is in <strong>fallback mode</strong>: optional table <code>{table}</code> is not available. Reads use demo fixtures; writes are disabled.
+    </aside>
   );
 }

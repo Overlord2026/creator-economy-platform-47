@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Camera, FileText, Shield, CheckCircle, Phone, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { tableExists, safeInsert } from '@/lib/db/safeSupabase';
-import { FallbackBanner } from '@/components/common/FallbackBanner';
+import FallbackBanner from '@/components/common/FallbackBanner';
 import { supabase } from '@/integrations/supabase/client';
 
 interface MobileOnboardingFlowProps {
