@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { supabase } from '@/integrations/supabase/client';
+import { safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface RecentlyJoinedProfessional {
@@ -12,38 +12,53 @@ interface RecentlyJoinedProfessional {
   created_at: string;
 }
 
+interface AdvisorProfile {
+  id: string;
+  name: string;
+  expertise_areas: string[];
+  firm_name: string;
+  created_at: string;
+}
+
 const RecentlyJoinedTicker: React.FC = () => {
   const [professionals, setProfessionals] = useState<RecentlyJoinedProfessional[]>([]);
 
   useEffect(() => {
     const fetchRecentProfessionals = async () => {
       try {
-        // Use advisor_profiles table instead of professional_profiles
-        const { data, error } = await supabase
-          .from('advisor_profiles')
-          .select('id, name, expertise_areas, firm_name, created_at')
-          .eq('is_active', true)
-          .order('created_at', { ascending: false })
-          .limit(20);
+        // Try to query advisor_profiles table
+        const result = await safeQueryOptionalTable<AdvisorProfile>(
+          'advisor_profiles',
+          'id, name, expertise_areas, firm_name, created_at',
+          { 
+            order: { column: 'created_at', ascending: false },
+            limit: 20
+          }
+        );
 
-        if (error) throw error;
+        let professionalData: RecentlyJoinedProfessional[] = [];
 
-        // Add some mock data if no real data exists
-        const mockData = data?.length ? data.map(item => ({
-          id: item.id,
-          name: item.name,
-          title: item.expertise_areas?.[0] || 'Financial Professional',
-          company: item.firm_name || 'Independent',
-          created_at: item.created_at
-        })) : [
-          { id: '1', name: 'Sarah Chen', title: 'Wealth Advisor', company: 'Goldman Sachs', created_at: new Date().toISOString() },
-          { id: '2', name: 'Michael Rodriguez', title: 'Estate Attorney', company: 'Baker McKenzie', created_at: new Date().toISOString() },
-          { id: '3', name: 'Jennifer Park', title: 'Tax Strategist', company: 'KPMG', created_at: new Date().toISOString() },
-          { id: '4', name: 'David Thompson', title: 'Private Banker', company: 'JP Morgan', created_at: new Date().toISOString() },
-          { id: '5', name: 'Lisa Wang', title: 'Financial Planner', company: 'Morgan Stanley', created_at: new Date().toISOString() },
-        ];
+        if (result.ok && result.data) {
+          // Transform advisor data to professional format
+          professionalData = result.data.map(item => ({
+            id: item.id,
+            name: item.name,
+            title: item.expertise_areas?.[0] || 'Financial Professional',
+            company: item.firm_name || 'Independent',
+            created_at: item.created_at
+          }));
+        } else {
+          // Use mock data when table doesn't exist
+          professionalData = [
+            { id: '1', name: 'Sarah Chen', title: 'Wealth Advisor', company: 'Goldman Sachs', created_at: new Date().toISOString() },
+            { id: '2', name: 'Michael Rodriguez', title: 'Estate Attorney', company: 'Baker McKenzie', created_at: new Date().toISOString() },
+            { id: '3', name: 'Jennifer Park', title: 'Tax Strategist', company: 'KPMG', created_at: new Date().toISOString() },
+            { id: '4', name: 'David Thompson', title: 'Private Banker', company: 'JP Morgan', created_at: new Date().toISOString() },
+            { id: '5', name: 'Lisa Wang', title: 'Financial Planner', company: 'Morgan Stanley', created_at: new Date().toISOString() },
+          ];
+        }
 
-        setProfessionals(mockData as RecentlyJoinedProfessional[]);
+        setProfessionals(professionalData);
       } catch (error) {
         console.error('Error fetching recent professionals:', error);
       }

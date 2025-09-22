@@ -27,6 +27,25 @@ export async function safeSelect<T = any>(
   }
 }
 
+/** Safe insert for optional tables that may not exist - bypasses TypeScript validation */
+export async function safeInsertOptionalTable(table: string, rows: any | any[]) {
+  try {
+    const exists = await tableExists(table);
+    if (!exists) {
+      if (isDev) console.warn(`[safeInsertOptionalTable] Table ${table} does not exist - skipping insert`);
+      return { ok: false, error: `Table ${table} does not exist` };
+    }
+
+    // Use type assertion to bypass TypeScript table validation
+    const { error } = await (supabase as any).from(table).insert(rows);
+    if (error) throw error;
+    return { ok: true };
+  } catch (e: any) {
+    if (isDev) console.warn(`[safeInsertOptionalTable] ${table} ->`, e?.message ?? e);
+    return { ok: false, error: String(e?.message ?? e) };
+  }
+}
+
 export async function safeInsert(table: string, rows: any | any[]) {
   try {
     const { error } = await supabase.from(table).insert(rows);
@@ -71,4 +90,36 @@ export async function withFallback<T>(
   const res = await query();
   if (!res.ok || !res.data) return await Promise.resolve(fallback());
   return res.data;
+}
+
+/** Safe query for optional tables that may not exist - bypasses TypeScript validation */
+export async function safeQueryOptionalTable<T = any>(
+  table: string, 
+  select: string = '*',
+  options: { order?: { column: string; ascending?: boolean }; limit?: number } = {}
+): Promise<{ ok: boolean; data?: T[]; error?: string }> {
+  try {
+    const exists = await tableExists(table);
+    if (!exists) {
+      return { ok: false, error: `Table ${table} does not exist` };
+    }
+
+    // Use type assertion to bypass TypeScript table validation
+    let query = (supabase as any).from(table).select(select);
+    
+    if (options.order) {
+      query = query.order(options.order.column, { ascending: options.order.ascending ?? false });
+    }
+    if (options.limit) {
+      query = query.limit(options.limit);
+    }
+    
+    const { data, error } = await query;
+    if (error) throw error;
+    
+    return { ok: true, data: data as T[] };
+  } catch (e: any) {
+    if (isDev) console.warn(`[safeQueryOptionalTable] ${table} ->`, e?.message ?? e);
+    return { ok: false, error: String(e?.message ?? e) };
+  }
 }

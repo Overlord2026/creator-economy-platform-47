@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { withFallback, tableExists, safeInsert } from '@/lib/db/safeSupabase';
+import { safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { mockInvestmentCategories, type InvestmentCategory } from '@/lib/mocks/investmentCategories.mock';
 import { FallbackBanner } from '@/components/common/FallbackBanner';
 import { supabase } from '@/integrations/supabase/client';
@@ -105,20 +105,18 @@ export function RIAAdminPanel() {
 
   const fetchCategories = async () => {
     try {
-      const tableAvailable = await tableExists('investment_categories');
-      if (!tableAvailable) {
+      const result = await safeQueryOptionalTable<InvestmentCategory>(
+        'investment_categories', 
+        '*', 
+        { order: { column: 'name', ascending: true } }
+      );
+      
+      if (result.ok && result.data) {
+        setCategories(result.data);
+      } else {
         setIsUsingFallback(true);
         setCategories(mockInvestmentCategories);
-        return;
       }
-
-      const { data, error } = await supabase
-        .from('investment_categories' as any)
-        .select('*')
-        .order('name');
-      
-      if (error) throw error;
-      setCategories(data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
       setCategories(mockInvestmentCategories);
