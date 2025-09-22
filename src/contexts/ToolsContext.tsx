@@ -1,3 +1,4 @@
+'use client';
 import { createContext, useContext, useState, useEffect, type FC, type ReactNode } from 'react';
 import toolRegistry from '@/config/toolRegistry.json';
 import { getWorkspaceTools, isInstalled, installTool as installWorkspaceTool, setPersona } from '@/lib/workspaceTools';

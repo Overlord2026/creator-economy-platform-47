@@ -5,7 +5,7 @@ export interface SecurityTestResult {
   id: string;
   name: string;
   category?: string;
-  status: DiagnosticTestStatus;
+  status: 'pending' | 'running' | 'passed' | 'failed' | 'warning';
   message: string;
   details?: string;
   severity: "low" | "medium" | "high" | "critical";
