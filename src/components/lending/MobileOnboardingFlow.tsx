@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Camera, FileText, Shield, CheckCircle, Phone, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { tableExists, safeInsert } from '@/lib/db/safeSupabase';
+import { FallbackBanner } from '@/components/common/FallbackBanner';
 import { supabase } from '@/integrations/supabase/client';
 
 interface MobileOnboardingFlowProps {
@@ -45,9 +47,19 @@ const MobileOnboardingFlow: React.FC<MobileOnboardingFlowProps> = ({ userType, o
     emailCode: ''
   });
   
+  const [isTableAvailable, setIsTableAvailable] = useState(true);
   const { toast } = useToast();
   const totalSteps = userType === 'client' ? 6 : 7;
   const progress = (currentStep / totalSteps) * 100;
+
+  useEffect(() => {
+    const checkTables = async () => {
+      const profilesAvailable = await tableExists('profiles');
+      const applicationsAvailable = await tableExists('partner_applications');
+      setIsTableAvailable(profilesAvailable && applicationsAvailable);
+    };
+    checkTables();
+  }, []);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -103,32 +115,86 @@ const MobileOnboardingFlow: React.FC<MobileOnboardingFlowProps> = ({ userType, o
 
   const completeOnboarding = async () => {
     try {
-      // Submit all data to Supabase
-      const { data, error } = await supabase
-        .from(userType === 'client' ? 'profiles' : 'partner_applications')
-        .insert({
+      const profilesAvailable = await tableExists('profiles');
+      const applicationsAvailable = await tableExists('partner_applications');
+      
+      if (!profilesAvailable || !applicationsAvailable) {
+        toast({
+          title: "Demo Mode",
+          description: "Onboarding completed with demo data - database tables not available",
+        });
+        onComplete({ 
+          id: 'demo-user',
           first_name: formData.firstName,
           last_name: formData.lastName,
           email: formData.email,
-          phone: formData.phone,
-          ...(userType === 'partner' && {
-            partner_name: formData.businessName,
-            business_type: formData.businessType,
-            license_number: formData.licenseNumber
-          })
-        })
-        .select()
-        .single();
+          phone: formData.phone
+        });
+        return;
+      }
 
-      if (error) throw error;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "Please log in to complete onboarding",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (userType === 'client') {
+        // Save profile
+        const profileResult = await safeInsert('profiles', {
+          user_id: user.id,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          phone: formData.phone
+        });
+
+        if (!profileResult.ok) {
+          toast({
+            title: "Error",
+            description: "Failed to save profile",
+            variant: "destructive"
+          });
+          return;
+        }
+      } else {
+        // Save partner application
+        const applicationResult = await safeInsert('partner_applications', {
+          user_id: user.id,
+          company_name: formData.businessName,
+          contact_person: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          status: 'pending'
+        });
+
+        if (!applicationResult.ok) {
+          toast({
+            title: "Error",
+            description: "Failed to submit application",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
 
       toast({
         title: "Onboarding Complete!",
         description: "Welcome to the lending platform"
       });
 
-      onComplete(data);
+      onComplete({
+        id: user.id,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        phone: formData.phone
+      });
     } catch (error) {
+      console.error('Error completing onboarding:', error);
       toast({
         title: "Error",
         description: "Failed to complete onboarding",
@@ -426,6 +492,7 @@ const MobileOnboardingFlow: React.FC<MobileOnboardingFlowProps> = ({ userType, o
 
   return (
     <div className="max-w-md mx-auto p-4">
+      <FallbackBanner active={!isTableAvailable} table="profiles/partner_applications" />
       <Card>
         <CardHeader>
           <CardTitle className="text-center">

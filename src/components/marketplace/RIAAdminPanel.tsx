@@ -10,6 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { withFallback, tableExists, safeInsert } from '@/lib/db/safeSupabase';
+import { mockInvestmentCategories, type InvestmentCategory } from '@/lib/mocks/investmentCategories.mock';
+import { FallbackBanner } from '@/components/common/FallbackBanner';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 
@@ -51,9 +54,10 @@ export function RIAAdminPanel() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<InvestmentCategory[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -101,15 +105,24 @@ export function RIAAdminPanel() {
 
   const fetchCategories = async () => {
     try {
+      const tableAvailable = await tableExists('investment_categories');
+      if (!tableAvailable) {
+        setIsUsingFallback(true);
+        setCategories(mockInvestmentCategories);
+        return;
+      }
+
       const { data, error } = await supabase
-        .from('investment_categories')
+        .from('investment_categories' as any)
         .select('*')
         .order('name');
-
+      
       if (error) throw error;
       setCategories(data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
+      setCategories(mockInvestmentCategories);
+      setIsUsingFallback(true);
     }
   };
 
@@ -433,6 +446,7 @@ export function RIAAdminPanel() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
+      <FallbackBanner active={isUsingFallback} table="investment_categories" />
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-foreground">RIA Admin Panel</h1>

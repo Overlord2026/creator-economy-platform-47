@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,8 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { Calculator, DollarSign, Calendar, TrendingDown, Save, BarChart3 } from 'lucide-react';
+import { tableExists, safeInsert, withFallback, safeSelect } from '@/lib/db/safeSupabase';
+import { mockLoanScenarios, type LoanScenario } from '@/lib/mocks/loanScenarios.mock';
+import { FallbackBanner } from '@/components/common/FallbackBanner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ScenarioResults {
   base_monthly_payment?: number;
@@ -36,8 +39,39 @@ export function LoanScenarioCalculator() {
 
   const [results, setResults] = useState<ScenarioResults | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [savedScenarios, setSavedScenarios] = useState<any[]>([]);
+  const [savedScenarios, setSavedScenarios] = useState<LoanScenario[]>([]);
+  const [isTableAvailable, setIsTableAvailable] = useState(true);
   const { toast } = useToast();
+
+  // Load saved scenarios using safe fallback pattern
+  useEffect(() => {
+    const loadScenarios = async () => {
+      try {
+        const tableAvailable = await tableExists('loan_scenarios');
+        setIsTableAvailable(tableAvailable);
+        
+        const scenarioData = await withFallback(
+          'loan_scenarios',
+          async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return { ok: true, data: [] };
+            
+            return safeSelect<LoanScenario>('loan_scenarios', '*', {
+              order: { column: 'created_at', ascending: false }
+            });
+          },
+          () => mockLoanScenarios
+        );
+
+        setSavedScenarios(scenarioData);
+      } catch (error) {
+        console.error('Error loading scenarios:', error);
+        setSavedScenarios(mockLoanScenarios);
+      }
+    };
+
+    loadScenarios();
+  }, []);
 
   const calculateScenario = async () => {
     setIsLoading(true);
@@ -94,24 +128,53 @@ export function LoanScenarioCalculator() {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from('loan_scenarios')
-        .insert({
-          scenario_name: scenarioForm.scenario_name,
-          base_loan_amount: scenarioForm.base_loan_amount,
-          base_interest_rate: scenarioForm.base_interest_rate,
-          base_term_months: scenarioForm.base_term_months,
-          scenario_type: scenarioForm.scenario_type,
-          scenario_parameters: {},
-          calculated_results: results as any,
-          user_id: (await supabase.auth.getUser()).data.user?.id
+      const tableAvailable = await tableExists('loan_scenarios');
+      
+      if (!tableAvailable) {
+        toast({
+          title: "Info",
+          description: "Scenario saving is not available in demo mode - showing with mock data",
         });
+        setIsLoading(false);
+        return;
+      }
 
-      if (error) throw error;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "Please log in to save scenarios",
+          variant: "destructive"
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      const scenarioData = {
+        user_id: user.id,
+        scenario_name: scenarioForm.scenario_name,
+        loan_amount: scenarioForm.base_loan_amount,
+        interest_rate: scenarioForm.base_interest_rate,
+        loan_term: scenarioForm.base_term_months,
+        monthly_payment: results.monthly_payment || 0,
+        total_interest: results.total_interest || 0
+      };
+
+      const result = await safeInsert('loan_scenarios', scenarioData);
+      
+      if (!result.ok) {
+        toast({
+          title: "Error",
+          description: "Failed to save scenario",
+          variant: "destructive"
+        });
+        setIsLoading(false);
+        return;
+      }
 
       toast({
-        title: "Scenario Saved",
-        description: "Your loan scenario has been saved for future reference!"
+        title: "Success",
+        description: "Scenario saved successfully"
       });
 
       // Reset form
@@ -120,10 +183,22 @@ export function LoanScenarioCalculator() {
         scenario_name: ''
       }));
       setResults(null);
+      
+      // Reload scenarios
+      const scenarioData2 = await withFallback(
+        'loan_scenarios',
+        async () => safeSelect<LoanScenario>('loan_scenarios', '*', {
+          order: { column: 'created_at', ascending: false }
+        }),
+        () => mockLoanScenarios
+      );
+      
+      setSavedScenarios(scenarioData2);
     } catch (error) {
+      console.error('Error:', error);
       toast({
         title: "Error",
-        description: "Failed to save scenario",
+        description: "An unexpected error occurred",
         variant: "destructive"
       });
     } finally {
@@ -150,6 +225,7 @@ export function LoanScenarioCalculator() {
 
   return (
     <div className="space-y-6">
+      <FallbackBanner active={!isTableAvailable} table="loan_scenarios" />
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

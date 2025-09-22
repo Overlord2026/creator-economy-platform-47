@@ -6,8 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { withFallback } from '@/lib/db/safeSupabase';
+import { mockInvestmentCategories, type InvestmentCategory } from '@/lib/mocks/investmentCategories.mock';
+import { FallbackBanner } from '@/components/common/FallbackBanner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Product {
   id: string;
@@ -35,8 +38,9 @@ export function MarketplaceDashboard({ userRole }: MarketplaceDashboardProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<InvestmentCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedRisk, setSelectedRisk] = useState('all');
@@ -92,15 +96,24 @@ export function MarketplaceDashboard({ userRole }: MarketplaceDashboardProps) {
 
   const fetchCategories = async () => {
     try {
+      const tableAvailable = await tableExists('investment_categories');
+      if (!tableAvailable) {
+        setIsUsingFallback(true);
+        setCategories(mockInvestmentCategories);
+        return;
+      }
+
       const { data, error } = await supabase
-        .from('investment_categories')
+        .from('investment_categories' as any)
         .select('*')
         .order('name');
-
+      
       if (error) throw error;
       setCategories(data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
+      setCategories(mockInvestmentCategories);
+      setIsUsingFallback(true);
     }
   };
 
@@ -135,6 +148,7 @@ export function MarketplaceDashboard({ userRole }: MarketplaceDashboardProps) {
 
   return (
     <div className="container mx-auto p-6 space-y-8">
+      <FallbackBanner active={isUsingFallback} table="investment_categories" />
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
