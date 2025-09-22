@@ -76,23 +76,42 @@ export function AdvisorInviteWorkflow() {
       const inviteToken = crypto.randomUUID();
       const link = `${window.location.origin}/onboard/${inviteToken}`;
       
-      const { data, error } = await supabase
-        .from('client_invitations')
-        .insert({
-          advisor_id: userProfile?.id,
-          tenant_id: userProfile?.tenant_id || userProfile?.id, // Fallback to user ID if no tenant
-          email: formData.email,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          custom_message: formData.message,
-          onboarding_template: formData.onboardingTemplate,
-          fee_structure: formData.feeStructure,
-          premium_modules: formData.premiumModules,
-          invite_link: link,
-          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
-        })
-        .select()
-        .single();
+     const inviteToken = crypto.randomUUID();
+const link = `${window.location.origin}/onboard/${inviteToken}`;
+
+const hasProspectInvites = await tableExists('prospect_invitations');
+if (hasProspectInvites) {
+  await safeInsertOptionalTable('prospect_invitations', {
+    advisor_id: userProfile?.id ?? null,
+    email: formData.email,
+    first_name: formData.firstName,
+    last_name: formData.lastName,
+    custom_message: formData.message ?? null,
+    onboarding_template: formData.onboardingTemplate ?? null,
+    fee_structure: formData.feeStructure ?? null,
+    premium_modules: formData.premiumModules ?? [],
+    invite_link: link,
+    expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'pending',
+  });
+}
+
+// send email via edge function (schema-agnostic)
+const { error } = await supabase.functions.invoke('leads-invite', {
+  body: {
+    email: formData.email,
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    advisorId: userProfile?.id ?? null,
+    message: formData.message ?? '',
+    link,
+  },
+});
+      
+if (error) throw error;
+
+setInviteLink(link);
+toast({ title: 'Invitation Created', description: 'Client invitation generated and email sent.' });
 
       if (error) throw error;
 
