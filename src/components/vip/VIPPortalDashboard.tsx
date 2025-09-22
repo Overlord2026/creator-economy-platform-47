@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,8 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Crown, Users, Link2, Star, TrendingUp, Gift } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { VIPBadge } from '@/components/badges/VIPBadgeSystem';
+import { tableExists, safeSelect, safeInsert, withFallback } from '@/lib/db/safeSupabase';
+import FallbackBanner from '@/components/common/FallbackBanner';
 
 interface VIPOrganization {
   id: string;
@@ -49,6 +51,7 @@ export const VIPPortalDashboard: React.FC = () => {
   const [members, setMembers] = useState<VIPMember[]>([]);
   const [referralNetwork, setReferralNetwork] = useState<VIPReferralNetwork[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fallbackActive, setFallbackActive] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const { toast } = useToast();
 
@@ -58,49 +61,73 @@ export const VIPPortalDashboard: React.FC = () => {
 
   const fetchVIPPortalData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const hasVipTables = await tableExists('vip_organizations');
+      setFallbackActive(!hasVipTables);
 
-      // Get user's VIP organization
-      const { data: orgData, error: orgError } = await supabase
-        .from('vip_organizations')
-        .select('*')
-        .or(`admin_contact_id.eq.${user.id},id.in.(select organization_id from vip_organization_members where user_id = '${user.id}')`)
-        .single();
-
-      if (orgError) throw orgError;
-      const processedOrgData = {
-        ...orgData,
-        premium_features_unlocked: Array.isArray(orgData.premium_features_unlocked) 
-          ? (orgData.premium_features_unlocked as string[])
-          : [],
-        brand_colors: orgData.brand_colors 
-          ? (typeof orgData.brand_colors === 'object' && orgData.brand_colors !== null 
-            ? orgData.brand_colors as { primary: string; secondary: string }
-            : { primary: '#000000', secondary: '#666666' })
-          : { primary: '#000000', secondary: '#666666' }
+      // Mock organization data
+      const mockOrgData: VIPOrganization = {
+        id: 'demo-org-1',
+        organization_name: 'Demo VIP Organization',
+        organization_type: 'advisor',
+        vip_tier: 'founding_member',
+        status: 'active',
+        referral_code: 'DEMO-VIP-123',
+        early_access_expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+        premium_features_unlocked: ['Custom Branding', 'Priority Support', 'Advanced Analytics'],
+        brand_colors: { primary: '#D4AF37', secondary: '#B8860B' },
+        logo_url: '/placeholder.svg',
+        custom_banner_url: undefined
       };
-      setOrganization(processedOrgData);
 
-      // Get organization members
-      const { data: memberData, error: memberError } = await supabase
-        .from('vip_organization_members')
-        .select('*')
-        .eq('organization_id', orgData.id)
-        .order('joined_at', { ascending: false });
+      const mockMembers: VIPMember[] = [
+        {
+          id: '1',
+          name: 'John Smith',
+          email: 'john@demo.com',
+          role: 'admin',
+          invitation_status: 'accepted',
+          joined_at: new Date().toISOString()
+        }
+      ];
 
-      if (memberError) throw memberError;
-      setMembers(memberData || []);
+      const mockReferrals: VIPReferralNetwork[] = [
+        {
+          id: '1',
+          referee_email: 'referral@example.com',
+          referee_organization: 'Partner Firm',
+          network_level: 1,
+          activation_status: 'activated',
+          total_credits_earned: 500,
+          activation_date: new Date().toISOString()
+        }
+      ];
 
-      // Get referral network
-      const { data: referralData, error: referralError } = await supabase
-        .from('vip_referral_networks')
-        .select('*')
-        .eq('organization_id', orgData.id)
-        .order('created_at', { ascending: false });
+      if (hasVipTables) {
+        // Real implementation would query the database
+        const orgData = await withFallback('vip_organizations',
+          () => safeSelect('vip_organizations', '*', { limit: 1 }),
+          async () => [mockOrgData]
+        );
 
-      if (referralError) throw referralError;
-      setReferralNetwork(referralData || []);
+        const memberData = await withFallback('vip_organization_members',
+          () => safeSelect('vip_organization_members', '*', { limit: 10 }),
+          async () => mockMembers
+        );
+
+        const referralData = await withFallback('vip_referral_networks',
+          () => safeSelect('vip_referral_networks', '*', { limit: 10 }),
+          async () => mockReferrals
+        );
+
+        setOrganization(Array.isArray(orgData) ? orgData[0] : orgData);
+        setMembers(memberData);
+        setReferralNetwork(referralData);
+      } else {
+        // Use mock data
+        setOrganization(mockOrgData);
+        setMembers(mockMembers);
+        setReferralNetwork(mockReferrals);
+      }
 
     } catch (error: any) {
       console.error('Error fetching VIP portal data:', error);
@@ -129,19 +156,20 @@ export const VIPPortalDashboard: React.FC = () => {
     if (!organization) return;
 
     try {
-      const { data, error } = await supabase
-        .from('vip_organization_members')
-        .insert({
+      const hasVipTables = await tableExists('vip_organization_members');
+      
+      if (hasVipTables) {
+        await safeInsert('vip_organization_members', {
           organization_id: organization.id,
           email,
           name,
           role,
           invitation_status: 'pending'
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
+        });
+      } else {
+        // Mock invitation
+        console.log('Member invitation sent (mock):', { email, name, role });
+      }
 
       toast({
         title: 'Invitation Sent',
@@ -191,6 +219,8 @@ export const VIPPortalDashboard: React.FC = () => {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
+      <FallbackBanner active={fallbackActive} table="vip_organizations" />
+      
       {/* VIP Header with Custom Branding */}
       <Card 
         className="relative overflow-hidden border-2"

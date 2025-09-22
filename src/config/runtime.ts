@@ -1,2 +1,2 @@
-export const RUNTIME_REPO = __RUNTIME_REPO__;
-export const RUNTIME_BRANCH = __RUNTIME_BRANCH__;
+export const RUNTIME_REPO = typeof __RUNTIME_REPO__ !== 'undefined' ? __RUNTIME_REPO__ : 'unknown';
+export const RUNTIME_BRANCH = typeof __RUNTIME_BRANCH__ !== 'undefined' ? __RUNTIME_BRANCH__ : 'local';
