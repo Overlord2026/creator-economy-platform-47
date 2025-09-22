@@ -7,6 +7,7 @@ import { LockIcon, ShieldIcon, ArrowLeft, CheckCircle } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { auditLog } from "@/services/auditLog/auditLogService";
 import { supabase } from "@/lib/supabase";
+import { tableExists, safeQueryOptionalTable, safeUpdate } from '@/lib/db/safeSupabase';
 import { useAuth } from "@/context/AuthContext";
 
 export function SecurityForm({ onSave }: { onSave: () => void }) {
@@ -136,13 +137,18 @@ export function SecurityForm({ onSave }: { onSave: () => void }) {
       }
 
       // Double-check that MFA was actually enabled in the database
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('two_factor_enabled')
-        .eq('id', user?.id)
-        .single();
+      const hasProfiles = await tableExists('profiles');
+      let mfaEnabled = false;
+      
+      if (hasProfiles) {
+        const result = await safeQueryOptionalTable('profiles', '*');
+        if (result.ok && result.data) {
+          const profile = result.data.find((p: any) => p.id === user?.id);
+          mfaEnabled = profile?.two_factor_enabled || false;
+        }
+      }
 
-      if (profileError || !profile?.two_factor_enabled) {
+      if (!mfaEnabled) {
         throw new Error('Failed to enable MFA. Please try again.');
       }
 

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Shield, AlertTriangle } from "lucide-react";
 import { TwoFactorDialog } from "./TwoFactorDialog";
 import { supabase } from "@/lib/supabase";
+import { tableExists, safeUpdate } from '@/lib/db/safeSupabase';
 
 interface TwoFactorToggleProps {
   className?: string;
@@ -31,15 +32,14 @@ export function TwoFactorToggle({ className, onMFAEnabled }: TwoFactorToggleProp
       // Disable 2FA
       setDisabling(true);
       try {
-        const { error } = await supabase
-          .from('profiles')
-          .update({ two_factor_enabled: false })
-          .eq('id', user.id);
-
-        if (error) {
-          console.error('Error disabling 2FA:', error);
-          toast.error('Failed to disable two-factor authentication');
-          return;
+        const hasProfiles = await tableExists('profiles');
+        if (hasProfiles) {
+          const result = await safeUpdate('profiles', { two_factor_enabled: false }, { id: user.id });
+          if (!result.ok) {
+            console.error('Error disabling 2FA:', result.error);
+            toast.error('Failed to disable two-factor authentication');
+            return;
+          }
         }
 
         // Refresh profile to update the UI

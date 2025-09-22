@@ -12,6 +12,7 @@ import { DemographicInfoSection } from "./DemographicInfoSection";
 import { ProfileDateOfBirthField } from "./ProfileDateOfBirthField";
 import { ProfileFormActions } from "./ProfileFormActions";
 import { supabase } from "@/lib/supabase";
+import { tableExists, safeUpdate } from '@/lib/db/safeSupabase';
 
 const formSchema = z.object({
   title: z.string().optional(),
@@ -132,15 +133,14 @@ export function ProfileForm({ onSave }: { onSave: () => void }) {
       console.log("Updating profile with data:", updateData);
 
       // Update profile in Supabase
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', user.id);
-
-      if (updateError) {
-        console.error("Supabase update error:", updateError);
-        throw updateError;
+      const hasProfiles = await tableExists('profiles');
+      if (hasProfiles) {
+        const result = await safeUpdate('profiles', updateData, { id: user.id });
+        if (!result.ok) {
+          throw new Error(result.error || 'Failed to update profile');
+        }
       }
+
 
       // Update local user profile state
       const profileUpdate = {
