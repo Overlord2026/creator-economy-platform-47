@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/lib/supabase";
+import { tableExists, safeQueryOptionalTable, safeInsertOptionalTable, safeUpdate } from '@/lib/db/safeSupabase';
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
@@ -49,11 +49,18 @@ export function ContactInfoForm({ onSave }: { onSave: () => void }) {
     const loadExistingData = async () => {
       if (!user) return;
       
-      const { data, error } = await supabase
-        .from('user_contact_info')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      const hasContactInfo = await tableExists('user_contact_info');
+      let data: any = null;
+      let error = null;
+      
+      if (hasContactInfo) {
+        const result = await safeQueryOptionalTable('user_contact_info', '*');
+        if (result.ok && result.data) {
+          data = result.data.find((c: any) => c.user_id === user.id);
+        } else {
+          error = result.error;
+        }
+      }
         
       if (data && !error) {
         form.reset({
@@ -81,11 +88,15 @@ export function ContactInfoForm({ onSave }: { onSave: () => void }) {
     
     try {
       // First, check if a record exists
-      const { data: existingData } = await supabase
-        .from('user_contact_info')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      const hasContactInfo = await tableExists('user_contact_info');
+      let existingData: any = null;
+      
+      if (hasContactInfo) {
+        const result = await safeQueryOptionalTable('user_contact_info', '*');
+        if (result.ok && result.data) {
+          existingData = result.data.find((c: any) => c.user_id === user.id);
+        }
+      }
 
       const contactData = {
         user_id: user.id,
@@ -103,17 +114,16 @@ export function ContactInfoForm({ onSave }: { onSave: () => void }) {
 
       if (existingData) {
         // Update existing record
-        const { error: updateError } = await supabase
-          .from('user_contact_info')
-          .update(contactData)
-          .eq('user_id', user.id);
-        error = updateError;
+        const result = await safeUpdate('user_contact_info', contactData, { user_id: user.id });
+        if (!result.ok) {
+          error = new Error(result.error);
+        }
       } else {
         // Insert new record
-        const { error: insertError } = await supabase
-          .from('user_contact_info')
-          .insert([contactData]);
-        error = insertError;
+        const result = await safeInsertOptionalTable('user_contact_info', contactData);
+        if (!result.ok) {
+          error = new Error(result.error);
+        }
       }
 
       if (error) {
