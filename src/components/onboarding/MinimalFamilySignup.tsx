@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { tableExists, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 
 interface MinimalFamilySignupProps {
   onComplete?: () => void;
@@ -42,18 +43,15 @@ export default function MinimalFamilySignup({ onComplete }: MinimalFamilySignupP
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not signed in');
 
-      await supabase
-        .from('profiles')
-        .upsert(
-          { 
-            id: user.id, 
-            email: formData.email || user.email,
-            first_name: formData.first_name,
-            last_name: formData.last_name,
-            phone: formData.phone
-          },
-          { onConflict: 'id' }
-        );
+      if (await tableExists('profiles')) {
+        await safeInsertOptionalTable('profiles', { 
+          id: user.id, 
+          email: formData.email || user.email,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          phone: formData.phone
+        });
+      }
 
       // Store in localStorage as backup
       localStorage.setItem('family_profile', JSON.stringify(formData));

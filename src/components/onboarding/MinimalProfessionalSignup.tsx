@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { tableExists, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 
 interface MinimalProfessionalSignupProps {
   role: 'advisor' | 'accountant' | 'attorney';
@@ -61,19 +62,16 @@ export default function MinimalProfessionalSignup({ role, onComplete }: MinimalP
       if (!user) throw new Error('Not signed in');
 
       // Update profile with basic info
-      await supabase
-        .from('profiles')
-        .upsert(
-          { 
-            id: user.id, 
-            email: formData.email || user.email,
-            first_name: formData.first_name,
-            last_name: formData.last_name,
-            phone: formData.phone,
-            role: role
-          },
-          { onConflict: 'id' }
-        );
+      if (await tableExists('profiles')) {
+        await safeInsertOptionalTable('profiles', { 
+          id: user.id, 
+          email: formData.email || user.email,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          phone: formData.phone,
+          role: role
+        });
+      }
 
       // Store firm data (pros table doesn't have firm fields yet, so use localStorage)
       const firmData = {

@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
+import { safeQueryOptionalTable, safeInsertOptionalTable, tableExists, safeUpdate } from '@/lib/db/safeSupabase';
 import { 
   TrendingUp, 
   Upload, 
@@ -110,10 +110,9 @@ export const ConsultantOnboardingFlow = () => {
     const allCompleted = Object.values(newData).every(Boolean);
 
     if (allCompleted) {
-      await supabase
-        .from('profiles')
-        .update({ bio: consultantProfile.bio })
-        .eq('id', userProfile?.id);
+      if (await tableExists('profiles')) {
+        await safeUpdate('profiles', { bio: consultantProfile.bio }, { id: userProfile?.id });
+      }
 
       confetti({
         particleCount: 100,
