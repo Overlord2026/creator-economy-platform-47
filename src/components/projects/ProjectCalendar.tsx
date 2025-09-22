@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar as CalendarIcon, Clock, Users, Plus } from 'lucide-react';
 import { useProjects } from '@/hooks/useProjects';
 import { supabase } from '@/lib/supabase';
+import { tableExists, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 import { toast } from 'sonner';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
@@ -121,21 +122,21 @@ export const ProjectCalendar: React.FC<ProjectCalendarProps> = ({ projectId }) =
 
     try {
       if (newEvent.type === 'milestone') {
-        const { error } = await supabase
-          .from('project_milestones')
-          .insert({
+        const hasMilestones = await tableExists('project_milestones');
+        if (hasMilestones) {
+          const result = await safeInsertOptionalTable('project_milestones', {
             project_id: newEvent.projectId,
             title: newEvent.title,
             description: newEvent.description,
             due_date: newEvent.start,
             priority: 'medium'
           });
-
-        if (error) throw error;
+          if (!result.ok) throw new Error(result.error || 'Failed to create milestone');
+        }
       } else if (newEvent.type === 'task') {
-        const { error } = await supabase
-          .from('project_tasks')
-          .insert({
+        const hasTasks = await tableExists('project_tasks');
+        if (hasTasks) {
+          const result = await safeInsertOptionalTable('project_tasks', {
             project_id: newEvent.projectId,
             title: newEvent.title,
             description: newEvent.description,
@@ -144,8 +145,8 @@ export const ProjectCalendar: React.FC<ProjectCalendarProps> = ({ projectId }) =
             status: 'todo',
             created_by: 'temp-user-id'
           });
-
-        if (error) throw error;
+          if (!result.ok) throw new Error(result.error || 'Failed to create task');
+        }
       }
 
       toast.success(`${newEvent.type.charAt(0).toUpperCase() + newEvent.type.slice(1)} created successfully`);

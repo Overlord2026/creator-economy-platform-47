@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, File, Download, Eye, Trash2, FolderPlus, Search, Filter } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { tableExists, safeQueryOptionalTable, safeInsertOptionalTable, safeDelete } from '@/lib/db/safeSupabase';
 import { toast } from 'sonner';
 import { useDropzone } from 'react-dropzone';
 
@@ -46,17 +47,22 @@ export const ProjectDocuments: React.FC<ProjectDocumentsProps> = ({ projectId })
 
   const fetchDocuments = async () => {
     try {
-      const { data, error } = await supabase
-        .from('project_documents')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setDocuments((data || []) as any);
+      const hasDocuments = await tableExists('project_documents');
+      if (hasDocuments) {
+        const result = await safeQueryOptionalTable('project_documents', '*');
+        if (result.ok && result.data) {
+          const projectDocs = result.data.filter((doc: any) => doc.project_id === projectId);
+          setDocuments(projectDocs);
+        } else {
+          setDocuments([]);
+        }
+      } else {
+        setDocuments([]);
+      }
     } catch (error) {
       console.error('Error fetching documents:', error);
       toast.error('Failed to load documents');
+      setDocuments([]);
     } finally {
       setLoading(false);
     }
@@ -86,9 +92,9 @@ export const ProjectDocuments: React.FC<ProjectDocumentsProps> = ({ projectId })
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error('Not authenticated');
 
-        const { error: dbError } = await supabase
-          .from('project_documents')
-          .insert({
+        const hasDocuments = await tableExists('project_documents');
+        if (hasDocuments) {
+          const result = await safeInsertOptionalTable('project_documents', {
             project_id: projectId,
             file_name: file.name,
             file_url: publicUrl,
@@ -100,7 +106,10 @@ export const ProjectDocuments: React.FC<ProjectDocumentsProps> = ({ projectId })
             uploaded_by: user.id
           });
 
-        if (dbError) throw dbError;
+          if (!result.ok) {
+            throw new Error(result.error || 'Failed to save document metadata');
+          }
+        }
 
         toast.success(`${file.name} uploaded successfully`);
       } catch (error) {
@@ -122,12 +131,13 @@ export const ProjectDocuments: React.FC<ProjectDocumentsProps> = ({ projectId })
 
   const handleDeleteDocument = async (documentId: string, fileName: string) => {
     try {
-      const { error } = await supabase
-        .from('project_documents')
-        .delete()
-        .eq('id', documentId);
-
-      if (error) throw error;
+      const hasDocuments = await tableExists('project_documents');
+      if (hasDocuments) {
+        const result = await safeDelete('project_documents', { id: documentId });
+        if (!result.ok) {
+          throw new Error(result.error || 'Failed to delete document');
+        }
+      }
 
       toast.success(`${fileName} deleted successfully`);
       fetchDocuments();
