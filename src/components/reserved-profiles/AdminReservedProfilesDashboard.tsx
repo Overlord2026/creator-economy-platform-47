@@ -44,7 +44,6 @@ export const AdminReservedProfilesDashboard: React.FC = () => {
         total_reserved: 0, 
         total_claimed: 0, 
         total_invited: 0,
-        conversion_rate: 0, 
         pending_invitations: 0,
         calculated_at: new Date().toISOString()
       }

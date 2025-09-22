@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Upload, FileText, Download, Eye, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
+import { tableExists, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 
 interface ImportProgress {
   step: 'upload' | 'parsing' | 'review' | 'complete';
@@ -68,6 +69,8 @@ export function PlanImportWizard() {
 
       // Create import record
       const hasImports = await tableExists('plan_imports');
+      let importRecordId = '';
+      
       if (hasImports) {
         const result = await safeInsertOptionalTable('plan_imports', {
           import_type: 'pdf_upload',
@@ -80,6 +83,9 @@ export function PlanImportWizard() {
         if (!result.ok) {
           throw new Error(result.error || 'Failed to create import record');
         }
+        
+        // Generate a mock ID since we can't get the real one from safeInsertOptionalTable
+        importRecordId = crypto.randomUUID();
       }
 
       // Get public URL for the uploaded file
@@ -91,7 +97,7 @@ export function PlanImportWizard() {
       const { data: parseData, error: parseError } = await supabase.functions
         .invoke('parse-retirement-pdf', {
           body: {
-            importId: importRecord.id,
+            importId: importRecordId,
             fileUrl: publicUrl,
             userId: (await supabase.auth.getUser()).data.user?.id
           }

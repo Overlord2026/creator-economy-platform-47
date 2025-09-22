@@ -8,5 +8,14 @@ export const OPTIONAL_TABLES = {
   advisor_migration_status: ['id','total_clients_to_migrate','clients_migrated','migration_started_at','previous_platform'],
   reserved_profiles: ['id','email','name','persona_type','invitation_token','claimed_at','created_at'],
   advisor_referrals: ['id','referrer_id','referee_email','status','commission_rate','created_at'],
+  ria_state_license_requests: ['id','ria_id','state','status','created_at','updated_at','compliance_score','estimated_completion_date','fees_paid'],
+  ria_state_checklists: ['id','state','requirement','doc_type','is_required','description','category','order_sequence','estimated_hours'],
+  ria_state_docs: ['id','license_request_id','doc_type','file_url','file_name','file_size','status','ai_review_score','ai_feedback','compliance_issues','created_at'],
+  ria_state_requirements: ['id','state','requirement_name','fee_amount','typical_processing_days'],
+  analytics_scorecard_events: ['id','event_type','user_id','scorecard_data','created_at'],
+  retirement_confidence_submissions: ['id','persona','user_id','responses','confidence_score','created_at'],
+  profiles: ['id','user_id','display_name','role','created_at','two_factor_enabled'],
+  security_issue_reports: ['id','title','description','issue_type','severity','status','reporter_id','assigned_to','created_at','resolved_at','resolution_notes','anonymized'],
+  security_review_checklists: ['id','name','description','checklist_items','created_at','updated_at'],
 } as const;
 export type OptionalTable = keyof typeof OPTIONAL_TABLES;

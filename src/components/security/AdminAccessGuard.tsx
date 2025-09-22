@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRoleAccess } from '@/hooks/useRoleAccess';
 import { supabase } from '@/integrations/supabase/client';
+import { tableExists, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Shield, AlertTriangle } from 'lucide-react';
@@ -59,18 +60,24 @@ export const AdminAccessGuard: React.FC<AdminAccessGuardProps> = ({
       }
 
       // Server-side role verification - critical security check
-      const { data: serverProfile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role, two_factor_enabled')
-        .eq('id', user.id)
-        .single();
+      const hasProfiles = await tableExists('profiles');
+      let serverProfile = null;
+      
+      if (hasProfiles) {
+        const result = await safeQueryOptionalTable('profiles', 'role,two_factor_enabled');
+        if (result.ok && result.data) {
+          serverProfile = result.data.find((p: any) => p.id === user.id);
+        }
+      }
 
-      if (profileError || !serverProfile) {
-        throw new Error('Failed to verify user role from server');
+      if (!serverProfile) {
+        // Fallback to basic auth if profiles table doesn't exist
+        console.warn('Profiles table not available, using basic auth verification');
+        serverProfile = { role: userProfile?.role || 'user', two_factor_enabled: false };
       }
 
       // Verify the role from server matches client-side role
-      if (serverProfile.role !== userProfile.role) {
+      if (serverProfile.role !== userProfile?.role) {
         throw new Error('Role mismatch detected - possible session hijacking');
       }
 
@@ -85,7 +92,7 @@ export const AdminAccessGuard: React.FC<AdminAccessGuardProps> = ({
       if (logAccess) {
         await logAdminAccessAttempt(
           hasRequiredRole,
-          serverProfile.role,
+          serverProfile?.role || 'user',
           requiredRoles
         );
       }

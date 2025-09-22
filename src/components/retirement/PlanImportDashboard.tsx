@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { tableExists, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { Upload, FileText, Users, CheckCircle, AlertCircle, Clock, Download } from 'lucide-react';
 
 interface ImportRecord {

@@ -49,6 +49,7 @@ export interface ReservedProfileAnalytics {
   total_reserved: number;
   total_claimed: number;
   total_invited: number;
+  pending_invitations: number;
   claim_rate?: number;
   response_rate?: number;
   avg_time_to_claim_hours?: number;

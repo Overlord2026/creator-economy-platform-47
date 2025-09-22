@@ -36,11 +36,12 @@ export const ReservedProfileClaimPage: React.FC = () => {
         setError('Invalid or expired invitation link');
         return;
       }
-      if (profileData.claimed_at) {
+      if (profileData && 'claimed_at' in profileData && profileData.claimed_at) {
         setError('This profile has already been claimed');
         return;
       }
-      setProfile(profileData as ReservedProfile);
+      // Cast to ReservedProfile with proper fallbacks
+      setProfile(profileData as unknown as ReservedProfile);
     } catch (error) {
       setError('Failed to load profile');
     }

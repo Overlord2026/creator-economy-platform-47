@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertTriangle, XCircle, ArrowRight, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { tableExists, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 import { useToast } from '@/hooks/use-toast';
 
 // Scorecard question types and data
@@ -216,11 +217,15 @@ export const RetirementConfidenceScorecard: React.FC = () => {
 
   const trackAnalyticsEvent = async (eventType: string, eventData: any) => {
     try {
-      await supabase.from('analytics_scorecard_events').insert({
-        event_type: eventType,
-        event_data: eventData,
-        session_id: `scorecard_${Date.now()}`
-      });
+      const hasAnalytics = await tableExists('analytics_scorecard_events');
+      if (hasAnalytics) {
+        await safeInsertOptionalTable('analytics_scorecard_events', {
+          event_type: eventType,
+          user_id: (await supabase.auth.getUser()).data.user?.id || '',
+          scorecard_data: eventData,
+          created_at: new Date().toISOString()
+        });
+      }
     } catch (error) {
       console.error('Analytics tracking error:', error);
     }
@@ -276,11 +281,22 @@ export const RetirementConfidenceScorecard: React.FC = () => {
       setScoringBand(band);
 
       // Store submission in database
-      const { error } = await supabase.from('retirement_confidence_submissions').insert({
-        persona,
-        answers_json: answers,
-        score: finalScore
-      });
+      const hasSubmissions = await tableExists('retirement_confidence_submissions');
+      let error = null;
+      
+      if (hasSubmissions) {
+        const result = await safeInsertOptionalTable('retirement_confidence_submissions', {
+          persona,
+          user_id: (await supabase.auth.getUser()).data.user?.id || '',
+          responses: answers,
+          confidence_score: finalScore,
+          created_at: new Date().toISOString()
+        });
+        
+        if (!result.ok) {
+          error = new Error(result.error || 'Failed to save submission');
+        }
+      }
 
       if (error) {
         console.error('Submission error:', error);
