@@ -52,6 +52,8 @@ export const KYCVerificationFlow: React.FC<KYCVerificationFlowProps> = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [kyc, setKyc] = useState<KycRecord[]>([]);
+  const [fallbackActive, setFallbackActive] = useState(false);
   const { toast } = useToast();
 
   const verificationSteps = entityType === 'client' 
@@ -66,37 +68,23 @@ export const KYCVerificationFlow: React.FC<KYCVerificationFlowProps> = ({
         { type: 'address', title: 'Business Address', icon: Building }
       ];
 
- import type { KycRecord } from '@/lib/mocks/kyc.mock';
+  const fetchVerifications = async () => {
+    try {
+      setLoading(true);
+      const { withFallback, safeSelect, tableExists } = await import('@/lib/db/safeSupabase');
+      const { mockKyc } = await import('@/lib/mocks/kyc.mock');
 
-const fetchVerifications = async () => {
-  try {
-    setLoading(true);
-    const { withFallback, safeSelect, tableExists } = await import('@/lib/db/safeSupabase');
+      const rows = await withFallback<KycRecord>(
+        'kyc_verifications',
+        () => safeSelect<KycRecord>('kyc_verifications', '*', {
+          order: { column: 'created_at', ascending: false },
+          limit: 50,
+        }),
+        async () => mockKyc
+      );
 
-    const rows = await withFallback<KycRecord>(
-      'kyc_verifications',
-      () => safeSelect<KycRecord>('kyc_verifications', '*', {
-        order: { column: 'created_at', ascending: false },
-        limit: 50,
-      }),
-      async () => (await import('@/lib/mocks/kyc.mock')).mockKyc
-    );
-
-    setKyc(rows);
-    setFallbackActive(!(await tableExists('kyc_verifications')));
-  } finally {
-    setLoading(false);
-  }
-};
-      
-      setVerifications(data as KYCVerification[]);
-    } catch (error) {
-      console.error('Error fetching KYC verifications:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load verification status",
-        variant: "destructive"
-      });
+      setKyc(rows);
+      setFallbackActive(!(await tableExists('kyc_verifications')));
     } finally {
       setLoading(false);
     }

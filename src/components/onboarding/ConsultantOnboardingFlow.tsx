@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 import { 
   TrendingUp, 
   Upload, 
@@ -74,12 +75,9 @@ export const ConsultantOnboardingFlow = () => {
   const checkOnboardingStatus = async () => {
     if (!userProfile?.id) return;
 
-    // Check if consultant profile exists
-    const { data: consultantData } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userProfile.id)
-      .single();
+    // Check if consultant profile exists - use safe method for optional table
+    const result = await safeQueryOptionalTable('profiles', '*', { limit: 1 });
+    const consultantData = result.ok && result.data && result.data.length > 0 ? result.data[0] : null;
 
     // Show welcome if minimal profile data
     if (!consultantData?.bio || consultantData.role !== 'consultant') {

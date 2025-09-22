@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useUser } from '@/context/UserContext';
 import { Mail, Link, Copy, User, Settings, Building } from 'lucide-react';
+import { tableExists, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 
 interface InviteFormData {
   email: string;
@@ -75,43 +76,35 @@ export function AdvisorInviteWorkflow() {
       // Generate unique invite token
       const inviteToken = crypto.randomUUID();
       const link = `${window.location.origin}/onboard/${inviteToken}`;
-      
-     const inviteToken = crypto.randomUUID();
-const link = `${window.location.origin}/onboard/${inviteToken}`;
 
-const hasProspectInvites = await tableExists('prospect_invitations');
-if (hasProspectInvites) {
-  await safeInsertOptionalTable('prospect_invitations', {
-    advisor_id: userProfile?.id ?? null,
-    email: formData.email,
-    first_name: formData.firstName,
-    last_name: formData.lastName,
-    custom_message: formData.message ?? null,
-    onboarding_template: formData.onboardingTemplate ?? null,
-    fee_structure: formData.feeStructure ?? null,
-    premium_modules: formData.premiumModules ?? [],
-    invite_link: link,
-    expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    status: 'pending',
-  });
-}
+      const hasProspectInvites = await tableExists('prospect_invitations');
+      if (hasProspectInvites) {
+        await safeInsertOptionalTable('prospect_invitations', {
+          advisor_id: userProfile?.id ?? null,
+          email: formData.email,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          custom_message: formData.message ?? null,
+          onboarding_template: formData.onboardingTemplate ?? null,
+          fee_structure: formData.feeStructure ?? null,
+          premium_modules: formData.premiumModules ?? [],
+          invite_link: link,
+          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          status: 'pending',
+        });
+      }
 
-// send email via edge function (schema-agnostic)
-const { error } = await supabase.functions.invoke('leads-invite', {
-  body: {
-    email: formData.email,
-    firstName: formData.firstName,
-    lastName: formData.lastName,
-    advisorId: userProfile?.id ?? null,
-    message: formData.message ?? '',
-    link,
-  },
-});
-      
-if (error) throw error;
-
-setInviteLink(link);
-toast({ title: 'Invitation Created', description: 'Client invitation generated and email sent.' });
+      // Send email via edge function (schema-agnostic)
+      const { error } = await supabase.functions.invoke('leads-invite', {
+        body: {
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          advisorId: userProfile?.id ?? null,
+          message: formData.message ?? '',
+          link,
+        },
+      });
 
       if (error) throw error;
 
@@ -120,7 +113,7 @@ toast({ title: 'Invitation Created', description: 'Client invitation generated a
 
       toast({
         title: "Invitation Created",
-        description: "Client invitation has been generated successfully.",
+        description: "Client invitation has been generated and email sent successfully.",
       });
     } catch (error) {
       console.error('Error creating invitation:', error);
@@ -144,13 +137,14 @@ toast({ title: 'Invitation Created', description: 'Client invitation generated a
 
   const sendInviteEmail = async () => {
     try {
-      const { error } = await supabase.functions.invoke('send-client-invitation', {
+      const { error } = await supabase.functions.invoke('leads-invite', {
         body: {
-          inviteLink,
-          clientName: `${formData.firstName} ${formData.lastName}`,
-          clientEmail: formData.email,
-          advisorName: userProfile?.displayName || userProfile?.name,
-          customMessage: formData.message
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          advisorId: userProfile?.id ?? null,
+          message: formData.message ?? '',
+          link: inviteLink,
         }
       });
 
