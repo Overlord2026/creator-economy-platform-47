@@ -40,14 +40,12 @@ export function RevocationCenter() {
   const loadTokens = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("consent_tokens")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(50);
-      if (error) throw error;
+      const result = await safeQueryOptionalTable('consent_tokens', '*', {
+        order: { column: 'created_at', ascending: false },
+        limit: 50
+      });
 
-      const parsed = (data || []).map((t: any) => ({
+      const parsed = ((result.ok ? result.data : []) || []).map((t: any) => ({
         ...t,
         scopes: safeParse<Record<string, unknown>>(t.scopes, {}),
         conditions: safeParse<Record<string, unknown>>(t.conditions, {}),

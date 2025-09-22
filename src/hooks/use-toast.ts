@@ -1,3 +1,5 @@
+'use client';
+import * as React from "react"
 import { useState, useEffect, type ReactNode } from "react"
 
 import type {
@@ -179,7 +181,7 @@ toast.info = (message: string, props?: Omit<Toast, 'title' | 'description'>) =>
   toast({ title: "Info", description: message, variant: "default", ...props });
 
 function useToast() {
-  const [state, setState] = useState<State>(memoryState)
+  const [state, setState] = React.useState<State>(memoryState)
 
   useEffect(() => {
     listeners.push(setState)
