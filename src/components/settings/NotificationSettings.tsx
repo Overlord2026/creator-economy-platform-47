@@ -20,7 +20,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useEventTracking } from '@/hooks/useEventTracking';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 
 interface NotificationPreferences {
   email: {
@@ -94,18 +94,17 @@ export const NotificationSettings: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (error) throw error;
-
-      if ((data as any)?.notification_preferences) {
+      const result = await withFallback(
+        'profiles',
+        () => safeQueryOptionalTable('profiles', '*'),
+        () => []
+      );
+      
+      const profileData = result.find((p: any) => p.id === user.id);
+      if (profileData && (profileData as any)?.notification_preferences) {
         setPreferences({
           ...preferences,
-          ...(data as any).notification_preferences
+          ...(profileData as any).notification_preferences
         });
       }
     } catch (error) {
@@ -120,19 +119,16 @@ export const NotificationSettings: React.FC = () => {
 
     setIsSaving(true);
     try {
-      const updateData: any = {
+      const updateData = {
+        id: user.id,
+        notification_preferences: preferences,
         updated_at: new Date().toISOString()
       };
       
-      // Only update notification_preferences if the column exists
-      updateData.notification_preferences = preferences;
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', user.id);
-
-      if (error) throw error;
+      const result = await safeInsertOptionalTable('profiles', updateData);
+      if (!result.ok) {
+        throw new Error(result.error || 'Failed to update notification preferences');
+      }
 
       trackFeatureUsed('notification_settings_updated', {
         email_notifications: Object.values(preferences.email).filter(Boolean).length,

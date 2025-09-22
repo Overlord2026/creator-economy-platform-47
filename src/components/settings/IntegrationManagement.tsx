@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FeatureFlagManagement } from '@/components/admin/FeatureFlagManagement';
+// import { FeatureFlagManagement } from '@/components/admin/FeatureFlagManagement';
 import { integrationService } from '@/services/integrations/IntegrationService';
 import { useAuth } from '@/context/AuthContext';
 import { Badge } from '@/components/ui/badge';
@@ -57,7 +57,7 @@ export function IntegrationManagement() {
         </CardContent>
       </Card>
       
-      <FeatureFlagManagement />
+      {/* <FeatureFlagManagement /> */}
     </div>
   );
 }

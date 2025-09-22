@@ -22,7 +22,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useEventTracking } from '@/hooks/useEventTracking';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { safeQueryOptionalTable, safeUpdate, tableExists } from '@/lib/db/safeSupabase';
+import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 
 export const AccountSettings: React.FC = () => {
   const { user } = useAuth();
@@ -56,27 +56,28 @@ export const AccountSettings: React.FC = () => {
     
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (error) throw error;
-
-      setProfile({
-        first_name: data?.first_name || '',
-        last_name: data?.last_name || '',
-        display_name: data?.display_name || '',
-        email: user.email || '',
-        phone: data?.phone || '',
-        bio: (data as any)?.bio || '',
-        location: (data as any)?.location || '',
-        avatar_url: data?.avatar_url || '',
-        timezone: (data as any)?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
-        date_format: (data as any)?.date_format || 'MM/DD/YYYY',
-        language: (data as any)?.language || 'en'
-      });
+      const result = await withFallback(
+        'profiles',
+        () => safeQueryOptionalTable('profiles', '*'),
+        () => []
+      );
+      
+      const profileData = result.find((p: any) => p.id === user.id);
+      if (profileData) {
+        setProfile({
+          first_name: (profileData as any).first_name || '',
+          last_name: (profileData as any).last_name || '',
+          display_name: (profileData as any).display_name || '',
+          email: user.email || '',
+          phone: (profileData as any).phone || '',
+          bio: (profileData as any).bio || '',
+          location: (profileData as any).location || '',
+          avatar_url: (profileData as any).avatar_url || '',
+          timezone: (profileData as any).timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+          date_format: (profileData as any).date_format || 'MM/DD/YYYY',
+          language: (profileData as any).language || 'en'
+        });
+      }
     } catch (error) {
       console.error('Error loading profile:', error);
       toast({
@@ -94,27 +95,24 @@ export const AccountSettings: React.FC = () => {
 
     setIsSaving(true);
     try {
-      const updateData: any = {
+      const updateData = {
+        id: user.id,
         first_name: profile.first_name,
         last_name: profile.last_name,
         display_name: profile.display_name,
         phone: profile.phone,
+        bio: profile.bio,
+        location: profile.location,
+        timezone: profile.timezone,
+        date_format: profile.date_format,
+        language: profile.language,
         updated_at: new Date().toISOString()
       };
 
-      // Only include fields that exist in the profiles table
-      if (profile.bio) updateData.bio = profile.bio;
-      if (profile.location) updateData.location = profile.location;
-      if (profile.timezone) updateData.timezone = profile.timezone;
-      if (profile.date_format) updateData.date_format = profile.date_format;
-      if (profile.language) updateData.language = profile.language;
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', user.id);
-
-      if (error) throw error;
+      const result = await safeInsertOptionalTable('profiles', updateData);
+      if (!result.ok) {
+        throw new Error(result.error || 'Failed to update profile');
+      }
 
       // Track the settings change
       trackFeatureUsed('account_settings_updated', {
@@ -157,13 +155,17 @@ export const AccountSettings: React.FC = () => {
 
       setProfile(prev => ({ ...prev, avatar_url: publicUrl }));
       
-      // Update profile with new avatar URL
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('id', user.id);
-
-      if (updateError) throw updateError;
+      // Update profile with new avatar URL using safe pattern
+      const updateData = {
+        id: user.id,
+        avatar_url: publicUrl,
+        updated_at: new Date().toISOString()
+      };
+      
+      const result = await safeInsertOptionalTable('profiles', updateData);
+      if (!result.ok) {
+        throw new Error(result.error || 'Failed to update avatar');
+      }
 
       trackFeatureUsed('avatar_uploaded');
       

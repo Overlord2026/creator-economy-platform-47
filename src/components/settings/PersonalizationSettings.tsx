@@ -30,6 +30,7 @@ import { useSubscriptionAccess } from '@/hooks/useSubscriptionAccess';
 import { useEventTracking } from '@/hooks/useEventTracking';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 
 interface PersonalizationSettings {
   theme: 'light' | 'dark' | 'system';
@@ -89,18 +90,17 @@ export const PersonalizationSettings: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (error) throw error;
-
-      if ((data as any)?.personalization_settings) {
+      const result = await withFallback(
+        'profiles',
+        () => safeQueryOptionalTable('profiles', '*'),
+        () => []
+      );
+      
+      const profileData = result.find((p: any) => p.id === user.id);
+      if (profileData && (profileData as any)?.personalization_settings) {
         setSettings({
           ...settings,
-          ...(data as any).personalization_settings
+          ...(profileData as any).personalization_settings
         });
       }
     } catch (error) {
@@ -115,17 +115,16 @@ export const PersonalizationSettings: React.FC = () => {
 
     setIsSaving(true);
     try {
-      const updateData: any = {
+      const updateData = {
+        id: user.id,
         personalization_settings: settings,
         updated_at: new Date().toISOString()
       };
 
-      const { error } = await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', user.id);
-
-      if (error) throw error;
+      const result = await safeInsertOptionalTable('profiles', updateData);
+      if (!result.ok) {
+        throw new Error(result.error || 'Failed to update personalization settings');
+      }
 
       trackFeatureUsed('personalization_settings_updated', {
         theme: settings.theme,
@@ -204,7 +203,7 @@ export const PersonalizationSettings: React.FC = () => {
     return (
       <div className={`relative ${!hasAccess ? 'opacity-60' : ''}`}>
         {!hasAccess && (
-          <div className="absolute inset-0 bg-bfo-black/90 backdrop-blur-sm rounded-lg z-10 flex items-center justify-center">
+          <div className="absolute inset-0 bg-background/90 backdrop-blur-sm rounded-lg z-10 flex items-center justify-center">
             <div className="text-center space-y-2">
               <Crown className="h-6 w-6 text-amber-500 mx-auto" />
               <p className="text-sm font-medium">Premium Feature</p>
@@ -417,172 +416,6 @@ export const PersonalizationSettings: React.FC = () => {
               </div>
             </CollapsibleContent>
           </Collapsible>
-        </CardContent>
-      </Card>
-
-      {/* Premium Features */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Crown className="h-5 w-5 text-amber-500" />
-            Branding & White Label
-            {!isPremium && <Badge variant="outline">Premium</Badge>}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Collapsible open={isPremiumOpen} onOpenChange={setIsPremiumOpen}>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" className="w-full justify-between p-0">
-                <span className="font-medium">Custom Branding Options</span>
-                {isPremiumOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-6 mt-4">
-              {/* Custom Logo */}
-              <PremiumFeatureWrapper
-                feature="custom_logo"
-                description="Upload your own logo to customize the interface"
-              >
-                <div className="space-y-3">
-                  <Label>Custom Logo</Label>
-                  <div className="space-y-3">
-                    {settings.custom_logo_url && (
-                      <div className="p-4 border rounded-lg flex items-center gap-3">
-                        <img 
-                          src={settings.custom_logo_url} 
-                          alt="Custom logo" 
-                          className="h-12 w-auto object-contain"
-                        />
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setSettings(prev => ({ ...prev, custom_logo_url: undefined }))}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-3">
-                      <Button variant="outline" asChild>
-                        <label className="cursor-pointer">
-                          <Upload className="h-4 w-4 mr-2" />
-                          Upload Logo
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleLogoUpload}
-                            className="hidden"
-                          />
-                        </label>
-                      </Button>
-                      <p className="text-sm text-muted-foreground">
-                        PNG, JPG up to 2MB. Recommended: 200x60px
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </PremiumFeatureWrapper>
-
-              {/* Custom Domain */}
-              <PremiumFeatureWrapper
-                feature="custom_domain"
-                description="Use your own domain for the application"
-              >
-                <div className="space-y-3">
-                  <Label>Custom Domain</Label>
-                  <div className="flex items-center gap-3">
-                    <Globe className="h-4 w-4 text-muted-foreground" />
-                    <Input
-                      value={settings.custom_domain || ''}
-                      onChange={(e) => setSettings(prev => ({ ...prev, custom_domain: e.target.value }))}
-                      placeholder="yourdomain.com"
-                      disabled={!isPremium}
-                    />
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Contact support to configure DNS settings
-                  </p>
-                </div>
-              </PremiumFeatureWrapper>
-
-              {/* Brand Colors */}
-              <PremiumFeatureWrapper
-                feature="brand_colors"
-                description="Customize all brand colors to match your identity"
-              >
-                <div className="space-y-4">
-                  <Label>Brand Colors</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[
-                      { key: 'primary', label: 'Primary', default: '#3b82f6' },
-                      { key: 'secondary', label: 'Secondary', default: '#64748b' },
-                      { key: 'accent', label: 'Accent', default: '#f59e0b' }
-                    ].map(({ key, label, default: defaultColor }) => (
-                      <div key={key} className="space-y-2">
-                        <Label className="text-sm">{label}</Label>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="color"
-                            value={settings.custom_brand_colors?.[key as keyof typeof settings.custom_brand_colors] || defaultColor}
-                            onChange={(e) => setSettings(prev => ({
-                              ...prev,
-                              custom_brand_colors: {
-                                ...prev.custom_brand_colors,
-                                [key]: e.target.value
-                              }
-                            }))}
-                            className="w-8 h-8 rounded border border-input"
-                            disabled={!isPremium}
-                          />
-                          <Input
-                            value={settings.custom_brand_colors?.[key as keyof typeof settings.custom_brand_colors] || defaultColor}
-                            onChange={(e) => setSettings(prev => ({
-                              ...prev,
-                              custom_brand_colors: {
-                                ...prev.custom_brand_colors,
-                                [key]: e.target.value
-                              }
-                            }))}
-                            className="text-xs font-mono"
-                            disabled={!isPremium}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </PremiumFeatureWrapper>
-
-              {/* White Label Toggle */}
-              <PremiumFeatureWrapper
-                feature="white_label"
-                description="Remove all branding references for a completely custom experience"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <Label>White Label Mode</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Remove all platform branding and references
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.white_label_enabled || false}
-                    onCheckedChange={(value) => setSettings(prev => ({ ...prev, white_label_enabled: value }))}
-                    disabled={!isWhiteLabelEnabled}
-                  />
-                </div>
-              </PremiumFeatureWrapper>
-            </CollapsibleContent>
-          </Collapsible>
-
-          {!isPremium && (
-            <Alert className="mt-4">
-              <Crown className="h-4 w-4" />
-              <AlertDescription>
-                Upgrade to Premium or Elite to access custom branding features and create a fully personalized experience.
-              </AlertDescription>
-            </Alert>
-          )}
         </CardContent>
       </Card>
 
