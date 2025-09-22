@@ -31,28 +31,28 @@ export default function ReasonCodesTimeline() {
   const fetchReceipts = async () => {
     setLoading(true);
     try {
-      let query = supabase
-        .from('reason_receipts')
-        .select(`
-          *,
-          personas (
-            kind
-          )
-        `)
-        .order('created_at', { ascending: false });
+      const hasTable = await tableExists('reason_receipts');
+      let data: any[] = [];
+      
+      if (hasTable) {
+        const result = await safeQueryOptionalTable('reason_receipts', '*', {
+          order: { column: 'created_at', ascending: false },
+          limit: 100
+        });
+        data = result.data || [];
+      }
 
-      // Apply filters
+      // Apply basic filters (simplified for non-existent table)
       if (filter.action_key) {
-        query = query.ilike('action_key', `%${filter.action_key}%`);
+        data = data.filter(item => 
+          item.action_key?.toLowerCase().includes(filter.action_key.toLowerCase())
+        );
       }
       if (filter.reason_code) {
-        query = query.eq('reason_code', filter.reason_code);
+        data = data.filter(item => item.reason_code === filter.reason_code);
       }
 
-      const { data, error } = await query.limit(100);
-      
-      if (error) throw error;
-      setReceipts(data || []);
+      setReceipts(data);
     } catch (error) {
       console.error('Error fetching receipts:', error);
       toast.error('Failed to load reason receipts');

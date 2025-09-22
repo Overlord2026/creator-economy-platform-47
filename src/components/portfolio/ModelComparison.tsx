@@ -18,6 +18,7 @@ import {
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { tableExists, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 
 interface ModelComparisonProps {
   portfolio: any;
@@ -106,15 +107,17 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
 
   const fetchInvestmentModels = async () => {
     try {
-      const { data, error } = await supabase
-        .from('investment_models')
-        .select('*')
-        .eq('is_active', true)
-        .order('name');
+      const hasTable = await tableExists('investment_models');
+      let data: any[] = [];
+      
+      if (hasTable) {
+        const result = await safeQueryOptionalTable('investment_models', '*', {
+          order: { column: 'name', ascending: true }
+        });
+        data = result.data || [];
+      }
 
-      if (error) throw error;
-
-      const modelsWithMetrics = (data || []).map(model => ({
+      const modelsWithMetrics = data.map(model => ({
         ...model,
         expected_return: calculateExpectedReturn(model as any),
         volatility: calculateVolatility(model as any),

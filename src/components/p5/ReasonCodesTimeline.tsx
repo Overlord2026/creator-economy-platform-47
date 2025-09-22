@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ReasonReceipt } from '@/types/p5';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { tableExists, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 
 export function ReasonCodesTimeline() {
   const [items, setItems] = useState<ReasonReceipt[]>([]);
@@ -14,13 +15,18 @@ export function ReasonCodesTimeline() {
 
   const loadReasonReceipts = async () => {
     try {
-      const { data } = await supabase
-        .from('reason_receipts')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
+      const hasTable = await tableExists('reason_receipts');
+      let data: any[] = [];
       
-      setItems((data || []).map(item => ({ ...item, reason_code: item.reason_code as any })));
+      if (hasTable) {
+        const result = await safeQueryOptionalTable('reason_receipts', '*', {
+          order: { column: 'created_at', ascending: false },
+          limit: 100
+        });
+        data = result.data || [];
+      }
+      
+      setItems(data.map(item => ({ ...item, reason_code: item.reason_code || 'UNKNOWN' })));
     } catch (error) {
       console.error('Error loading reason receipts:', error);
     } finally {

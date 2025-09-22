@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { tableExists, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 
 export function RevocationCenter() {
   const [tokens, setTokens] = useState<ConsentToken[]>([]);
@@ -18,16 +19,23 @@ export function RevocationCenter() {
 
   const loadTokens = async () => {
     try {
-      const { data } = await supabase
-        .from('consent_tokens')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50);
+      const hasTable = await tableExists('consent_tokens');
+      let data: any[] = [];
       
-      setTokens((data || []).map(token => ({
+      if (hasTable) {
+        const result = await safeQueryOptionalTable('consent_tokens', '*', {
+          order: { column: 'created_at', ascending: false },
+          limit: 50
+        });
+        data = result.data || [];
+      }
+      
+      setTokens(data.map(token => ({
         ...token,
-        scopes: typeof token.scopes === 'string' ? JSON.parse(token.scopes) : token.scopes,
-        conditions: typeof token.conditions === 'string' ? JSON.parse(token.conditions as string) : token.conditions
+        scopes: typeof token.scopes === 'string' ? JSON.parse(token.scopes) : (token.scopes || {}),
+        conditions: typeof token.conditions === 'string' ? JSON.parse(token.conditions as string) : (token.conditions || {}),
+        subject_user: token.subject_user || 'unknown',
+        status: token.status || 'unknown'
       })) as ConsentToken[]);
     } catch (error) {
       console.error('Error loading tokens:', error);

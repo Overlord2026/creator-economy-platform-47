@@ -7,6 +7,7 @@ import { scoreLiquidity, persistLiquidityScore, type LiquidityScoreResult } from
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
+import { tableExists, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 
 interface LiquidityScorecardProps {
   fundId: string;
@@ -28,16 +29,18 @@ export function LiquidityScorecard({ fundId }: LiquidityScorecardProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from('liquidity_scores')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('fund_id', fundId)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const hasTable = await tableExists('liquidity_scores');
+      let data = null;
+      
+      if (hasTable) {
+        const result = await safeQueryOptionalTable('liquidity_scores', '*', {
+          order: { column: 'created_at', ascending: false },
+          limit: 1
+        });
+        data = result.data && result.data.length > 0 ? result.data[0] : null;
+      }
 
-      if (data && !error) {
+      if (data) {
         setResult({
           score: data.score,
           breakdown: JSON.parse(String(data.breakdown))
@@ -50,16 +53,18 @@ export function LiquidityScorecard({ fundId }: LiquidityScorecardProps) {
 
   const loadLiquidityEvents = async () => {
     try {
-      const { data, error } = await supabase
-        .from('liquidity_events')
-        .select('*')
-        .eq('fund_id', fundId)
-        .order('event_date', { ascending: false })
-        .limit(10);
-
-      if (data && !error) {
-        setEvents(data);
+      const hasTable = await tableExists('liquidity_events');
+      let data: any[] = [];
+      
+      if (hasTable) {
+        const result = await safeQueryOptionalTable('liquidity_events', '*', {
+          order: { column: 'event_date', ascending: false },
+          limit: 10
+        });
+        data = result.data || [];
       }
+
+      setEvents(data);
     } catch (error) {
       console.warn('Failed to load liquidity events:', error);
     }

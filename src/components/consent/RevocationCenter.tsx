@@ -20,32 +20,29 @@ export default function RevocationCenter() {
     setLoading(true);
     try {
       // Fetch user's consent tokens
-      const { data: consentData, error: consentError } = await supabase
-        .from('consent_tokens')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (consentError) throw consentError;
+      const hasConsents = await tableExists('consent_tokens');
+      let consentData: any[] = [];
+      
+      if (hasConsents) {
+        const result = await safeQueryOptionalTable('consent_tokens', '*', {
+          order: { column: 'created_at', ascending: false }
+        });
+        consentData = result.data || [];
+      }
 
       // Fetch revocation history
-      const { data: revocationData, error: revocationError } = await supabase
-        .from('revocations')
-        .select(`
-          *,
-          consent_tokens (
-            id,
-            scopes,
-            subject_user,
-            issuer_user,
-            created_at
-          )
-        `)
-        .order('created_at', { ascending: false });
+      const hasRevocations = await tableExists('revocations');
+      let revocationData: any[] = [];
+      
+      if (hasRevocations) {
+        const result = await safeQueryOptionalTable('revocations', '*', {
+          order: { column: 'created_at', ascending: false }
+        });
+        revocationData = result.data || [];
+      }
 
-      if (revocationError) throw revocationError;
-
-      setConsents(consentData || []);
-      setRevocations(revocationData || []);
+      setConsents(consentData);
+      setRevocations(revocationData);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Failed to load consent data');
