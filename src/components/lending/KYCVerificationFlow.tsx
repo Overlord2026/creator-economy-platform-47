@@ -93,24 +93,34 @@ export const KYCVerificationFlow: React.FC<KYCVerificationFlowProps> = ({
     try {
       setSubmitting(true);
       
-      // Create a new verification record
-      const { data, error } = await supabase
-        .from('kyc_verifications')
-        .insert({
-          entity_type: entityType,
-          entity_id: entityId,
-          verification_type: verificationType,
-          status: 'in_progress',
-          provider: 'manual', // For now, using manual verification
-          verification_data: {
-            started_at: new Date().toISOString(),
-            method: 'document_upload'
-          }
-        })
-        .select()
-        .single();
+      // Check if table exists before attempting write
+      const { tableExists } = await import('@/lib/db/safeSupabase');
+      const hasTable = await tableExists('kyc_verifications');
+      
+      if (!hasTable) {
+        toast({
+          title: "Feature Unavailable",
+          description: "KYC verification is not configured in this environment",
+          variant: "destructive"
+        });
+        return;
+      }
 
-      if (error) throw error;
+      // Create a new verification record using safe operations
+      const { safeInsert } = await import('@/lib/db/safeSupabase');
+      const result = await safeInsert('kyc_verifications', {
+        entity_type: entityType,
+        entity_id: entityId,
+        verification_type: verificationType,
+        status: 'in_progress',
+        provider: 'manual', // For now, using manual verification
+        verification_data: {
+          started_at: new Date().toISOString(),
+          method: 'document_upload'
+        }
+      });
+
+      if (!result.ok) throw new Error(result.error);
 
       toast({
         title: "Verification Started",
@@ -139,21 +149,31 @@ export const KYCVerificationFlow: React.FC<KYCVerificationFlowProps> = ({
 
   const completeVerification = async (verificationId: string, riskScore: number) => {
     try {
-      const { error } = await supabase
-        .from('kyc_verifications')
-        .update({
-          status: 'verified',
-          risk_score: riskScore,
-          verified_at: new Date().toISOString(),
-          verification_data: {
-            completed_at: new Date().toISOString(),
-            verified_by: 'system',
-            method: 'document_verification'
-          }
-        })
-        .eq('id', verificationId);
+      // Check if table exists before attempting update
+      const { tableExists, safeUpdate } = await import('@/lib/db/safeSupabase');
+      const hasTable = await tableExists('kyc_verifications');
+      
+      if (!hasTable) {
+        toast({
+          title: "Feature Unavailable",
+          description: "KYC verification updates are not supported in this environment",
+          variant: "destructive"
+        });
+        return;
+      }
 
-      if (error) throw error;
+      const result = await safeUpdate('kyc_verifications', {
+        status: 'verified',
+        risk_score: riskScore,
+        verified_at: new Date().toISOString(),
+        verification_data: {
+          completed_at: new Date().toISOString(),
+          verified_by: 'system',
+          method: 'document_verification'
+        }
+      }, { id: verificationId });
+
+      if (!result.ok) throw new Error(result.error);
 
       toast({
         title: "Verification Complete",

@@ -36,16 +36,20 @@ export function LendingSMSAlerts() {
 
   const loadRecentAlerts = async () => {
     try {
-      const { data, error } = await supabase
-        .from('lending_sms_alerts')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (error) throw error;
-      setRecentAlerts(data || []);
+      const { withFallback, safeSelect } = await import('@/lib/db/safeSupabase');
+      
+      const data = await withFallback('lending_sms_alerts',
+        () => safeSelect('lending_sms_alerts', '*', { 
+          order: { column: 'created_at', ascending: false },
+          limit: 10 
+        }),
+        async () => []
+      );
+      
+      setRecentAlerts(data as SMSAlert[]);
     } catch (error) {
       console.error('Error loading SMS alerts:', error);
+      setRecentAlerts([]);
     }
   };
 
@@ -78,16 +82,26 @@ export function LendingSMSAlerts() {
   const sendTestAlert = async () => {
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from('lending_sms_alerts')
-        .insert([{
-          phone_number: phoneNumber,
-          alert_type: 'status_update',
-          message: 'Test alert: Your lending application is being reviewed.',
-          user_id: (await supabase.auth.getUser()).data.user?.id
-        }]);
+      const { tableExists, safeInsert } = await import('@/lib/db/safeSupabase');
+      const hasTable = await tableExists('lending_sms_alerts');
+      
+      if (!hasTable) {
+        toast({
+          title: "Feature Unavailable",
+          description: "SMS alerts are not configured in this environment",
+          variant: "destructive"
+        });
+        return;
+      }
 
-      if (error) throw error;
+      const result = await safeInsert('lending_sms_alerts', {
+        phone_number: phoneNumber,
+        alert_type: 'status_update',
+        message: 'Test alert: Your lending application is being reviewed.',
+        user_id: (await supabase.auth.getUser()).data.user?.id
+      });
+
+      if (!result.ok) throw new Error(result.error);
 
       toast({
         title: "Test Alert Sent",

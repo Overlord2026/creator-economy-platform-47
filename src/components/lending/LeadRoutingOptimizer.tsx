@@ -67,16 +67,19 @@ export const LeadRoutingOptimizer: React.FC = () => {
 
   const fetchRules = async () => {
     try {
-      const { data, error } = await supabase
-        .from('lead_routing_rules')
-        .select('*')
-        .eq('is_active', true)
-        .order('weight_score', { ascending: false });
-
-      if (error) throw error;
-      setRules(data || []);
+      const { withFallback, safeSelect } = await import('@/lib/db/safeSupabase');
+      
+      const data = await withFallback('lead_routing_rules',
+        () => safeSelect('lead_routing_rules', '*', { 
+          order: { column: 'weight_score', ascending: false } 
+        }),
+        async () => []
+      );
+      
+      setRules(data as RoutingRule[]);
     } catch (error) {
       console.error('Error fetching routing rules:', error);
+      setRules([]);
     }
   };
 
@@ -121,18 +124,23 @@ export const LeadRoutingOptimizer: React.FC = () => {
 
       setMatches(simulatedMatches);
 
-      // Log the routing decision
-      await supabase.from('lead_routing_decisions').insert({
-        loan_request_id: testLoan.id,
-        recommended_partner_id: simulatedMatches[0]?.partner_id,
-        score: simulatedMatches[0]?.match_score,
-        reasoning: JSON.parse(JSON.stringify({ matches: simulatedMatches })),
-        decision_factors: JSON.parse(JSON.stringify({
-          loan_type: testLoan.loan_type,
-          amount: testLoan.requested_amount,
-          credit_score: testLoan.applicant_credit_score
-        }))
-      });
+      // Log the routing decision if table exists
+      const { tableExists, safeInsert } = await import('@/lib/db/safeSupabase');
+      const hasDecisionTable = await tableExists('lead_routing_decisions');
+      
+      if (hasDecisionTable) {
+        await safeInsert('lead_routing_decisions', {
+          loan_request_id: testLoan.id,
+          recommended_partner_id: simulatedMatches[0]?.partner_id,
+          score: simulatedMatches[0]?.match_score,
+          reasoning: { matches: simulatedMatches },
+          decision_factors: {
+            loan_type: testLoan.loan_type,
+            amount: testLoan.requested_amount,
+            credit_score: testLoan.applicant_credit_score
+          }
+        });
+      }
 
     } catch (error) {
       console.error('Error calculating routing:', error);
@@ -148,21 +156,33 @@ export const LeadRoutingOptimizer: React.FC = () => {
 
   const createRoutingRule = async () => {
     try {
-      const { error } = await supabase.from('lead_routing_rules').insert({
+      const { tableExists, safeInsert } = await import('@/lib/db/safeSupabase');
+      const hasTable = await tableExists('lead_routing_rules');
+      
+      if (!hasTable) {
+        toast({
+          title: "Feature Unavailable",
+          description: "Routing rules are not configured in this environment",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const result = await safeInsert('lead_routing_rules', {
         rule_name: 'High-value home loans',
         tenant_id: 'mock-tenant-id',
-        criteria: JSON.parse(JSON.stringify({
+        criteria: {
           loan_type: 'home-loans',
           min_amount: 200000,
           min_credit_score: 680
-        })),
+        },
         preferred_partners: ['1', '3'], // Premier Lending, Secure Finance
         weight_score: 1.0,
         is_active: true,
         created_by: 'user-id' // This would be the actual user ID
       });
 
-      if (error) throw error;
+      if (!result.ok) throw new Error(result.error);
 
       toast({
         title: "Success",
