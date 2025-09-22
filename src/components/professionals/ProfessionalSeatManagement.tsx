@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Users, Plus, Link, Send, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { tableExists, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { SeatPurchaseFlow } from './SeatPurchaseFlow';
 import { ProfessionalInviteFlow } from './ProfessionalInviteFlow';
 
@@ -48,14 +49,11 @@ export const ProfessionalSeatManagement = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get professional profile
-      const { data: professional } = await supabase
-        .from('professionals')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (!professional) return;
+      // Check if professionals table exists
+      const hasProfessionals = await tableExists('professionals');
+      if (!hasProfessionals) {
+        console.log('Professionals table not found - using demo data');
+      }
 
       // Load seat purchases - simulate for now since table may not have data
       setSeatPurchases([

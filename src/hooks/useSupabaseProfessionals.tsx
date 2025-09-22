@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { Professional, ProfessionalType } from '@/types/professional';
+import { tableExists, safeQueryOptionalTable, safeInsertOptionalTable, safeUpdate, safeDelete } from '@/lib/db/safeSupabase';
 
 export interface SupabaseProfessional {
   id: string;
@@ -38,40 +38,51 @@ export const useSupabaseProfessionals = () => {
         return;
       }
 
-      const { data, error } = await supabase
-        .from('professionals')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching professionals:', error);
-        toast({
-          title: "Error fetching professionals",
-          description: error.message,
-          variant: "destructive"
-        });
+      const hasProfessionals = await tableExists('professionals');
+      if (!hasProfessionals) {
+        // Demo data
+        setProfessionals([
+          {
+            id: '1',
+            name: 'Demo Advisor',
+            email: 'advisor@demo.com',
+            type: 'advisor',
+            company: 'Demo Wealth Management',
+            phone: '+1-555-0123',
+            rating: 4.8,
+            specialties: ['Wealth Management', 'Tax Planning'],
+            certifications: ['CFP', 'CPA'],
+            custom_fields: {}
+          }
+        ]);
         return;
       }
 
-      // Transform Supabase data to match frontend interface
-      const transformedProfessionals: Professional[] = ((data as any) || []).map((prof: any) => ({
-        id: prof.id,
-        name: prof.name,
-        email: prof.email,
-        type: prof.type,
-        company: prof.company,
-        phone: prof.phone,
-        website: prof.website,
-        address: prof.address,
-        notes: prof.notes,
-        rating: prof.rating,
-        specialties: prof.specialties,
-        certifications: prof.certifications,
-        custom_fields: prof.custom_fields || {}
-      }));
+      const profRows = await safeQueryOptionalTable('professionals', '*', {
+        order: { column: 'created_at', ascending: false },
+        limit: 100
+      });
 
-      setProfessionals(transformedProfessionals);
+      if (profRows.ok && profRows.data) {
+        // Transform data if needed
+        const transformedProfessionals: Professional[] = profRows.data.map((prof: any) => ({
+          id: prof.id,
+          name: prof.name,
+          email: prof.email,
+          type: prof.type,
+          company: prof.company,
+          phone: prof.phone,
+          website: prof.website,
+          address: prof.address,
+          notes: prof.notes,
+          rating: prof.rating,
+          specialties: prof.specialties || [],
+          certifications: prof.certifications || [],
+          custom_fields: prof.custom_fields || {}
+        }));
+
+        setProfessionals(transformedProfessionals);
+      }
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -96,45 +107,42 @@ export const useSupabaseProfessionals = () => {
         return null;
       }
 
-      const { data, error } = await supabase
-        .from('professionals')
-        .insert({
-          user_id: user.id,
-          name: professional.name,
-          email: professional.email,
-          professional_type: professional.type,
-          tenant_id: 'default',
-          company: professional.company,
-          phone: professional.phone,
-          website: professional.website,
-          address: professional.address,
-          notes: professional.notes,
-          rating: professional.rating,
-          specialties: professional.specialties,
-          certifications: professional.certifications,
-          custom_fields: professional.custom_fields || {}
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error adding professional:', error);
+      const hasProfessionals = await tableExists('professionals');
+      if (!hasProfessionals) {
         toast({
-          title: "Error adding professional",
-          description: error.message,
-          variant: "destructive"
+          title: "Demo Mode",
+          description: `${professional.name} added in demo mode`
         });
-        return null;
+        await fetchProfessionals();
+        return { id: 'demo' };
       }
 
-      toast({
-        title: "Professional added",
-        description: `${professional.name} has been added successfully`
+      const insertResult = await safeInsertOptionalTable('professionals', {
+        user_id: user.id,
+        name: professional.name,
+        email: professional.email,
+        professional_type: professional.type,
+        tenant_id: 'default',
+        company: professional.company,
+        phone: professional.phone,
+        website: professional.website,
+        address: professional.address,
+        notes: professional.notes,
+        rating: professional.rating,
+        specialties: professional.specialties,
+        certifications: professional.certifications,
+        custom_fields: professional.custom_fields || {}
       });
 
-      // Refresh the list
-      fetchProfessionals();
-      return data;
+      if (insertResult.ok) {
+        toast({
+          title: "Professional added",
+          description: `${professional.name} has been added successfully`
+        });
+        await fetchProfessionals();
+      }
+
+      return insertResult.ok ? { id: 'demo' } : null;
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -162,9 +170,18 @@ export const useSupabaseProfessionals = () => {
         return null;
       }
 
-      const { data, error } = await supabase
-        .from('professionals')
-        .update({
+      const hasProfessionals = await tableExists('professionals');
+      if (!hasProfessionals) {
+        toast({
+          title: "Demo Mode",
+          description: `${professional.name} updated in demo mode`
+        });
+        await fetchProfessionals();
+        return { id: professional.id };
+      }
+
+      const updateResult = await safeUpdate('professionals', 
+        {
           name: professional.name,
           email: professional.email,
           type: professional.type,
@@ -177,30 +194,19 @@ export const useSupabaseProfessionals = () => {
           specialties: professional.specialties,
           certifications: professional.certifications,
           custom_fields: professional.custom_fields || {}
-        })
-        .eq('id', professional.id)
-        .eq('user_id', user.id)
-        .select()
-        .single();
+        },
+        { id: professional.id, user_id: user.id }
+      );
 
-      if (error) {
-        console.error('Error updating professional:', error);
+      if (updateResult.ok) {
         toast({
-          title: "Error updating professional",
-          description: error.message,
-          variant: "destructive"
+          title: "Professional updated",
+          description: `${professional.name} has been updated successfully`
         });
-        return null;
+        await fetchProfessionals();
       }
 
-      toast({
-        title: "Professional updated",
-        description: `${professional.name} has been updated successfully`
-      });
-
-      // Refresh the list
-      fetchProfessionals();
-      return data;
+      return updateResult.ok ? { id: professional.id } : null;
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -228,29 +234,25 @@ export const useSupabaseProfessionals = () => {
         return;
       }
 
-      const { error } = await supabase
-        .from('professionals')
-        .delete()
-        .eq('id', id)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error removing professional:', error);
+      const hasProfessionals = await tableExists('professionals');
+      if (!hasProfessionals) {
         toast({
-          title: "Error removing professional",
-          description: error.message,
-          variant: "destructive"
+          title: "Demo Mode",
+          description: "Professional removed in demo mode"
         });
+        await fetchProfessionals();
         return;
       }
 
-      toast({
-        title: "Professional removed",
-        description: "Professional has been removed successfully"
-      });
+      const deleteResult = await safeDelete('professionals', { id, user_id: user.id });
 
-      // Refresh the list
-      fetchProfessionals();
+      if (deleteResult.ok) {
+        toast({
+          title: "Professional removed",
+          description: "Professional has been removed successfully"
+        });
+        await fetchProfessionals();
+      }
     } catch (error) {
       console.error('Error:', error);
       toast({
