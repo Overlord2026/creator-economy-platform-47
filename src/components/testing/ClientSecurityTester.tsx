@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { withFallback, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { 
   Shield, 
   AlertTriangle, 

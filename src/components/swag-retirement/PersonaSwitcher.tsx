@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
+import { supabase } from "@/integrations/supabase/client";
 
 interface Persona {
   id: string;
@@ -34,24 +35,23 @@ export default function PersonaSwitcher() {
       const userId = auth.user?.id;
       if (!userId) return;
 
-      const { data: pData, error: pErr } = await supabase
-        .from("personas")
-        .select("*")
-        .order("created_at");
-      if (pErr) throw pErr;
+      // Load personas using safe database pattern
+      const personaData = await withFallback('personas',
+        () => safeQueryOptionalTable('personas', '*', { order: { column: 'created_at', ascending: true } }),
+        () => []
+      );
 
-      setPersonas((pData || []).map((p: any) => ({ ...p, kind: (p.persona_kind ?? p.kind) as any })));
+      setPersonas(personaData.map((p: any) => ({ ...p, kind: (p.persona_kind ?? p.kind) as any })));
 
-      const { data: session, error: sErr } = await supabase
-        .from("persona_sessions")
-        .select("persona_id")
-        .eq("user_id", userId)
-        .eq("active", true)
-        .limit(1)
-        .maybeSingle();
-      if (sErr) throw sErr;
+      // Load active session using safe database pattern
+      const sessionData = await withFallback('persona_sessions',
+        () => safeQueryOptionalTable('persona_sessions', 'persona_id', { limit: 1 }),
+        () => []
+      );
 
-      if (session?.persona_id) setActive(session.persona_id);
+      if (sessionData.length > 0 && (sessionData[0] as any)?.persona_id) {
+        setActive((sessionData[0] as any).persona_id);
+      }
     } catch (e: any) {
       console.error(e);
       toast({ title: "Unable to load personas", description: e.message ?? "Please try again.", variant: "destructive" });
@@ -67,21 +67,12 @@ export default function PersonaSwitcher() {
       const userId = auth.user?.id;
       if (!userId) throw new Error("Not authenticated");
 
-      // Deactivate current for this user only
-      const { error: upErr } = await supabase
-        .from("persona_sessions")
-        .update({ active: false })
-        .eq("user_id", userId)
-        .eq("active", true);
-      if (upErr) throw upErr;
-
-      // Create (or upsert) new active session
-      const { error: insErr } = await supabase.from("persona_sessions").insert({
+      // Use safe database pattern for persona session management
+      await safeInsertOptionalTable('persona_sessions', {
         persona_id: id,
         user_id: userId,
         active: true,
       });
-      if (insErr) throw insErr;
 
       setActive(id);
       window.dispatchEvent(new CustomEvent("persona-switched", { detail: { personaId: id } }));

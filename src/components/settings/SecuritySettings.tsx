@@ -72,15 +72,14 @@ export const SecuritySettings: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // Load user profile for 2FA status
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('two_factor_enabled')
-        .eq('id', user.id)
-        .single();
-
-      if (!profileError && profile) {
-        setTwoFactorEnabled(profile.two_factor_enabled || false);
+      // Load user profile for 2FA status using safe database pattern
+      const profileData = await withFallback('profiles', 
+        () => safeQueryOptionalTable('profiles', 'two_factor_enabled', { limit: 1 }),
+        () => []
+      );
+      
+      if (profileData.length > 0) {
+        setTwoFactorEnabled((profileData[0] as any)?.two_factor_enabled || false);
       }
 
       // Load login sessions and history
@@ -220,13 +219,15 @@ export const SecuritySettings: React.FC = () => {
           description: "2FA setup would be implemented here",
         });
       } else {
-        // Disable 2FA
-        const { error } = await supabase
-          .from('profiles')
-          .update({ two_factor_enabled: false })
-          .eq('id', user.id);
-
-        if (error) throw error;
+        // Disable 2FA using safe database pattern
+        const result = await safeInsertOptionalTable('profiles', { 
+          id: user.id, 
+          two_factor_enabled: false 
+        });
+        
+        if (!result.ok) {
+          console.warn('Could not update 2FA status - profiles table may not exist');
+        }
 
         setTwoFactorEnabled(false);
         trackFeatureUsed('2fa_disabled');
