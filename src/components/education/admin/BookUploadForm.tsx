@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { BookOpen, X, AlertTriangle } from 'lucide-react';
+import { insertReceipt } from '@/lib/receipts';
 
 const categories = ['Tax', 'Retirement', 'Estate', 'Investment', 'Insurance', 'Planning', 'Business'];
 const difficulties = ['Beginner', 'Intermediate', 'Advanced'];
@@ -104,31 +105,28 @@ export function BookUploadForm() {
       }
 
       // Skip database operations - education schema not available
-      // Just log to audit_receipts for tracking
-      const { error: auditError } = await supabase
-        .from('audit_receipts')
-        .insert({
-          action: 'education_book_upload_attempted',
-          entity: 'education_content',
-          entity_id: crypto.randomUUID(),
-          sha256: formData.title,
-          actor_id: user.id,
-          canonical: {
-            title: formData.title,
-            description: formData.description,
-            content_type: 'book',
-            category: formData.category,
-            difficulty: formData.difficulty,
-            author: formData.author,
-            tags,
-            badges: selectedBadges,
-            external_url: formData.external_url,
-            is_featured: formData.is_featured,
-            note: 'Book upload attempted but education_content table not available'
-          }
-        });
-
-      if (auditError) throw auditError;
+      // Just log to receipts for tracking
+      const bookId = crypto.randomUUID();
+      await insertReceipt({
+        org_id: user.id, // Using user.id as org_id for education content
+        user_id: user.id,
+        type: 'BOOK_UPLOAD',
+        payload: { 
+          entity: 'book', 
+          entity_id: bookId,
+          title: formData.title,
+          description: formData.description,
+          content_type: 'book',
+          category: formData.category,
+          difficulty: formData.difficulty,
+          author: formData.author,
+          tags,
+          badges: selectedBadges,
+          external_url: formData.external_url,
+          is_featured: formData.is_featured,
+          note: 'Book upload attempted but education_content table not available'
+        }
+      });
       setSchemaUnavailable(true);
       toast.info('Book recommendation logged to audit system (education tables not available)');
       
