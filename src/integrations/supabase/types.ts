@@ -14,358 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
-      audit_receipts: {
+      receipts: {
         Row: {
-          action: string
-          actor_id: string
+          anchor_ref: Json | null
+          anchor_status: string | null
           canonical: Json
           created_at: string
-          entity: string
-          entity_id: string
           id: string
-          sha256: string
+          inputs_hash: string
+          org_id: string | null
+          payload: Json
+          policy_version: string
+          reasons: string[] | null
+          result: Json | null
+          sha256_hash: string
+          tenant_id: string | null
+          type: string
+          updated_at: string
+          user_id: string
         }
         Insert: {
-          action: string
-          actor_id: string
-          canonical: Json
-          created_at?: string
-          entity: string
-          entity_id: string
-          id?: string
-          sha256: string
-        }
-        Update: {
-          action?: string
-          actor_id?: string
+          anchor_ref?: Json | null
+          anchor_status?: string | null
           canonical?: Json
           created_at?: string
-          entity?: string
-          entity_id?: string
           id?: string
-          sha256?: string
+          inputs_hash: string
+          org_id?: string | null
+          payload?: Json
+          policy_version: string
+          reasons?: string[] | null
+          result?: Json | null
+          sha256_hash: string
+          tenant_id?: string | null
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          anchor_ref?: Json | null
+          anchor_status?: string | null
+          canonical?: Json
+          created_at?: string
+          id?: string
+          inputs_hash?: string
+          org_id?: string | null
+          payload?: Json
+          policy_version?: string
+          reasons?: string[] | null
+          result?: Json | null
+          sha256_hash?: string
+          tenant_id?: string | null
+          type?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
-      }
-      compliance_gates: {
-        Row: {
-          creator_id: string
-          disclosure: boolean
-          ftc_labels: boolean
-          training: boolean
-          updated_at: string
-        }
-        Insert: {
-          creator_id: string
-          disclosure?: boolean
-          ftc_labels?: boolean
-          training?: boolean
-          updated_at?: string
-        }
-        Update: {
-          creator_id?: string
-          disclosure?: boolean
-          ftc_labels?: boolean
-          training?: boolean
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      deals: {
-        Row: {
-          created_at: string
-          id: string
-          offer_id: string
-          status: Database["public"]["Enums"]["deal_status"]
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          offer_id: string
-          status?: Database["public"]["Enums"]["deal_status"]
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          offer_id?: string
-          status?: Database["public"]["Enums"]["deal_status"]
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "deals_offer_id_fkey"
-            columns: ["offer_id"]
-            isOneToOne: false
-            referencedRelation: "offers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "deals_offer_id_fkey"
-            columns: ["offer_id"]
-            isOneToOne: false
-            referencedRelation: "v_my_offers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      offers: {
-        Row: {
-          brand: string | null
-          compensation: number | null
-          compensation_currency: string | null
-          created_at: string
-          creator_id: string
-          end_date: string | null
-          id: string
-          notes: string | null
-          start_date: string | null
-          status: Database["public"]["Enums"]["offer_status"]
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          brand?: string | null
-          compensation?: number | null
-          compensation_currency?: string | null
-          created_at?: string
-          creator_id: string
-          end_date?: string | null
-          id?: string
-          notes?: string | null
-          start_date?: string | null
-          status?: Database["public"]["Enums"]["offer_status"]
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          brand?: string | null
-          compensation?: number | null
-          compensation_currency?: string | null
-          created_at?: string
-          creator_id?: string
-          end_date?: string | null
-          id?: string
-          notes?: string | null
-          start_date?: string | null
-          status?: Database["public"]["Enums"]["offer_status"]
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      payouts: {
-        Row: {
-          amount: number
-          created_at: string
-          currency: string
-          deal_id: string
-          funded: boolean
-          id: string
-          released: boolean
-          splits: Json
-          updated_at: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          currency?: string
-          deal_id: string
-          funded?: boolean
-          id?: string
-          released?: boolean
-          splits?: Json
-          updated_at?: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          currency?: string
-          deal_id?: string
-          funded?: boolean
-          id?: string
-          released?: boolean
-          splits?: Json
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "payouts_deal_id_fkey"
-            columns: ["deal_id"]
-            isOneToOne: false
-            referencedRelation: "deals"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payouts_deal_id_fkey"
-            columns: ["deal_id"]
-            isOneToOne: false
-            referencedRelation: "v_my_deals"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      proofs: {
-        Row: {
-          created_at: string
-          hash: string | null
-          id: string
-          items: Json
-          offer_id: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          hash?: string | null
-          id?: string
-          items?: Json
-          offer_id: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          hash?: string | null
-          id?: string
-          items?: Json
-          offer_id?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "proofs_offer_id_fkey"
-            columns: ["offer_id"]
-            isOneToOne: false
-            referencedRelation: "offers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "proofs_offer_id_fkey"
-            columns: ["offer_id"]
-            isOneToOne: false
-            referencedRelation: "v_my_offers"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
     Views: {
-      v_my_deals: {
-        Row: {
-          created_at: string | null
-          id: string | null
-          offer_id: string | null
-          status: Database["public"]["Enums"]["deal_status"] | null
-          updated_at: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "deals_offer_id_fkey"
-            columns: ["offer_id"]
-            isOneToOne: false
-            referencedRelation: "offers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "deals_offer_id_fkey"
-            columns: ["offer_id"]
-            isOneToOne: false
-            referencedRelation: "v_my_offers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      v_my_offers: {
-        Row: {
-          brand: string | null
-          compensation: number | null
-          compensation_currency: string | null
-          created_at: string | null
-          creator_id: string | null
-          end_date: string | null
-          id: string | null
-          notes: string | null
-          start_date: string | null
-          status: Database["public"]["Enums"]["offer_status"] | null
-          title: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          brand?: string | null
-          compensation?: number | null
-          compensation_currency?: string | null
-          created_at?: string | null
-          creator_id?: string | null
-          end_date?: string | null
-          id?: string | null
-          notes?: string | null
-          start_date?: string | null
-          status?: Database["public"]["Enums"]["offer_status"] | null
-          title?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          brand?: string | null
-          compensation?: number | null
-          compensation_currency?: string | null
-          created_at?: string | null
-          creator_id?: string | null
-          end_date?: string | null
-          id?: string | null
-          notes?: string | null
-          start_date?: string | null
-          status?: Database["public"]["Enums"]["offer_status"] | null
-          title?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      v_my_payouts: {
-        Row: {
-          amount: number | null
-          created_at: string | null
-          currency: string | null
-          deal_id: string | null
-          funded: boolean | null
-          id: string | null
-          released: boolean | null
-          splits: Json | null
-          updated_at: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "payouts_deal_id_fkey"
-            columns: ["deal_id"]
-            isOneToOne: false
-            referencedRelation: "deals"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payouts_deal_id_fkey"
-            columns: ["deal_id"]
-            isOneToOne: false
-            referencedRelation: "v_my_deals"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
-      user_owns_deal: {
-        Args: { p_deal_id: string }
-        Returns: boolean
-      }
-      user_owns_offer: {
-        Args: { p_offer_id: string }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
-      deal_status: "open" | "funded" | "released" | "closed"
-      offer_status: "brief" | "locked" | "signed" | "cancelled"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -492,9 +206,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      deal_status: ["open", "funded", "released", "closed"],
-      offer_status: ["brief", "locked", "signed", "cancelled"],
-    },
+    Enums: {},
   },
 } as const
