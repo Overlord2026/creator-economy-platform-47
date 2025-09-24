@@ -42,28 +42,48 @@ export function ContentLog() {
     try {
       setLoading(true);
       
-      // Use audit_receipts since education tables don't exist
-      const { data: auditLogs, error: auditError } = await supabase
-        .from('audit_receipts')
-        .select('*')
-        .eq('entity', 'education_content')
+      // Get current user's org_id
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setLogs([]);
+        return;
+      }
+
+      // Get org_id from org_members
+      const { data: membership } = await supabase
+        .from('org_members')
+        .select('org_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!membership?.org_id) {
+        setLogs([]);
+        return;
+      }
+
+      // Use receipts table with new schema
+      const { data: receipts, error: receiptsError } = await supabase
+        .from('receipts')
+        .select('id, type, payload, user_id, created_at')
+        .eq('org_id', membership.org_id)
+        .contains('payload', { entity: 'education_content' })
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (auditError) throw auditError;
+      if (receiptsError) throw receiptsError;
 
-      const fallbackLogs: ContentLogEntry[] = (auditLogs || []).map(log => ({
+      const fallbackLogs: ContentLogEntry[] = (receipts || []).map(log => ({
         id: log.id,
-        content_id: log.entity_id,
+        content_id: (log.payload as any)?.entity_id || 'unknown',
         action_type: 'upload' as const,
         performed_at: log.created_at,
-        performed_by: log.actor_id,
-        details: log.canonical,
+        performed_by: log.user_id,
+        details: log.payload,
         education_content: {
-          title: typeof log.canonical === 'object' && log.canonical && 'title' in log.canonical 
-            ? String(log.canonical.title) : 'Unknown',
-          content_type: typeof log.canonical === 'object' && log.canonical && 'content_type' in log.canonical 
-            ? String(log.canonical.content_type) : 'unknown'
+          title: typeof log.payload === 'object' && log.payload && 'title' in log.payload 
+            ? String((log.payload as any).title) : 'Unknown',
+          content_type: typeof log.payload === 'object' && log.payload && 'entity' in log.payload 
+            ? String((log.payload as any).entity) : 'unknown'
         }
       }));
 
@@ -341,7 +361,7 @@ export function ContentLog() {
                       {log.details && typeof log.details === 'object' && (
                         <div className="mt-2 p-2 bg-muted rounded-sm">
                           <p className="text-xs text-muted-foreground">
-                            {log.details.note || JSON.stringify(log.details, null, 2)}
+                            {(log.details as any).note || JSON.stringify(log.details, null, 2)}
                           </p>
                         </div>
                       )}

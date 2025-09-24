@@ -2,7 +2,7 @@
 // src/components/education/admin/CourseUploadForm.tsx
 import * as React from 'react';
 import { insertReceipt } from '@/lib/receipts';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 type Props = { orgId?: string };
 
