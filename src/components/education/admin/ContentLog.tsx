@@ -49,12 +49,13 @@ export function ContentLog() {
         return;
       }
 
-      // Get org_id from org_members
-      const { data: membership } = await supabase
+      // Get org_id from org_members - use limit(1) instead of maybeSingle
+      const { data: membershipData } = await (supabase as any)
         .from('org_members')
         .select('org_id')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .limit(1);
+      const membership = membershipData?.[0];
 
       if (!membership?.org_id) {
         setLogs([]);

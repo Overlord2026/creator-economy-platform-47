@@ -24,13 +24,13 @@ export default function AICTODashboard({ orgId: orgIdProp }: Props) {
           const metaOrgId = (ures?.user?.app_metadata as any)?.org_id as string | undefined;
           if (metaOrgId) orgId = metaOrgId;
           if (!orgId) {
-            const { data: m } = await supabase
+            const { data: memberData } = await (supabase as any)
               .from('org_members')
               .select('org_id')
               .eq('user_id', userId)
               .order('inserted_at', { ascending: false })
-              .limit(1)
-              .maybeSingle();
+              .limit(1);
+            const m = memberData?.[0];
             orgId = m?.org_id as string | undefined;
           }
         }

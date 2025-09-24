@@ -21,13 +21,13 @@ export default function CourseUploadForm({ orgId: orgIdProp }: Props) {
     let orgId = orgIdProp ?? metaOrgId;
     if (orgId) return orgId;
 
-    const { data: m, error: mErr } = await supabase
+    const { data: memberData, error: mErr } = await (supabase as any)
       .from('org_members')
       .select('org_id')
       .eq('user_id', userId)
       .order('inserted_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .limit(1);
+    const m = memberData?.[0];
 
     if (mErr) throw mErr;
     if (!m?.org_id) throw new Error('Missing org_id — user must belong to an organization.');
