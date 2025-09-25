@@ -162,7 +162,8 @@ export async function computeOverlap(input: OverlapInput): Promise<OverlapResult
     sector?: string;
   }>();
 
-  for (const [fundId, holdingsMap] of Object.entries(fundHoldings)) {
+  const fundEntries = Object.entries(fundHoldings) as Array<[string, Map<string, any>]>;
+  for (const [fundId, holdingsMap] of fundEntries) {
     for (const holding of Array.from(holdingsMap.values())) {
       const current = holdingContribution.get(holding.holding_id) || {
         name: holding.holding_name || 'Unknown',
@@ -191,7 +192,7 @@ export async function computeOverlap(input: OverlapInput): Promise<OverlapResult
   // Calculate sector heatmap
   const sectorHeatmap: Record<string, number> = {};
   
-  for (const [fundId, holdingsMap] of Object.entries(fundHoldings)) {
+  for (const [fundId, holdingsMap] of fundEntries) {
     for (const holding of Array.from(holdingsMap.values())) {
       if (holding.sector) {
         sectorHeatmap[holding.sector] = (sectorHeatmap[holding.sector] || 0) + (holding.weight || 0);

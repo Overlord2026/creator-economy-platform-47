@@ -1,5 +1,3 @@
-
-cat > vite.config.ts <<'TS'
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -16,6 +14,7 @@ export default defineConfig({
     dedupe: ['react', 'react-dom'],
     include: ['react', 'react-dom'],
   },
+  server: {
+    port: 8080,
+  },
 });
-TS
-

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { safeSelect, safeInsertOptionalTable, safeUpdate, withFallback, tableExists } from '@/lib/db/safeSupabase';
 
 export interface AdvisorProduction {
   id: string;
@@ -24,25 +25,18 @@ export const useAdvisorProduction = () => {
   const fetchProduction = async (advisorId?: string) => {
     setLoading(true);
     try {
-      let query = supabase
-        .from('advisor_production')
-        .select('*')
-        .order('period_start', { ascending: false });
-
-      if (advisorId) {
-        query = query.eq('advisor_id', advisorId);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-      setProduction(data || []);
+      const results = await withFallback<AdvisorProduction>(
+        'advisor_production',
+        () => safeSelect<AdvisorProduction>('advisor_production', '*', advisorId ? { advisor_id: advisorId } : {}),
+        []
+      );
+      setProduction(results);
     } catch (error) {
       console.error('Error fetching advisor production:', error);
       toast({
-        title: "Error",
-        description: "Failed to load production data",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to load production data',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -58,66 +52,47 @@ export const useAdvisorProduction = () => {
         .from('profiles')
         .select('tenant_id')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (!profile?.tenant_id) {
-        throw new Error('No tenant found');
+      const exists = await tableExists('advisor_production');
+      if (!exists) {
+        toast.info('Advisor production table not available in this environment.');
+        return null as any;
       }
 
-      const { data, error } = await supabase
-        .from('advisor_production')
-        .insert({
-          ...productionData,
-          tenant_id: profile.tenant_id,
-        })
-        .select()
-        .single();
+      const insertRow = { ...productionData, tenant_id: profile?.tenant_id } as any;
+      const result = await safeInsertOptionalTable<AdvisorProduction>('advisor_production', insertRow);
+      if (!result.ok) throw result.error;
 
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Production data added successfully",
-      });
+      toast.success('Production data added successfully');
 
       await fetchProduction(productionData.advisor_id);
-      return data;
+      return result.data?.[0];
     } catch (error) {
       console.error('Error adding production:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add production data",
-        variant: "destructive",
-      });
+      toast.error('Failed to add production data');
       throw error;
     }
   };
 
   const updateProduction = async (id: string, updates: Partial<AdvisorProduction>) => {
     try {
-      const { data, error } = await supabase
-        .from('advisor_production')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+      const exists = await tableExists('advisor_production');
+      if (!exists) {
+        toast.info('Advisor production table not available in this environment.');
+        return null as any;
+      }
 
-      if (error) throw error;
+      const result = await safeUpdate<AdvisorProduction>('advisor_production', updates, { id });
+      if (!result.ok) throw result.error;
 
-      toast({
-        title: "Success",
-        description: "Production data updated successfully",
-      });
+      toast.success('Production data updated successfully');
 
       await fetchProduction();
-      return data;
+      return result.data?.[0] as any;
     } catch (error) {
       console.error('Error updating production:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update production data",
-        variant: "destructive",
-      });
+      toast.error('Failed to update production data');
       throw error;
     }
   };
