@@ -14,6 +14,135 @@ export type Database = {
   }
   public: {
     Tables: {
+      bank_accounts: {
+        Row: {
+          account_name: string
+          account_number: string | null
+          account_type: string
+          balance: number | null
+          bank_name: string
+          created_at: string
+          currency: string
+          id: string
+          is_primary: boolean | null
+          routing_number: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_name: string
+          account_number?: string | null
+          account_type: string
+          balance?: number | null
+          bank_name: string
+          created_at?: string
+          currency?: string
+          id?: string
+          is_primary?: boolean | null
+          routing_number?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_name?: string
+          account_number?: string | null
+          account_type?: string
+          balance?: number | null
+          bank_name?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          is_primary?: boolean | null
+          routing_number?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      bill_transactions: {
+        Row: {
+          amount: number
+          bill_id: string
+          created_at: string
+          id: string
+          payment_date: string
+          payment_method: string | null
+          reference_number: string | null
+          transaction_status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          bill_id: string
+          created_at?: string
+          id?: string
+          payment_date: string
+          payment_method?: string | null
+          reference_number?: string | null
+          transaction_status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          bill_id?: string
+          created_at?: string
+          id?: string
+          payment_date?: string
+          payment_method?: string | null
+          reference_number?: string | null
+          transaction_status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      bills: {
+        Row: {
+          account_number: string | null
+          amount: number
+          biller_name: string
+          category: string
+          created_at: string
+          due_date: string
+          id: string
+          notes: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_number?: string | null
+          amount: number
+          biller_name: string
+          category: string
+          created_at?: string
+          due_date: string
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_number?: string | null
+          amount?: number
+          biller_name?: string
+          category?: string
+          created_at?: string
+          due_date?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       cap_spend: {
         Row: {
           amount_committed: number
@@ -884,6 +1013,123 @@ export type Database = {
           metadata?: Json | null
           org_id?: string
           transaction_id?: string
+        }
+        Relationships: []
+      }
+      transfers: {
+        Row: {
+          ach_credit_status: string | null
+          ach_debit_status: string | null
+          ach_return_code: string | null
+          amount: number
+          created_at: string
+          description: string | null
+          estimated_completion_date: string | null
+          failure_reason: string | null
+          from_account_id: string
+          funds_held_at: string | null
+          id: string
+          processed_at: string | null
+          reference_number: string
+          status: string
+          stripe_credit_payment_intent_id: string | null
+          stripe_debit_payment_intent_id: string | null
+          to_account_id: string
+          transfer_fee: number
+          transfer_type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ach_credit_status?: string | null
+          ach_debit_status?: string | null
+          ach_return_code?: string | null
+          amount: number
+          created_at?: string
+          description?: string | null
+          estimated_completion_date?: string | null
+          failure_reason?: string | null
+          from_account_id: string
+          funds_held_at?: string | null
+          id?: string
+          processed_at?: string | null
+          reference_number: string
+          status?: string
+          stripe_credit_payment_intent_id?: string | null
+          stripe_debit_payment_intent_id?: string | null
+          to_account_id: string
+          transfer_fee?: number
+          transfer_type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ach_credit_status?: string | null
+          ach_debit_status?: string | null
+          ach_return_code?: string | null
+          amount?: number
+          created_at?: string
+          description?: string | null
+          estimated_completion_date?: string | null
+          failure_reason?: string | null
+          from_account_id?: string
+          funds_held_at?: string | null
+          id?: string
+          processed_at?: string | null
+          reference_number?: string
+          status?: string
+          stripe_credit_payment_intent_id?: string | null
+          stripe_debit_payment_intent_id?: string | null
+          to_account_id?: string
+          transfer_fee?: number
+          transfer_type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vendors: {
+        Row: {
+          address: string | null
+          category: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          payment_terms: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          category?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          payment_terms?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          category?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          payment_terms?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

@@ -1,7 +1,9 @@
+'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { EdgeFunctionClient } from '@/services/edgeFunction/EdgeFunctionClient';
 import { supabase } from '@/integrations/supabase/client';
+import { safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 
 export interface Transfer {
   id: string;
@@ -75,11 +77,9 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
 
       console.log('TransfersContext: Fetching transfers for user:', user.id);
       
-      const { data, error } = await supabase
-        .from('transfers')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+      const result = await safeQueryOptionalTable<Transfer>('transfers', '*', { user_id: user.id });
+      const data = result.ok ? (result.data || []) : [];
+      const error = result.ok ? null : result.error as any;
 
       console.log('TransfersContext: Fetch result:', { 
         userId: user.id,
