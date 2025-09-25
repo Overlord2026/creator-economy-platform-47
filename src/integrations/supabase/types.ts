@@ -233,6 +233,105 @@ export type Database = {
           },
         ]
       }
+      fund_holdings_lookup: {
+        Row: {
+          as_of_date: string
+          created_at: string
+          fund_id: string
+          holding_id: string
+          id: string
+          org_id: string
+          value: number | null
+          weight: number | null
+        }
+        Insert: {
+          as_of_date?: string
+          created_at?: string
+          fund_id: string
+          holding_id: string
+          id?: string
+          org_id: string
+          value?: number | null
+          weight?: number | null
+        }
+        Update: {
+          as_of_date?: string
+          created_at?: string
+          fund_id?: string
+          holding_id?: string
+          id?: string
+          org_id?: string
+          value?: number | null
+          weight?: number | null
+        }
+        Relationships: []
+      }
+      liquidity_events: {
+        Row: {
+          amount: number | null
+          created_at: string
+          event_date: string
+          event_type: string
+          fund_id: string | null
+          id: string
+          org_id: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          event_date?: string
+          event_type: string
+          fund_id?: string | null
+          id?: string
+          org_id: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          event_date?: string
+          event_type?: string
+          fund_id?: string | null
+          id?: string
+          org_id?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      liquidity_scores: {
+        Row: {
+          calculated_at: string
+          created_at: string
+          fund_id: string | null
+          id: string
+          org_id: string
+          score: number | null
+          score_type: string | null
+        }
+        Insert: {
+          calculated_at?: string
+          created_at?: string
+          fund_id?: string | null
+          id?: string
+          org_id: string
+          score?: number | null
+          score_type?: string | null
+        }
+        Update: {
+          calculated_at?: string
+          created_at?: string
+          fund_id?: string | null
+          id?: string
+          org_id?: string
+          score?: number | null
+          score_type?: string | null
+        }
+        Relationships: []
+      }
       org_members: {
         Row: {
           inserted_at: string

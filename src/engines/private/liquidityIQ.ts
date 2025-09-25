@@ -40,24 +40,24 @@ const DEFAULT_WEIGHTS = {
 export async function scoreLiquidity(input: LiquidityScoreInput): Promise<LiquidityScoreResult> {
   const { fundId, horizonDays = 90, events, managerSignals = [] } = input;
 
-  // Fetch recent liquidity events if not provided
+  // Fetch recent liquidity events if not provided using safe helpers
   let liquidityEvents = events;
   if (!liquidityEvents) {
-    const { data, error } = await supabase
-      .from('liquidity_events')
-      .select('*')
-      .eq('fund_id', fundId)
-      .gte('event_date', new Date(Date.now() - horizonDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
-      .order('event_date', { ascending: false });
-
-    if (error) {
-      console.warn(`Failed to fetch liquidity events: ${error.message}`);
+    const { safeSelect } = await import('@/lib/db/safeSupabase');
+    const cutoffDate = new Date(Date.now() - horizonDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    
+    const result = await safeSelect('liquidity_events', '*', { fund_id: fundId });
+    
+    if (!result.ok) {
+      console.warn(`Failed to fetch liquidity events: ${result.error?.message}`);
       liquidityEvents = [];
     } else {
-      liquidityEvents = (data || []).map(event => ({
-        ...event,
-        event_type: event.event_type as 'pause' | 'resume' | 'gate' | 'partial-fill' | 'queue'
-      }));
+      liquidityEvents = (result.data || [])
+        .filter(event => event.event_date >= cutoffDate)
+        .map(event => ({
+          event_date: event.event_date,
+          event_type: event.event_type as 'pause' | 'resume' | 'gate' | 'partial-fill' | 'queue'
+        }));
     }
   }
 
@@ -206,22 +206,19 @@ export async function persistLiquidityScore(
   result: LiquidityScoreResult,
   asOfDate?: string
 ): Promise<string> {
-  const { data, error } = await supabase
-    .from('liquidity_scores')
-    .upsert({
-      user_id: userId,
-      fund_id: fundId,
-      as_of_date: asOfDate || new Date().toISOString().split('T')[0],
-      inputs: JSON.stringify(inputs),
-      score: result.score,
-      breakdown: JSON.stringify(result.breakdown)
-    })
-    .select('id')
-    .single();
+  const { safeInsert } = await import('@/lib/db/safeSupabase');
+  
+  const insertResult = await safeInsert('liquidity_scores', {
+    org_id: userId, // Use org_id to match schema
+    fund_id: fundId,
+    score: result.score,
+    score_type: 'composite',
+    calculated_at: asOfDate || new Date().toISOString().split('T')[0]
+  });
 
-  if (error) {
-    throw new Error(`Failed to persist liquidity score: ${error.message}`);
+  if (!insertResult.ok) {
+    throw new Error(`Failed to persist liquidity score: ${insertResult.error?.message}`);
   }
 
-  return data.id;
+  return insertResult.data?.[0]?.id || '';
 }

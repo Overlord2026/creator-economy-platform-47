@@ -111,39 +111,32 @@ export async function buildDDPackage(input: DDPackageInput): Promise<DDPackageRe
     const packageContent = JSON.stringify({ snapshot, complianceMetadata, regulatoryStandard });
     const packageHash = await Canonical.sha256Hex(packageContent);
 
-    // Get next version number
-    const { data: existingPackages } = await supabase
-      .from('dd_packages')
-      .select('id, fund_name, strategy_type, created_at, fund_details')
-      .eq('user_id', userId)
-      .eq('fund_id', fundId)
-      .order('created_at', { ascending: false })
-      .limit(1);
+    // Get next version number using safe helpers
+    const { safeSelect, safeInsert } = await import('@/lib/db/safeSupabase');
+    const existingResult = await safeSelect('dd_packages', 'id, created_at', { org_id: userId });
+    const nextVersion = (existingResult.ok ? existingResult.data?.length || 0 : 0) + 1;
 
-    const nextVersion = (existingPackages?.length || 0) + 1;
+    // Persist to database with enhanced metadata using correct schema
+    const insertResult = await safeInsert('dd_packages', {
+      org_id: userId, // Use org_id instead of user_id
+      name: `DD Package v${nextVersion}`,
+      description: `${regulatoryStandard} compliance package for fund`,
+      package_data: {
+        snapshot,
+        artifactUrls: { pdfUrl, zipUrl },
+        regulatoryStandard,
+        packageHash,
+        version: nextVersion,
+        complianceMetadata
+      }
+    });
 
-    // Persist to database with enhanced metadata
-    const { data, error } = await supabase
-      .from('dd_packages')
-      .insert({
-        user_id: userId,
-        fund_id: fundId,
-        snapshot: JSON.stringify(snapshot),
-        artifact_urls: JSON.stringify({ pdfUrl, zipUrl }),
-        regulatory_standard: regulatoryStandard,
-        package_hash: packageHash,
-        // version_number: nextVersion, // Column doesn't exist
-        compliance_metadata: JSON.stringify(complianceMetadata)
-      })
-      .select('id')
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to persist DD package: ${error.message}`);
+    if (!insertResult.ok) {
+      throw new Error(`Failed to persist DD package: ${insertResult.error?.message}`);
     }
 
     return {
-      packageId: data.id,
+      packageId: insertResult.data?.[0]?.id,
       pdfUrl,
       zipUrl,
       packageHash,
@@ -379,21 +372,12 @@ async function generateDDZip(
 
 // Get existing DD packages for a user/fund
 export async function getDDPackages(userId: string, fundId?: string) {
-  let query = supabase
-    .from('dd_packages')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
-
-  if (fundId) {
-    query = query.eq('fund_id', fundId);
+  const { safeSelect } = await import('@/lib/db/safeSupabase');
+  const result = await safeSelect('dd_packages', '*', { org_id: userId });
+  
+  if (!result.ok) {
+    throw new Error(`Failed to fetch DD packages: ${result.error?.message}`);
   }
 
-  const { data, error } = await query;
-
-  if (error) {
-    throw new Error(`Failed to fetch DD packages: ${error.message}`);
-  }
-
-  return data || [];
+  return result.data || [];
 }
