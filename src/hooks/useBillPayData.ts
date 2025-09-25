@@ -196,7 +196,7 @@ export const useBillPayData = () => {
   }, [bills]);
 
   const addBill = async (newBill: Omit<Bill, 'id' | 'user_id'>) => {
-    if (!checkFeatureAccess('bill_management')) {
+    if (!checkFeatureAccess('premium')) {
       toast({
         title: "Upgrade to Premium",
         description: "Bill Management is a premium feature. Upgrade to access.",
@@ -216,7 +216,12 @@ export const useBillPayData = () => {
 
       if (error) throw error;
 
-      setBills(prevBills => [...prevBills, data]);
+      setBills(prevBills => [...prevBills, {
+        ...data,
+        frequency: data.frequency || 'monthly',
+        is_auto_pay: data.is_auto_pay || false,
+        reminder_days: data.reminder_days || 3
+      }]);
       toast({
         title: "Bill Added",
         description: "Your bill has been successfully added.",
@@ -242,7 +247,13 @@ export const useBillPayData = () => {
       if (error) throw error;
 
       setBills(prevBills =>
-        prevBills.map(bill => (bill.id === billId ? { ...bill, ...data } : bill))
+        prevBills.map(bill => (bill.id === billId ? { 
+          ...bill, 
+          ...data,
+          frequency: data.frequency || bill.frequency,
+          is_auto_pay: data.is_auto_pay !== undefined ? data.is_auto_pay : bill.is_auto_pay,
+          reminder_days: data.reminder_days !== undefined ? data.reminder_days : bill.reminder_days
+        } : bill))
       );
       toast({
         title: "Bill Updated",
@@ -293,7 +304,10 @@ export const useBillPayData = () => {
 
       if (error) throw error;
 
-      setTransactions(prevTransactions => [...prevTransactions, data]);
+      setTransactions(prevTransactions => [...prevTransactions, {
+        ...data,
+        transaction_status: data.transaction_status || 'completed'
+      }]);
       setBills(prevBills =>
         prevBills.map(bill => (bill.id === billId ? { ...bill, status: 'paid' } : bill))
       );
@@ -335,5 +349,25 @@ export const useBillPayData = () => {
     }
   };
 
-  return { bills, transactions, vendors, isLoading, error, analytics, upcomingBills, overdueBills, addBill, updateBill, deleteBill, payBill, scheduleAutoPay };
+  // Add missing properties with safe defaults
+  const hasAutomatedPayments = bills.some(bill => bill.is_auto_pay);
+  const hasAdvancedAnalytics = true; // Always available for now
+
+  return { 
+    bills, 
+    transactions, 
+    vendors, 
+    isLoading, 
+    error, 
+    analytics, 
+    upcomingBills, 
+    overdueBills, 
+    hasAutomatedPayments,
+    hasAdvancedAnalytics,
+    addBill, 
+    updateBill, 
+    deleteBill, 
+    payBill, 
+    scheduleAutoPay 
+  };
 }

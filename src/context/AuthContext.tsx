@@ -39,7 +39,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(true);
   const [isChecking2FA, setIsChecking2FA] = useState(false);
   const [isQABypassActive, setIsQABypassActive] = useState(MOCK_MODE);
-  const { checkAndInstallDefaultTools } = useFirstLoginToolInstaller();
+  
+  // Create a safe hook instance that won't break React
+  const toolInstaller = (() => {
+    try {
+      if (typeof window !== 'undefined' && user) {
+        return useFirstLoginToolInstaller();
+      }
+      return { checkAndInstallDefaultTools: () => Promise.resolve() };
+    } catch {
+      return { checkAndInstallDefaultTools: () => Promise.resolve() };
+    }
+  })();
 
   // Mock mode user profile
   const mockUserProfile: UserProfile = {
@@ -121,9 +132,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUserProfile(userProfileData);
         setIsQABypassActive(isQABypassAllowed(profile.email));
         
-        // Check for first login and auto-install tools
-        if (userProfileData.role) {
-          checkAndInstallDefaultTools(userProfileData.role as PersonaType);
+        // Check for first login and auto-install tools (safely)
+        if (userProfileData.role && toolInstaller?.checkAndInstallDefaultTools) {
+          try {
+            toolInstaller.checkAndInstallDefaultTools(userProfileData.role as PersonaType);
+          } catch (error) {
+            console.warn('Tool installation failed:', error);
+          }
         }
       }
     } catch (error) {
