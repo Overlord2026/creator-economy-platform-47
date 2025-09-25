@@ -266,6 +266,78 @@ export type Database = {
         }
         Relationships: []
       }
+      insurance_submissions: {
+        Row: {
+          created_at: string
+          id: string
+          intake: Json
+          org_id: string
+          risk_hash: string
+          status: string | null
+          submitted_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          intake?: Json
+          org_id: string
+          risk_hash: string
+          status?: string | null
+          submitted_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          intake?: Json
+          org_id?: string
+          risk_hash?: string
+          status?: string | null
+          submitted_at?: string
+        }
+        Relationships: []
+      }
+      investment_offerings: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          description: string | null
+          featured: boolean | null
+          firm: string | null
+          id: string
+          minimum_investment: string | null
+          name: string
+          org_id: string
+          performance: string | null
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          featured?: boolean | null
+          firm?: string | null
+          id?: string
+          minimum_investment?: string | null
+          name: string
+          org_id: string
+          performance?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          featured?: boolean | null
+          firm?: string | null
+          id?: string
+          minimum_investment?: string | null
+          name?: string
+          org_id?: string
+          performance?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       liquidity_events: {
         Row: {
           amount: number | null
@@ -329,6 +401,42 @@ export type Database = {
           org_id?: string
           score?: number | null
           score_type?: string | null
+        }
+        Relationships: []
+      }
+      meeting_notes: {
+        Row: {
+          attendees: Json | null
+          content: string | null
+          created_at: string
+          id: string
+          meeting_date: string | null
+          org_id: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          attendees?: Json | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          meeting_date?: string | null
+          org_id: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          attendees?: Json | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          meeting_date?: string | null
+          org_id?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -531,6 +639,42 @@ export type Database = {
           },
         ]
       }
+      prospect_invitations: {
+        Row: {
+          activated_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          org_id: string
+          status: string
+          token: string
+        }
+        Insert: {
+          activated_at?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          org_id: string
+          status?: string
+          token: string
+        }
+        Update: {
+          activated_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          org_id?: string
+          status?: string
+          token?: string
+        }
+        Relationships: []
+      }
       qa_findings: {
         Row: {
           created_at: string
@@ -712,6 +856,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      transaction_classifications: {
+        Row: {
+          classification: string
+          confidence: number | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          org_id: string
+          transaction_id: string
+        }
+        Insert: {
+          classification: string
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          org_id: string
+          transaction_id: string
+        }
+        Update: {
+          classification?: string
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          org_id?: string
+          transaction_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {

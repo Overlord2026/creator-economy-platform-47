@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { safeSelect } from '@/lib/db/safeSupabase';
 
 export interface OverlapResult {
   pairwise: Record<string, number>;
@@ -54,11 +54,20 @@ export async function computeOverlap(input: OverlapInput): Promise<OverlapResult
   let sectorWeightConfig: SectorWeightConfig | null = null;
   
   // Fetch holdings for all funds using safe helpers
-  const { safeSelect } = await import('@/lib/db/safeSupabase');
   const holdingsResult = await safeSelect('fund_holdings_lookup', '*');
   
   if (!holdingsResult.ok) {
-    throw new Error(`Failed to fetch holdings: ${holdingsResult.error?.message}`);
+    console.warn(`Failed to fetch holdings: ${holdingsResult.error?.message}`);
+    return {
+      pairwise: {},
+      topContributors: [],
+      sectorHeatmap: {},
+      algorithmMetadata: {
+        method: 'weighted_jaccard_similarity' as const,
+        sectorWeightingApplied: false,
+        computationTimestamp: new Date().toISOString()
+      }
+    };
   }
   
   // Filter by fund IDs and date in memory since we can't use complex queries
@@ -156,7 +165,7 @@ export async function computeOverlap(input: OverlapInput): Promise<OverlapResult
   for (const [fundId, holdingsMap] of Object.entries(fundHoldings)) {
     for (const holding of Array.from(holdingsMap.values())) {
       const current = holdingContribution.get(holding.holding_id) || {
-        name: holding.holding_name,
+        name: holding.holding_name || 'Unknown',
         total_weight: 0,
         fund_count: 0,
         sector: holding.sector
