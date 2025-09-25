@@ -75,17 +75,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       console.log("Loading user profile for user:", userId);
       
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*, two_factor_enabled')
-        .eq('id', userId)
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error loading profile:', error);
+      const { safeSelect } = await import('@/lib/db/safeSupabase');
+      const result = await safeSelect('profiles', '*, two_factor_enabled', { id: userId });
+      
+      if (!result.ok || !result.data?.length) {
+        console.error('Error loading profile:', result.error);
         return;
       }
 
+      const profile = result.data[0] as any;
       if (profile) {
         console.log("Loaded profile from database:", profile);
         
