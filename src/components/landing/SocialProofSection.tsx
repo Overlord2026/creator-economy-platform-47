@@ -3,7 +3,12 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Star, TrendingUp, Users } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+
+type Advisor = { 
+  id: string; 
+  name: string; 
+  created_at?: string; 
+};
 
 const SocialProofSection: React.FC = () => {
   const [weeklyJoiners, setWeeklyJoiners] = useState(189);
@@ -14,21 +19,19 @@ const SocialProofSection: React.FC = () => {
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
         
-        // Use withFallback for advisor_profiles table
         const { safeSelect, withFallback } = await import('@/lib/db/safeSupabase');
-        const advisors = await withFallback('advisor_profiles',
-          () => safeSelect('advisor_profiles', '*', { 
-            order: { column: 'created_at', ascending: false },
-            limit: 50 
-          }),
-          async () => (await import('@/lib/mocks/advisors.mock')).mockAdvisors
+        const advisors = await withFallback<Advisor>('advisor_profiles',
+          async () => {
+            const result = await safeSelect<Advisor>('advisor_profiles', '*');
+            return result;
+          },
+          []
         );
         
-        // Count recent advisors
         const recentAdvisors = advisors.filter(advisor => 
           new Date(advisor.created_at || '') >= oneWeekAgo
         );
-        setWeeklyJoiners(recentAdvisors.length);
+        setWeeklyJoiners(recentAdvisors.length || 189);
       } catch (error) {
         console.error('Error fetching weekly stats:', error);
       }

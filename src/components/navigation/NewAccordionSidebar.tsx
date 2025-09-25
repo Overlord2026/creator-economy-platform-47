@@ -36,7 +36,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useResponsive } from '@/hooks/use-responsive.tsx';
+import { useResponsive } from '@/hooks/use-responsive';
 
 // Role-based navigation configuration
 const getNavigationByRole = (role: string, tier?: string): NavItem[] => {

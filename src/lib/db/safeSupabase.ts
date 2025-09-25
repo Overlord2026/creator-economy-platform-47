@@ -1,7 +1,11 @@
-/**
- * Safe Supabase helpers with fallbacks for missing tables/methods
- */
 import { supabase } from '@/integrations/supabase/client';
+
+export type Result<T> = {
+  ok: boolean;
+  data?: T;
+  error?: any;
+  warning?: string;
+};
 
 export async function tableExists(name: string): Promise<boolean> {
   try {
@@ -12,11 +16,10 @@ export async function tableExists(name: string): Promise<boolean> {
   }
 }
 
-export async function safeSelect<T>(tableName: string, columns: string = '*', filters: Record<string, any> = {}): Promise<T[]> {
+export async function safeSelect<T>(tableName: string, columns: string = '*', filters: Record<string, any> = {}): Promise<Result<T[]>> {
   try {
     let query = supabase.from(tableName).select(columns);
     
-    // Apply filters
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         query = query.eq(key, value);
@@ -25,83 +28,97 @@ export async function safeSelect<T>(tableName: string, columns: string = '*', fi
     
     const { data, error } = await query;
     if (error) throw error;
-    return (data || []) as T[];
-  } catch (err) {
-    console.warn(`safeSelect failed for ${tableName}:`, err);
-    return [];
+    return { ok: true, data: (data || []) as T[] };
+  } catch (error) {
+    console.warn(`safeSelect failed for ${tableName}:`, error);
+    return { ok: false, error };
   }
 }
 
-export async function safeInsert<T>(tableName: string, data: any): Promise<{ data?: T[], error?: any, ok?: boolean }> {
+export async function safeInsert<T>(tableName: string, data: any): Promise<Result<T[]>> {
   try {
-    const result = await (supabase as any).from(tableName).insert(data).select();
-    return { ...result, ok: !result.error };
-  } catch (err) {
-    console.warn(`safeInsert failed for ${tableName}:`, err);
-    return { error: err, ok: false };
+    const { data: result, error } = await (supabase as any).from(tableName).insert(data).select();
+    if (error) throw error;
+    return { ok: true, data: (result || []) as T[] };
+  } catch (error) {
+    console.warn(`safeInsert failed for ${tableName}:`, error);
+    return { ok: false, error };
   }
 }
 
-export async function safeUpdate<T>(tableName: string, data: any, filters: Record<string, any> = {}): Promise<{ data?: T[], error?: any, ok?: boolean }> {
+export async function safeUpdate<T>(tableName: string, data: any, filters: Record<string, any> = {}): Promise<Result<T[]>> {
   try {
     let query = (supabase as any).from(tableName).update(data);
     
-    // Apply filters
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         query = query.eq(key, value);
       }
     });
     
-    const result = await query.select();
-    return { ...result, ok: !result.error };
-  } catch (err) {
-    console.warn(`safeUpdate failed for ${tableName}:`, err);
-    return { error: err, ok: false };
+    const { data: result, error } = await query.select();
+    if (error) throw error;
+    return { ok: true, data: (result || []) as T[] };
+  } catch (error) {
+    console.warn(`safeUpdate failed for ${tableName}:`, error);
+    return { ok: false, error };
   }
 }
 
-export async function withFallback<T>(tableName: string, queryFnOrFallback: (() => Promise<T[]>) | T[], fallback?: T[]): Promise<T[]> {
-  // Handle the case where this is called with (tableName, fallbackArray) instead of (tableName, queryFn, fallbackArray)
-  if (Array.isArray(queryFnOrFallback)) {
-    return queryFnOrFallback;
+export async function safeDelete<T>(tableName: string, filters: Record<string, any> = {}): Promise<Result<T[]>> {
+  try {
+    let query = (supabase as any).from(tableName).delete();
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        query = query.eq(key, value);
+      }
+    });
+    
+    const { data: result, error } = await query.select();
+    if (error) throw error;
+    return { ok: true, data: (result || []) as T[] };
+  } catch (error) {
+    console.warn(`safeDelete failed for ${tableName}:`, error);
+    return { ok: false, error };
   }
-  
-  const queryFn = queryFnOrFallback as () => Promise<T[]>;
-  const actualFallback = fallback || [];
-  
+}
+
+export async function withFallback<T>(tableName: string, queryFn: () => Promise<Result<T[]>>, fallback: T[]): Promise<T[]> {
   try {
     const exists = await tableExists(tableName);
     if (!exists) {
       console.warn(`Table ${tableName} does not exist, returning fallback`);
-      return actualFallback;
+      return fallback;
     }
-    return await queryFn();
+    const result = await queryFn();
+    return result.ok ? (result.data || fallback) : fallback;
   } catch (err) {
     console.warn(`withFallback failed for ${tableName}:`, err);
-    return actualFallback;
+    return fallback;
   }
 }
 
-export async function safeQueryOptionalTable<T>(tableName: string, columns: string = '*', filters: Record<string, any> = {}): Promise<{ data?: T[], error?: any, ok?: boolean }> {
-  try {
-    const data = await safeSelect<T>(tableName, columns, filters);
-    return { data, ok: true };
-  } catch (error) {
-    return { error, ok: false };
-  }
-}
-
-export async function safeInsertOptionalTable<T>(table: string, row: T) {
+export async function safeInsertOptionalTable<T>(table: string, row: T): Promise<Result<T[]>> {
   const exists = await tableExists(table);
-  if (!exists) return { warning: 'table_missing', data: row };
+  if (!exists) return { ok: true, data: [row] as T[], warning: 'table_missing' };
+  
   try {
     const { data, error } = await supabase.from(table).insert(row).select();
-    if (error) return { error };
-    return { data };
-  } catch (err) {
-    return { error: err };
+    if (error) throw error;
+    return { ok: true, data: (data || []) as T[] };
+  } catch (error) {
+    return { ok: false, error };
   }
 }
 
-export default { tableExists, safeSelect, safeInsert, safeUpdate, withFallback, safeInsertOptionalTable, safeQueryOptionalTable };
+export async function safeQueryOptionalTable<T>(tableName: string, columns: string = '*', filters: Record<string, any> = {}): Promise<Result<T[]>> {
+  try {
+    const result = await safeSelect<T>(tableName, columns, filters);
+    return result;
+  } catch (error) {
+    return { ok: false, error };
+  }
+}
+
+export default { tableExists, safeSelect, safeInsert, safeUpdate, safeDelete, withFallback, safeInsertOptionalTable, safeQueryOptionalTable };
