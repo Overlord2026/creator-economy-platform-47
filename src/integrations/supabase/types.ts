@@ -25,6 +25,7 @@ export type Database = {
           currency: string
           id: string
           is_primary: boolean | null
+          name: string | null
           routing_number: string | null
           status: string
           updated_at: string
@@ -40,6 +41,7 @@ export type Database = {
           currency?: string
           id?: string
           is_primary?: boolean | null
+          name?: string | null
           routing_number?: string | null
           status?: string
           updated_at?: string
@@ -55,6 +57,7 @@ export type Database = {
           currency?: string
           id?: string
           is_primary?: boolean | null
+          name?: string | null
           routing_number?: string | null
           status?: string
           updated_at?: string
@@ -109,8 +112,11 @@ export type Database = {
           category: string
           created_at: string
           due_date: string
+          frequency: string | null
           id: string
+          is_auto_pay: boolean | null
           notes: string | null
+          reminder_days: number | null
           status: string
           updated_at: string
           user_id: string
@@ -122,8 +128,11 @@ export type Database = {
           category: string
           created_at?: string
           due_date: string
+          frequency?: string | null
           id?: string
+          is_auto_pay?: boolean | null
           notes?: string | null
+          reminder_days?: number | null
           status?: string
           updated_at?: string
           user_id: string
@@ -135,8 +144,11 @@ export type Database = {
           category?: string
           created_at?: string
           due_date?: string
+          frequency?: string | null
           id?: string
+          is_auto_pay?: boolean | null
           notes?: string | null
+          reminder_days?: number | null
           status?: string
           updated_at?: string
           user_id?: string

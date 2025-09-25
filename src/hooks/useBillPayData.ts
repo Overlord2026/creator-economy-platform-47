@@ -74,11 +74,11 @@ export const useBillPayData = () => {
         user_id: r.user_id || '',
         vendor_id: r.vendor_id ?? null,
         biller_name: r.biller_name || r.name || 'Unknown',
-        category: (r.category as Bill['category']) || 'other',
+        category: (['utilities', 'mortgage', 'insurance', 'tuition', 'loans', 'subscriptions', 'transportation', 'healthcare', 'entertainment', 'other'].includes(r.category) ? r.category : 'other') as Bill['category'],
         amount: Number(r.amount) || 0,
         due_date: r.due_date || new Date().toISOString(),
-        frequency: (r.frequency as Bill['frequency']) || 'monthly',
-        status: (r.status as Bill['status']) || 'unpaid',
+        frequency: (['one_time', 'weekly', 'monthly', 'quarterly', 'annual'].includes(r.frequency) ? r.frequency : 'monthly') as Bill['frequency'],
+        status: (['unpaid', 'paid', 'overdue', 'scheduled'].includes(r.status) ? r.status : 'unpaid') as Bill['status'],
         payment_method: r.payment_method ?? null,
         is_auto_pay: Boolean(r.is_auto_pay),
         notes: r.notes ?? null,
@@ -105,7 +105,7 @@ export const useBillPayData = () => {
         amount: Number(t.amount) || 0,
         payment_date: t.payment_date || new Date().toISOString(),
         payment_method: t.payment_method,
-        transaction_status: (t.transaction_status as BillTransaction['transaction_status']) || 'pending',
+        transaction_status: (['completed', 'pending', 'failed'].includes(t.transaction_status) ? t.transaction_status : 'pending') as BillTransaction['transaction_status'],
         confirmation_number: t.reference_number,
         notes: t.notes,
         created_at: t.created_at || new Date().toISOString(),
@@ -210,18 +210,28 @@ export const useBillPayData = () => {
 
       const { data, error } = await supabase
         .from('bills')
-        .insert([{ ...newBill, user_id: user.id }])
+        .insert([{ 
+          ...newBill, 
+          user_id: user.id,
+          frequency: newBill.frequency || 'monthly',
+          is_auto_pay: newBill.is_auto_pay || false,
+          reminder_days: newBill.reminder_days || 3
+        }])
         .select()
         .single();
 
       if (error) throw error;
 
-      setBills(prevBills => [...prevBills, {
+      const mappedBill: Bill = {
         ...data,
-        frequency: data.frequency || 'monthly',
+        frequency: (data.frequency as Bill['frequency']) || 'monthly',
         is_auto_pay: data.is_auto_pay || false,
-        reminder_days: data.reminder_days || 3
-      }]);
+        reminder_days: data.reminder_days || 3,
+        category: (['utilities', 'mortgage', 'insurance', 'tuition', 'loans', 'subscriptions', 'transportation', 'healthcare', 'entertainment', 'other'].includes(data.category) ? data.category : 'other') as Bill['category'],
+        status: (['unpaid', 'paid', 'overdue', 'scheduled'].includes(data.status) ? data.status : 'unpaid') as Bill['status']
+      };
+
+      setBills(prevBills => [...prevBills, mappedBill]);
       toast({
         title: "Bill Added",
         description: "Your bill has been successfully added.",
@@ -246,14 +256,17 @@ export const useBillPayData = () => {
 
       if (error) throw error;
 
+      const mappedBill: Bill = {
+        ...data,
+        frequency: (data.frequency as Bill['frequency']) || 'monthly',
+        is_auto_pay: data.is_auto_pay !== undefined ? data.is_auto_pay : false,
+        reminder_days: data.reminder_days !== undefined ? data.reminder_days : 3,
+        category: (['utilities', 'mortgage', 'insurance', 'tuition', 'loans', 'subscriptions', 'transportation', 'healthcare', 'entertainment', 'other'].includes(data.category) ? data.category : 'other') as Bill['category'],
+        status: (['unpaid', 'paid', 'overdue', 'scheduled'].includes(data.status) ? data.status : 'unpaid') as Bill['status']
+      };
+
       setBills(prevBills =>
-        prevBills.map(bill => (bill.id === billId ? { 
-          ...bill, 
-          ...data,
-          frequency: data.frequency || bill.frequency,
-          is_auto_pay: data.is_auto_pay !== undefined ? data.is_auto_pay : bill.is_auto_pay,
-          reminder_days: data.reminder_days !== undefined ? data.reminder_days : bill.reminder_days
-        } : bill))
+        prevBills.map(bill => (bill.id === billId ? mappedBill : bill))
       );
       toast({
         title: "Bill Updated",
@@ -304,12 +317,14 @@ export const useBillPayData = () => {
 
       if (error) throw error;
 
-      setTransactions(prevTransactions => [...prevTransactions, {
+      const mappedTransaction: BillTransaction = {
         ...data,
-        transaction_status: data.transaction_status || 'completed'
-      }]);
+        transaction_status: (['completed', 'pending', 'failed'].includes(data.transaction_status) ? data.transaction_status : 'completed') as BillTransaction['transaction_status']
+      };
+
+      setTransactions(prevTransactions => [...prevTransactions, mappedTransaction]);
       setBills(prevBills =>
-        prevBills.map(bill => (bill.id === billId ? { ...bill, status: 'paid' } : bill))
+        prevBills.map(bill => (bill.id === billId ? { ...bill, status: 'paid' as Bill['status'] } : bill))
       );
       toast({
         title: "Bill Paid",
@@ -370,4 +385,4 @@ export const useBillPayData = () => {
     payBill, 
     scheduleAutoPay 
   };
-}
+};
