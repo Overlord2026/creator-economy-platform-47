@@ -108,7 +108,7 @@ export default function PersonaMiniPage() {
   return (
     <div className={`${colors.navyBg} text-white min-h-screen flex flex-col`}>
       <MarketingHeader />
-      <main className="mx-auto max-w-4xl flex-1 px-4 py-12 sm:py-16">
+      <main className="marketing-container flex-1 marketing-section max-w-4xl">
         <div className="text-sm opacity-70">
           <Link to="/personas" className="underline">← Back to Personas</Link>
         </div>

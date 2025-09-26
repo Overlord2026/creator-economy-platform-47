@@ -11,7 +11,7 @@ export default function ProsPage() {
   return (
     <div className={`${colors.navyBg} text-white min-h-screen flex flex-col`}>
       <MarketingHeader />
-      <main className="mx-auto max-w-6xl flex-1 px-4 py-12 sm:py-16">
+      <main className="marketing-container flex-1 marketing-section">
         <h1 className="text-3xl font-semibold">Service Pros</h1>
         <p className="mt-2 text-white/80">Find accountants, attorneys, and advisors who get creator work.</p>
         <div className="mt-6 grid gap-3 sm:grid-cols-2 md:grid-cols-3">

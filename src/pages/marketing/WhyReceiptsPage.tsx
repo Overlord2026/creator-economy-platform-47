@@ -5,7 +5,7 @@ export default function WhyReceiptsPage() {
   return (
     <div className={`${colors.navyBg} text-white min-h-screen flex flex-col`}>
       <MarketingHeader />
-      <main className="mx-auto max-w-3xl flex-1 px-4 py-12 sm:py-16">
+      <main className="marketing-container flex-1 marketing-section max-w-3xl">
         <h1 className="text-3xl font-semibold">Why receipts?</h1>
         <p className="mt-3 text-white/80">
           A receipt here is a private, content-light proof of what happened and why (no oversharing).

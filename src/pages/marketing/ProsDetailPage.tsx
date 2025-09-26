@@ -7,7 +7,7 @@ export default function ProsDetailPage() {
   return (
     <div className={`${colors.navyBg} text-white min-h-screen flex flex-col`}>
       <MarketingHeader />
-      <main className="mx-auto max-w-3xl flex-1 px-4 py-12 sm:py-16">
+      <main className="marketing-container flex-1 marketing-section max-w-3xl">
         <Link to="/pros" className="text-sm underline">← Back to Pros</Link>
         <h1 className="mt-3 text-3xl font-semibold">Profile</h1>
         <p className="mt-2 text-white/80">This is a demo profile for <code>{id}</code>. Replace with live directory later.</p>

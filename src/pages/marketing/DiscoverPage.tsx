@@ -7,7 +7,7 @@ export default function DiscoverPage() {
   return (
     <div className={`${colors.navyBg} text-white min-h-screen flex flex-col`}>
       <MarketingHeader />
-      <main className="mx-auto max-w-4xl flex-1 px-4 py-12 sm:py-16">
+      <main className="marketing-container flex-1 marketing-section max-w-4xl">
         <h1 className="text-3xl font-semibold">Discover • 60-second demo</h1>
         <p className="mt-2 text-white/80">
           See OfferLock → E-Sign → Settlement in under a minute. This is a UI-only teaser; the full walk-through starts the demo.

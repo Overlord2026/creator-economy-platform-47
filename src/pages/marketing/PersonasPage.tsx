@@ -18,7 +18,7 @@ export default function PersonasPage() {
   return (
     <div className={`${colors.navyBg} text-white min-h-screen flex flex-col`}>
       <MarketingHeader />
-      <main className="mx-auto max-w-6xl flex-1 px-4 py-12 sm:py-16">
+      <main className="marketing-container flex-1 marketing-section">
         <h1 className="text-3xl font-semibold">Personas</h1>
         <p className="mt-2 text-white/80">Choose who you are — we’ll tailor the view.</p>
         <div className="mt-6 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
