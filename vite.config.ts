@@ -34,5 +34,5 @@ export default defineConfig({
   // single entry; don't scan docs/** html
   build: { rollupOptions: { input: 'index.html' } },
   // allow reading files from ./packages during dev
-  server: { host: true,  port: 8080, strictPort: false, fs: { allow: ['.', 'packages'] , hmr: { clientPort: 443 } } },
+  server: {  host: true,  port: 8080, strictPort: false, fs: { allow: ['.', 'packages'] , hmr: { clientPort: 443  } } },
 });
