@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from "next-themes";
 import { HelmetProvider } from 'react-helmet-async';
 import '@/styles/brand.css';
+import MarketingRoutes from '@/routes/MarketingRoutes';
 import { TopBanner } from '@/components/layout/TopBanner';
 import BrandHeader from '@/components/layout/BrandHeader';
 import { ConditionalMegaMenu } from '@/components/nav/ConditionalMegaMenu';
