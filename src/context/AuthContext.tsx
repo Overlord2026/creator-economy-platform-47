@@ -1,42 +1,11 @@
 'use client';
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-
-// Try to load Supabase client if it exists; stay no-op if not
-let supabase: any = null;
-try {
-  const mod = require('@/integrations/supabase/client');
-  supabase = typeof mod.getAnonClient === 'function' ? mod.getAnonClient() : null;
-} catch (_) { /* no-op for demo/dev */ }
+import React, { createContext, useContext } from 'react';
 
 type AuthValue = { user: any; loading: boolean; error?: any; session?: any };
-const Ctx = createContext<AuthValue>({ user: null, loading: true });
+const Ctx = createContext<AuthValue>({ user: null, loading: false });
 export const useAuth = () => useContext(Ctx);
 
+// No-op provider for demo stability (no hooks, no supabase access)
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
-
-  useEffect(() => {
-    if (!supabase) { setLoading(false); return; }
-
-    let mounted = true;
-    supabase.auth.getUser().then(({ data, error }: any) => {
-      if (!mounted) return;
-      if (error) setError(error);
-      setUser(data?.user ?? null);
-      setLoading(false);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e: any, session: any) => {
-      if (!mounted) return;
-      setUser(session?.user ?? null);
-    });
-    return () => {
-      mounted = false;
-      sub?.subscription?.unsubscribe?.();
-    };
-  }, []);
-
-  const value = useMemo(() => ({ user, loading, error, session: null }), [user, loading, error]);
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ user: null, loading: false }}>{children}</Ctx.Provider>;
 }
