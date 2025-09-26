@@ -3,16 +3,16 @@
  * Exported symbol required by src/main.tsx.
  * Keep it lightweight: no heavy hooks at module init.
  */
-export function setupNetworkErrorHandling() {
+export function setupNetworkErrorHandling(): void {
   // No-op default: prevents build errors and keeps demo snappy.
   // You can expand later with fetch/XHR interception or toast hooks.
   if (typeof window === 'undefined') return;
 
-  // Example lightweight console reporter (disabled by default):
+  // Example (disabled) fetch wrapper:
   // const origFetch = window.fetch;
-  // window.fetch = async (...args) => {
+  // window.fetch = async (...args: Parameters<typeof fetch>) => {
   //   try {
-  //     const res = await origFetch(...args as Parameters<typeof fetch>);
+  //     const res = await origFetch(...args);
   //     if (!res.ok) console.warn('[net]', res.status, res.url);
   //     return res;
   //   } catch (err) {
