@@ -4,6 +4,7 @@ import path from "node:path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
+  build: { rollupOptions: { input: 'index.html' } },
   server: { host: "::", port: 8080 },
   plugins: [
     react(),
