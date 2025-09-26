@@ -1,26 +1,38 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "node:path";
-import { componentTagger } from "lovable-tagger";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
-export default defineConfig(({ mode }) => ({
-  build: { rollupOptions: { input: 'index.html' } },
-  server: { host: "::", port: 8080 },
+export default defineConfig({
   plugins: [
-    react(),
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
-  define: {
-    __RUNTIME_REPO__: JSON.stringify(process.env.GITHUB_REPOSITORY || 'unknown'),
-    __RUNTIME_BRANCH__: JSON.stringify(process.env.VERCEL_GIT_COMMIT_REF || process.env.GITHUB_REF_NAME || 'local')
-  },
+    react({
+      // process JSX in plain .js files (incl. monorepo packages/creator/**)
+      include: [
+        /\.[jt]sx?$/,                        // normal app files
+        /packages\/creator\/src\/.*\.js$/ // workspace JS with JSX
+      ],
+      jsxRuntime: 'automatic',
+    }),
+  ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"),
-      "@advisor": path.resolve(__dirname, "src/features/advisors/platform"),
-      "@creator": path.resolve(__dirname, "packages/creator/src"),
+      react: path.resolve(__dirname, 'node_modules/react'),
+      'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+      '@': path.resolve(__dirname, 'src'),
     },
-    dedupe: ["react","react-dom","react-dom/client","react/jsx-runtime","react/jsx-dev-runtime"],
+    preserveSymlinks: false,
   },
-  optimizeDeps: { include: ["react","react-dom","react-dom/client"] }
-}));
+  // dev transforms: treat .js files as JSX
+  esbuild: { loader: 'jsx' },
+  optimizeDeps: {
+    dedupe: ['react', 'react-dom'],
+    include: ['react', 'react-dom'],
+    esbuildOptions: {
+      // dep-scan: also parse .js as JSX
+      loader: { '.js': 'jsx' },
+    },
+  },
+  // single entry; don't scan docs/** html
+  build: { rollupOptions: { input: 'index.html' } },
+  // allow reading files from ./packages during dev
+  server: { port: 8080, strictPort: false, fs: { allow: ['.', 'packages'] } },
+});
