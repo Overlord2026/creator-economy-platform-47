@@ -22,7 +22,6 @@ export default function DemoOfferLock() {
 
   function lockOffer(e: React.FormEvent) {
     e.preventDefault();
-    // Generate a simple demo ID
     const id = 'OL-' + Math.random().toString(36).slice(2, 8).toUpperCase();
     setLocked({ id });
   }
@@ -31,7 +30,9 @@ export default function DemoOfferLock() {
     return (
       <div style={{ maxWidth: 720, margin: '2rem auto', padding: 16 }}>
         <h1 style={{ marginBottom: 8 }}>Offer Locked ✅</h1>
-        <p style={{ marginBottom: 16 }}>Demo OfferLock ID: <strong>{locked.id}</strong></p>
+        <p style={{ marginBottom: 16 }}>
+          Demo OfferLock ID: <strong>{locked.id}</strong>
+        </p>
         <div style={{ border: '1px solid #ddd', padding: 16, borderRadius: 8 }}>
           <h2 style={{ marginTop: 0 }}>Summary</h2>
           <ul>
@@ -113,5 +114,5 @@ const btnPrimary: React.CSSProperties = {
   background: '#111',
   color: 'white',
   borderRadius: 10,
-  cursor: 'pointer'
+  cursor: 'pointer',
 };
