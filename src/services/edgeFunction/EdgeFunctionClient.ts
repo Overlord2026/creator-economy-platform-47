@@ -39,4 +39,25 @@ export class EdgeFunctionClient {
   }
 }
 
+// Export interface and instance for compatibility
+export interface EdgeFunctionResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: {
+    userMessage?: string;
+    correlationId?: string;
+  };
+}
+
+export const edgeFunctionClient = {
+  invoke: async <T>(functionName: string, payload?: any): Promise<EdgeFunctionResponse<T>> => {
+    const result = await EdgeFunctionClient.invoke<T>(functionName, { body: payload });
+    return {
+      success: !result.error,
+      data: result.data || undefined,
+      error: result.error ? { userMessage: 'Service unavailable' } : undefined
+    };
+  }
+};
+
 export default EdgeFunctionClient;

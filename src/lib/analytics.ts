@@ -1,4 +1,4 @@
-// Legacy analytics - use @/lib/analyticsBridge instead
+// Simple analytics stub for UI-only mode
 import { analytics as bridge } from '@/lib/analyticsBridge';
 
 export interface AnalyticsProps {
