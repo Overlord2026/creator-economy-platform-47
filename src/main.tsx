@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-
-import App from './App';
+import DevSafeApp from './DevSafeApp';
 
 // best-effort network bootstrap (safe if missing)
 try {
@@ -12,12 +11,10 @@ try {
 } catch (_) { /* no-op */ }
 
 const rootEl = document.getElementById('root');
-if (!rootEl) {
-  throw new Error('Root element #root missing');
-}
+if (!rootEl) throw new Error('Root element #root missing');
 
 ReactDOM.createRoot(rootEl).render(
   <React.StrictMode>
-    <App />
+    <DevSafeApp />
   </React.StrictMode>
 );
