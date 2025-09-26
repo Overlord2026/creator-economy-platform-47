@@ -2,25 +2,23 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-type Level = 'HS' | 'College' | 'Pro' | 'Creator';
-
 export default function DemoOfferLock() {
   const [form, setForm] = useState({
     name: '',
-    level: 'College' as Level,
+    level: 'College',
     schoolOrPlatform: '',
     followers: '',
     brand: '',
     offerValue: '',
   });
-  const [locked, setLocked] = useState<null | { id: string }>(null);
+  const [locked, setLocked] = useState(null);
 
-  function onChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+  function onChange(e) {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   }
 
-  function lockOffer(e: React.FormEvent) {
+  function lockOffer(e) {
     e.preventDefault();
     const id = 'OL-' + Math.random().toString(36).slice(2, 8).toUpperCase();
     setLocked({ id });
@@ -86,5 +84,5 @@ export default function DemoOfferLock() {
   );
 }
 
-const input: React.CSSProperties = { display: 'block', width: '100%', marginTop: 6, padding: '10px 12px', border: '1px solid #ccc', borderRadius: 8 };
-const btnPrimary: React.CSSProperties = { padding: '10px 14px', border: '1px solid #111', background: '#111', color: 'white', borderRadius: 10, cursor: 'pointer' };
+const input = { display: 'block', width: '100%', marginTop: 6, padding: '10px 12px', border: '1px solid #ccc', borderRadius: 8 };
+const btnPrimary = { padding: '10px 14px', border: '1px solid #111', background: '#111', color: 'white', borderRadius: 10, cursor: 'pointer' };
