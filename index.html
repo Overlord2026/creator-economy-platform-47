@@ -6,6 +6,13 @@
     <title>Creator NIL Demo</title>
   </head>
   <body>
+    <script>
+      (function(){
+        if(!window.location.hash || window.location.hash==='#' || window.location.hash==='#/'){
+          window.location.replace(window.location.pathname + '#/demo/offerlock');
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
