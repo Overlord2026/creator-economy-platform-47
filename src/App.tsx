@@ -32,6 +32,9 @@ import ReceiptsListPage from '@/pages/ReceiptsListPage';
 import ReceiptDetailPage from '@/pages/ReceiptDetailPage';
 import SamplesPage from '@/pages/SamplesPage';
 import Pricing from '@/pages/Pricing';
+import DemoOfferLock from './pages/DemoOfferLock';
+import DemoContract from './pages/DemoContract';
+import DemoSettlement from './pages/DemoSettlement';
 
 // Landing page imports
 import FamiliesLanding from '@/pages/landing/FamiliesLanding';
@@ -1110,7 +1113,11 @@ function App() {
             
             {/* NotFound Route */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
+          
+      <Route path="/demo/offerlock" element={<DemoOfferLock/>} />
+      <Route path="/demo/contract" element={<DemoContract/>} />
+      <Route path="/demo/settlement" element={<DemoSettlement/>} />
+      </Routes>
           
           <Toaster />
           <DevPanel />
