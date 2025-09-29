@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTenant } from './useTenant';
+import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
 export interface FranchiseReferral {
   id: string;
@@ -54,6 +55,22 @@ export const useFranchiseReferrals = () => {
   const [referrals, setReferrals] = useState<FranchiseReferral[]>([]);
   const [payouts, setPayouts] = useState<FranchiseReferralPayout[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Bootstrap mode: return UI-only stub
+  if (BOOTSTRAP_MODE) {
+    return {
+      referrals: [],
+      payouts: [],
+      loading: false,
+      generateReferralCode: async () => null,
+      updateReferralStatus: async () => {},
+      createPayout: async () => {},
+      updatePayoutStatus: async () => {},
+      getReferralLink: () => '',
+      copyReferralLink: () => {},
+      refreshData: async () => {}
+    };
+  }
 
   useEffect(() => {
     if (currentTenant) {

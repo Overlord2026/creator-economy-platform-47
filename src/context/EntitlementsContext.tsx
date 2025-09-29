@@ -11,6 +11,7 @@ import {
 } from '@/types/pricing';
 import { useSubscriptionAccess } from '@/hooks/useSubscriptionAccess';
 import { TrialManager, TrialGrant } from '@/lib/trialManager';
+import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
 interface EntitlementsContextType {
   entitlements: UserEntitlements | null;
@@ -51,6 +52,19 @@ export function EntitlementsProvider({ children }: EntitlementsProviderProps) {
   const loadEntitlements = async () => {
     if (!userProfile) {
       setEntitlements(null);
+      setLoading(false);
+      return;
+    }
+
+    // Bootstrap mode: return minimal static entitlements
+    if (BOOTSTRAP_MODE) {
+      const staticEntitlements: UserEntitlements = {
+        plan: 'basic',
+        persona: 'user',
+        segment: 'basic',
+        entitlements: {} as Record<FeatureKey, Entitlement>
+      };
+      setEntitlements(staticEntitlements);
       setLoading(false);
       return;
     }

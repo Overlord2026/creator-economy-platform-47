@@ -4,7 +4,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useDatabaseDiagnostics, DatabaseTestResult } from '@/hooks/useDatabaseDiagnostics';
+import { useDatabaseDiagnostics } from '@/hooks/useDatabaseDiagnostics';
+
+// Local type definition to avoid import issues
+type DatabaseTestResult = {
+  test_number: number;
+  area_feature: string;
+  test_case: string;
+  expected_result: string;
+  actual_result: string;
+  pass_fail: 'PASS' | 'FAIL';
+  notes: string;
+};
 import { Play, CheckCircle, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 
 export const DatabaseTestRunner: React.FC = () => {

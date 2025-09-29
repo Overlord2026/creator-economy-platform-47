@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
 export interface InsuranceAgent {
   id?: string;
@@ -49,11 +50,11 @@ export interface CEReminder {
 }
 
 export const useInsuranceAgent = () => {
+  const { user } = useAuth();
   const [agent, setAgent] = useState<InsuranceAgent | null>(null);
   const [courses, setCourses] = useState<CECourse[]>([]);
   const [reminders, setReminders] = useState<CEReminder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { user } = useAuth();
 
   const fetchAgent = async () => {
     if (!user) return;

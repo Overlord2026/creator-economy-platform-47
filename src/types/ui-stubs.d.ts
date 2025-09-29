@@ -12,7 +12,7 @@ declare module '@/hooks/useEventTracking' {
 }
 
 declare module '@/hooks/useFamilyVault' {
-  export const useFamilyVault: () => any;
+  export const useFamilyVault: (vaultId?: string) => any;
 }
 
 declare module '@/hooks/useFamilyWealthData' {
