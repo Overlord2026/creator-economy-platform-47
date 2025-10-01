@@ -51,12 +51,7 @@ export interface FranchiseReferralPayout {
 }
 
 export const useFranchiseReferrals = () => {
-  const { currentTenant } = useTenant();
-  const [referrals, setReferrals] = useState<FranchiseReferral[]>([]);
-  const [payouts, setPayouts] = useState<FranchiseReferralPayout[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Bootstrap mode: return UI-only stub
+  // Bootstrap mode: return UI-only stub (before any hooks)
   if (BOOTSTRAP_MODE) {
     return {
       referrals: [],
@@ -71,6 +66,11 @@ export const useFranchiseReferrals = () => {
       refreshData: async () => {}
     };
   }
+
+  const { currentTenant } = useTenant();
+  const [referrals, setReferrals] = useState<FranchiseReferral[]>([]);
+  const [payouts, setPayouts] = useState<FranchiseReferralPayout[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (currentTenant) {

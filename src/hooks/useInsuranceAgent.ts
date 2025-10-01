@@ -50,6 +50,23 @@ export interface CEReminder {
 }
 
 export const useInsuranceAgent = () => {
+  // Bootstrap mode: return UI-only stub (before any hooks)
+  if (BOOTSTRAP_MODE) {
+    return {
+      agent: null,
+      courses: [],
+      reminders: [],
+      isLoading: false,
+      addCourse: async () => {},
+      updateAgent: async () => {},
+      createAgent: async () => {},
+      getDaysUntilExpiry: () => null,
+      getDaysUntilPeriodEnd: () => null,
+      getCEProgress: () => ({ percentage: 0, status: 'unknown' }),
+      refreshData: () => {}
+    };
+  }
+
   const { user } = useAuth();
   const [agent, setAgent] = useState<InsuranceAgent | null>(null);
   const [courses, setCourses] = useState<CECourse[]>([]);

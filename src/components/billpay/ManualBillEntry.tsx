@@ -232,7 +232,15 @@ export const ManualBillEntry: React.FC = () => {
             setSelectedBillId(null);
           }}
           billId={selectedBillId}
-          onPayBill={(billId: string, paymentMethod: string) => payBill(billId, paymentMethod)}
+          onPayBill={(billId: string, paymentMethod: string) => 
+            payBill(billId, {
+              amount: 0,
+              payment_date: new Date().toISOString(),
+              payment_method: paymentMethod,
+              transaction_status: 'pending',
+              created_at: new Date().toISOString()
+            })
+          }
         />
       )}
     </div>
