@@ -1,11 +1,18 @@
 'use client';
-import React, { createContext, useContext } from 'react';
+import * as React from 'react';
 
-type AuthValue = { user: any; loading: boolean; error?: any; session?: any };
-const Ctx = createContext<AuthValue>({ user: null, loading: false });
-export const useAuth = () => useContext(Ctx);
+export type AuthValue = { user: any; loading: boolean; error?: any; session?: any };
 
-// No-op provider for demo stability (no hooks, no supabase access)
+// Keep module import side-effect free
+const Ctx = React.createContext<AuthValue>({ user: null, loading: false });
+export const useAuth = () => React.useContext(Ctx);
+
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
-  return <Ctx.Provider value={{ user: null, loading: false }}>{children}</Ctx.Provider>;
+  // Inert on import — no window/network/storage here
+  const mountedRef = React.useRef(false);
+  const [, force] = React.useReducer((x) => x + 1, 0);
+  React.useEffect(() => { mountedRef.current = true; force(); }, []);
+
+  const value = React.useMemo<AuthValue>(() => ({ user: null, loading: false }), []);
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

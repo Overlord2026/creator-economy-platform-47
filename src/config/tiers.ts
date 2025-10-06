@@ -1,0 +1,6 @@
+export const TIERS = [
+  // { id:'starter', price:..., features:[...]}, ...
+];
+export const BADGES = [
+  // { id:'new', label:'New'}, ...
+];
