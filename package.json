@@ -9,7 +9,14 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "echo \"No tests configured for this repo (placeholder)\" && exit 0"
+    "test": "echo \"No tests configured for this repo (placeholder)\" && exit 0",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typegen:supabase": "supabase gen types typescript --project-id \"$SUPABASE_PROJECT_ID\" --schema public > src/types/supabase.ts",
+    "check:schema": "node -e \"console.log(require('fs').existsSync('src/types/supabase.ts') ? 'ok: types present' : 'missing supabase types')\"",
+    "typegen:ci": "scripts/ops/typegen.sh",
+    "supa:login": "npx supabase@latest login",
+    "supa:whoami": "npx supabase@latest projects list -o json | head -n 20",
+    "typegen:openapi": "scripts/ops/openapi-typegen.sh"
   },
   "dependencies": {
     "@axe-core/react": "^4.10.2",
@@ -147,5 +154,11 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "18.3.1",
+      "react-dom": "18.3.1"
+    }
   }
 }

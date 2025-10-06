@@ -1,24 +1,20 @@
 'use client';
-import React, { createContext, useContext, useMemo } from "react";
-import { BOOTSTRAP_MODE } from "@/config/bootstrap";
+import * as React from 'react';
+import { useSubscriptionAccess } from '@/hooks/useSubscriptionAccess';
 
-type Entitlements = {
-  plan?: "free"|"pro"|"enterprise";
-  features?: Record<string, boolean>;
-  can: (key: string) => boolean;
-};
+type Entitlements = { plan?: string; features?: string[]; has: (f: string) => boolean };
+const Ctx = React.createContext<Entitlements | null>(null);
 
-const Ctx = createContext<Entitlements>({ plan: "free", features: {}, can: () => true });
-
-export function EntitlementsProvider({ children }: { children: React.ReactNode }) {
-  if (BOOTSTRAP_MODE) {
-    const value = useMemo<Entitlements>(() => ({ plan: "free", features: {}, can: () => true }), []);
-    return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
-  }
-  // TODO: replace with real entitlement loader when BOOTSTRAP_MODE=false
-  const value = useMemo<Entitlements>(() => ({ plan: "free", features: {}, can: () => true }), []);
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+export function useEntitlements() {
+  const v = React.useContext(Ctx);
+  if (!v) return { plan: undefined, features: [], has: () => false };
+  return v;
 }
 
-export const useEntitlements = () => useContext(Ctx);
-export default EntitlementsProvider;
+export default function EntitlementsProvider({ children }: { children: React.ReactNode }) {
+  const ent = useSubscriptionAccess();
+  const value = React.useMemo<Entitlements>(() => ({
+    plan: ent.plan, features: ent.features ?? [], has: ent.has
+  }), [ent.plan, ent.features, ent.has]);
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+}
