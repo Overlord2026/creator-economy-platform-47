@@ -6,9 +6,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: { '@': path.resolve(__dirname, 'src') },
-    dedupe: ['react', 'react-dom'], // force one copy (Vite-documented)
+    dedupe: ['react', 'react-dom'],        // force single copy
   },
-  optimizeDeps: {
-    include: ['react', 'react-dom'], // prebundle the same pair
-  },
+  optimizeDeps: { include: ['react', 'react-dom'] }, // prebundle same pair
 });
