@@ -200,7 +200,7 @@ export async function applyPremiumSeal(
   });
   
   // Generate SHA256 hash
-  const hashBuffer = await crypto.subtle.digest('SHA-256', pdfBytes);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', pdfBytes.buffer as ArrayBuffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   

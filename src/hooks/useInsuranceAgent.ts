@@ -4,6 +4,9 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
+// Relax Supabase generics for insurance tables
+const sb = supabase as any;
+
 export interface InsuranceAgent {
   id?: string;
   user_id?: string;
@@ -78,7 +81,7 @@ export const useInsuranceAgent = () => {
 
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('insurance_agents')
         .select('*')
         .eq('user_id', user.id)
@@ -87,13 +90,7 @@ export const useInsuranceAgent = () => {
       if (error) throw error;
 
       if (data) {
-        setAgent({
-          ...data,
-          status: data.status as 'active' | 'inactive' | 'suspended',
-          license_expiry: data.license_expiry ? new Date(data.license_expiry) : undefined,
-          ce_reporting_period_start: data.ce_reporting_period_start ? new Date(data.ce_reporting_period_start) : undefined,
-          ce_reporting_period_end: data.ce_reporting_period_end ? new Date(data.ce_reporting_period_end) : undefined,
-        });
+        setAgent(data);
       }
     } catch (error) {
       console.error('Error fetching agent:', error);
@@ -107,7 +104,7 @@ export const useInsuranceAgent = () => {
     if (!agent?.id) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('ce_courses')
         .select('*')
         .eq('agent_id', agent.id)
@@ -115,12 +112,7 @@ export const useInsuranceAgent = () => {
 
       if (error) throw error;
 
-      const formattedCourses = data?.map(course => ({
-        ...course,
-        completion_date: course.completion_date ? new Date(course.completion_date) : undefined,
-      })) || [];
-
-      setCourses(formattedCourses);
+      setCourses(data || []);
     } catch (error) {
       console.error('Error fetching courses:', error);
       toast.error('Failed to load CE courses');
@@ -131,7 +123,7 @@ export const useInsuranceAgent = () => {
     if (!agent?.id) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('ce_reminders')
         .select('*')
         .eq('agent_id', agent.id)
@@ -140,15 +132,7 @@ export const useInsuranceAgent = () => {
 
       if (error) throw error;
 
-      const formattedReminders = data?.map(reminder => ({
-        ...reminder,
-        reminder_type: reminder.reminder_type as 'CE Due Soon' | 'License Expiry' | 'Deficiency' | 'Compliance Check',
-        reminder_status: reminder.reminder_status as 'pending' | 'sent' | 'acknowledged' | 'resolved',
-        trigger_date: reminder.trigger_date ? new Date(reminder.trigger_date) : undefined,
-        resolved_date: reminder.resolved_date ? new Date(reminder.resolved_date) : undefined,
-      })) || [];
-
-      setReminders(formattedReminders);
+      setReminders(data || []);
     } catch (error) {
       console.error('Error fetching reminders:', error);
       toast.error('Failed to load reminders');
@@ -159,7 +143,7 @@ export const useInsuranceAgent = () => {
     if (!agent?.id) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('ce_courses')
         .insert([{
           ...course,
@@ -171,18 +155,13 @@ export const useInsuranceAgent = () => {
 
       if (error) throw error;
 
-      const newCourse = {
-        ...data,
-        completion_date: data.completion_date ? new Date(data.completion_date) : undefined,
-      };
-
-      setCourses(prev => [newCourse, ...prev]);
+      setCourses(prev => [data, ...prev]);
       toast.success('CE course added successfully!');
       
       // Refresh agent data to update credits
       await fetchAgent();
       
-      return newCourse;
+      return data;
     } catch (error) {
       console.error('Error adding course:', error);
       toast.error('Failed to add CE course');
@@ -205,7 +184,7 @@ export const useInsuranceAgent = () => {
         (updateData as any).ce_reporting_period_end = updateData.ce_reporting_period_end.toISOString().split('T')[0];
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('insurance_agents')
         .update(updateData as any)
         .eq('id', agent.id)
@@ -214,18 +193,10 @@ export const useInsuranceAgent = () => {
 
       if (error) throw error;
 
-      const updatedAgent = {
-        ...data,
-        status: data.status as 'active' | 'inactive' | 'suspended',
-        license_expiry: data.license_expiry ? new Date(data.license_expiry) : undefined,
-        ce_reporting_period_start: data.ce_reporting_period_start ? new Date(data.ce_reporting_period_start) : undefined,
-        ce_reporting_period_end: data.ce_reporting_period_end ? new Date(data.ce_reporting_period_end) : undefined,
-      };
-
-      setAgent(updatedAgent);
+      setAgent(data);
       toast.success('Agent profile updated successfully!');
       
-      return updatedAgent;
+      return data;
     } catch (error) {
       console.error('Error updating agent:', error);
       toast.error('Failed to update agent profile');
@@ -237,7 +208,7 @@ export const useInsuranceAgent = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('insurance_agents')
         .insert([{
           ...agentData,
@@ -251,18 +222,10 @@ export const useInsuranceAgent = () => {
 
       if (error) throw error;
 
-      const newAgent = {
-        ...data,
-        status: data.status as 'active' | 'inactive' | 'suspended',
-        license_expiry: data.license_expiry ? new Date(data.license_expiry) : undefined,
-        ce_reporting_period_start: data.ce_reporting_period_start ? new Date(data.ce_reporting_period_start) : undefined,
-        ce_reporting_period_end: data.ce_reporting_period_end ? new Date(data.ce_reporting_period_end) : undefined,
-      };
-
-      setAgent(newAgent);
+      setAgent(data);
       toast.success('Agent profile created successfully!');
       
-      return newAgent;
+      return data;
     } catch (error) {
       console.error('Error creating agent:', error);
       toast.error('Failed to create agent profile');
