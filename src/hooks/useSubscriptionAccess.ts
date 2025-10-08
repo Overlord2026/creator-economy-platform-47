@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';  // ← Fixed import
+import { sb } from '@/lib/supabase-relaxed';  // ← Fixed import
 import { useToast } from '@/hooks/use-toast';
 import { SubscriptionTierType, AddOnAccess, UsageCounters, UsageLimits } from '@/types/subscription';
 
@@ -23,7 +23,7 @@ export function useSubscriptionAccess() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (user) {
         await fetchSubscriptionData();
       } else {
@@ -45,7 +45,7 @@ export function useSubscriptionAccess() {
           stripe_customer_id,
           stripe_subscription_id
         `)
-        .eq('id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('id', (await sb.auth.getUser()).data.user?.id)
         .single();
 
       if (error) {
@@ -134,7 +134,7 @@ export function useSubscriptionAccess() {
 
   const syncWithStripe = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('check-subscription');
+      const { data, error } = await sb.functions.invoke('check-subscription');
       
       if (error) throw error;
       
