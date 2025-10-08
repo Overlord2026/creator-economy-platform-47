@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+const sb = supabase as any;
 import { useAuth } from '@/context/AuthContext';
 import { OnboardingStepData } from '@/types/onboarding';
 import { toast } from 'sonner';
@@ -31,7 +32,7 @@ export const useOnboardingProgress = () => {
 
   const loadProgress = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('onboarding_flow_progress')
         .select('*')
         .eq('user_id', user?.id)
@@ -83,7 +84,7 @@ export const useOnboardingProgress = () => {
 
       if (progress?.id) {
         // Update existing progress
-        const { error } = await supabase
+        const { error } = await sb
           .from('onboarding_flow_progress')
           .update(progressData)
           .eq('id', progress.id);
@@ -91,11 +92,11 @@ export const useOnboardingProgress = () => {
         if (error) throw error;
       } else {
         // Create new progress record
-        const { data, error } = await supabase
+        const { data, error } = await sb
           .from('onboarding_flow_progress')
           .insert(progressData)
           .select()
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
         
@@ -126,7 +127,7 @@ export const useOnboardingProgress = () => {
     if (!progress?.id) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('onboarding_flow_progress')
         .update({
           status: 'completed',
@@ -154,7 +155,7 @@ export const useOnboardingProgress = () => {
     if (!progress?.id) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('onboarding_flow_progress')
         .update({ status: 'abandoned' })
         .eq('id', progress.id);
