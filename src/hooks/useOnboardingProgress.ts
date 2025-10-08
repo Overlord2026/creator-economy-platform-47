@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+const sb = supabase as any;
+
 import { useAuth } from '@/context/AuthContext';
 import { OnboardingStepData } from '@/types/onboarding';
 import { toast } from 'sonner';

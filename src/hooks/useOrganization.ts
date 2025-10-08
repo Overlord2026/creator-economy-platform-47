@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+const sb = supabase as any;
+
 import { Employee, Organization, OrganizationRole } from '@/types/operations';
 
 export const useOrganization = () => {
