@@ -1,9 +1,5 @@
-import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
-
-type MeetOffering = Database['public']['Tables']['meet_offerings']['Row'];
-type MeetWindow = Database['public']['Tables']['meet_windows']['Row'];
-type MeetBooking = Database['public']['Tables']['meet_bookings']['Row'];
+import { sb } from '@/lib/supabase-relaxed';
+const supabase = sb as any;
 
 export interface OfferingFormData {
   title: string;

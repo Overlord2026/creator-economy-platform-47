@@ -2,10 +2,6 @@ import { useState, useEffect } from 'react';
 import { sb } from '@/lib/supabase-relaxed';
 const supabase = sb as any;
 import { useAuth } from '@/context/AuthContext';
-import type { Database } from '@/integrations/supabase/types';
-
-type TenantRow = Database['public']['Tables']['tenants']['Row'];
-type TenantSettingsRow = Database['public']['Tables']['tenant_settings']['Row'];
 
 export interface Tenant {
   id: string;
