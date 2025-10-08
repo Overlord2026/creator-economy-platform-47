@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "pnpm run build:web",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -16,7 +16,9 @@
     "typegen:ci": "scripts/ops/typegen.sh",
     "supa:login": "npx supabase@latest login",
     "supa:whoami": "npx supabase@latest projects list -o json | head -n 20",
-    "typegen:openapi": "scripts/ops/openapi-typegen.sh"
+    "typegen:openapi": "scripts/ops/openapi-typegen.sh",
+    "build:web": "vite build",
+    "build:functions": "echo 'skip functions'"
   },
   "dependencies": {
     "@axe-core/react": "^4.10.2",
@@ -160,5 +162,13 @@
       "react": "18.3.1",
       "react-dom": "18.3.1"
     }
+  },
+  "overrides": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "resolutions": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   }
 }
