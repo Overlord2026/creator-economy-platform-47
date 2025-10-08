@@ -1,19 +1,18 @@
-/**
- * Minimal augmentation so code like Tables<"franchise_referrals"> compiles
- * even when the generated supabase.ts lacks these tables (bootstrap/dev).
- * This has no runtime effect; it's types-only.
- */
-import type { Database as GenDB } from "@/types/supabase";
-
-declare module "@/types/supabase" {
-  // Extend the generated Database type with stubs
+import type { Database as GenDB } from '@/types/supabase';
+declare module '@/types/supabase' {
   interface Database {
-    public: GenDB["public"] & {
-      Tables: GenDB["public"]["Tables"] & {
+    public: GenDB['public'] & {
+      Tables: GenDB['public']['Tables'] & {
         franchise_referrals?: {
-          Row: { id: string; created_at?: string; status?: string };
-          Insert: Partial<{ id: string; created_at: string; status: string }>;
-          Update: Partial<{ id: string; created_at: string; status: string }>;
+          Row: { id: string; created_at?: string; status?: string; code?: string };
+          Insert: Partial<{ id: string; created_at: string; status: string; code: string }>;
+          Update: Partial<{ id: string; created_at: string; status: string; code: string }>;
+          Relationships: [];
+        };
+        franchise_referral_payouts?: {
+          Row: { id: string; referral_id: string; amount_cents?: number; status?: string };
+          Insert: Partial<{ id: string; referral_id: string; amount_cents: number; status: string }>;
+          Update: Partial<{ id: string; referral_id: string; amount_cents: number; status: string }>;
           Relationships: [];
         };
         insurance_agents?: {
