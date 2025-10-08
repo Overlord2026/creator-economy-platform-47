@@ -1,3 +1,42 @@
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+
+const targets = [
+  'src/hooks/useLeads.ts',
+  'src/hooks/useOnboardingProgress.ts',
+  'src/hooks/useOrganization.ts',
+];
+
+function relaxSupabaseIn(file) {
+  if (!existsSync(file)) { console.log('skip (missing):', file); return; }
+  let s = readFileSync(file, 'utf8');
+
+  // only operate on files that import the typed client
+  if (!s.includes("@/integrations/supabase/client")) {
+    console.log('skip (no supabase import):', file);
+    return;
+  }
+
+  // insert local any-cast once right after the supabase import
+  if (!/const\s+sb\s*=\s*supabase\s+as\s+any\s*;?/.test(s)) {
+    s = s.replace(
+      /(import\s+\{\s*supabase\s*\}\s+from\s+['"]@\/integrations\/supabase\/client['"];?\s*)/,
+      '$1\nconst sb = supabase as any;\n'
+    );
+  }
+
+  // replace calls to the typed client in this file only
+  s = s.replace(/\bsupabase\.(from|rpc)\(/g, 'sb.$1(');
+
+  // safer when rows may not exist yet
+  s = s.replace(/\.single\(\)/g, '.maybeSingle()');
+
+  writeFileSync(file, s);
+  console.log('relaxed generics in:', file);
+}
+
+function augmentTypes() {
+  const path = 'src/integrations/supabase/types-augment.d.ts';
+  const augment = `
 // AUTO-GENERATED: stubs for missing tables while bootstrapping.
 // Remove when schema + typegen include these and the casts are gone.
 
@@ -76,3 +115,12 @@ declare module './types' {
     };
   }
 }
+`.trimStart();
+
+  writeFileSync(path, augment);
+  console.log('wrote augmentation:', path);
+}
+
+// run
+targets.forEach(relaxSupabaseIn);
+augmentTypes();

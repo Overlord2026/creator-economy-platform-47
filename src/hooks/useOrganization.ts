@@ -25,7 +25,7 @@ export const useOrganization = () => {
           .from('employees')
           .select('*')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (employeeError) {
           if (employeeError.code === 'PGRST116') {
@@ -45,7 +45,7 @@ export const useOrganization = () => {
           .from('organizations')
           .select('*')
           .eq('id', employeeData.organization_id)
-          .single();
+          .maybeSingle();
 
         if (orgError) {
           setError(orgError.message);

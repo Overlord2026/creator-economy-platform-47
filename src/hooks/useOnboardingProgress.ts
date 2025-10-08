@@ -97,7 +97,7 @@ export const useOnboardingProgress = () => {
           .from('onboarding_flow_progress')
           .insert(progressData)
           .select()
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
         
