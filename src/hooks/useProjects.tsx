@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { sb } from '@/lib/supabase-relaxed';
+const supabase = sb as any;
 import { useToast } from '@/hooks/use-toast';
 
 export interface Project {

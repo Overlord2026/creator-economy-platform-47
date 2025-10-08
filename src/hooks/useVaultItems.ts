@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
+const supabase = sb as any;
 import { useToast } from '@/hooks/use-toast';
-import type { Database } from '@/integrations/supabase/types';
 
-type VaultItem = Database['public']['Tables']['vault_items']['Row'];
+type VaultItem = any;
 
 export function useVaultItems() {
   const [items, setItems] = useState<VaultItem[]>([]);

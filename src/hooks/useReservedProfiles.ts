@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
+const supabase = sb as any;
 import { ReservedProfile, CreateReservedProfileRequest, ClaimProfileRequest } from '@/types/reservedProfiles';
 import { useToast } from '@/hooks/use-toast';
 

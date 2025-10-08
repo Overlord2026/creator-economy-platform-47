@@ -1,5 +1,6 @@
 import React from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
+const supabase = sb as any;
 
 export interface ReadinessStatus {
   ready: boolean;
