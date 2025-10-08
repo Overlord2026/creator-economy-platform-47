@@ -3,7 +3,7 @@
  * Handles RDS creation, anchoring, and verification
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { inputs_hash } from '@/lib/canonical';
 
 export interface RDS {
@@ -77,7 +77,7 @@ export async function recordReceipt(rds: RDS): Promise<string> {
  */
 export async function anchorSingle(receiptId: string): Promise<AnchorRef> {
   try {
-    const { data, error } = await supabase.functions.invoke('nil-anchor-resolver', {
+    const { data, error } = await sb.functions.invoke('nil-anchor-resolver', {
       body: {
         receiptIds: [receiptId],
         anchorType: 'timestamping',
@@ -118,7 +118,7 @@ export async function anchorBatch(options: { sinceIso?: string } = {}): Promise<
 
     const receiptIds = receipts.map(r => r.id);
 
-    const { data, error } = await supabase.functions.invoke('nil-anchor-resolver', {
+    const { data, error } = await sb.functions.invoke('nil-anchor-resolver', {
       body: {
         receiptIds,
         anchorType: 'blockchain',

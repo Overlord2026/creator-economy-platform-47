@@ -1,6 +1,6 @@
 
 // Service to fetch market data from free APIs
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { CONFIG } from '@/config/flags';
 import { withDemoFallback } from './demoService';
 
@@ -33,7 +33,7 @@ export const fetchStockStats = async (tickers: string[], holdings?: Array<{ticke
   portfolioMetrics?: PortfolioMetrics;
 }> => {
   return withDemoFallback(async () => {
-    const { data, error } = await supabase.functions.invoke('finnhub-stock-stats', {
+    const { data, error } = await sb.functions.invoke('finnhub-stock-stats', {
       body: { tickers, holdings }
     });
 

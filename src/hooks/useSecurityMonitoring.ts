@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { analytics } from '@/lib/analytics';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface SecurityEvent {
   eventType: string;
@@ -32,7 +32,7 @@ export const useSecurityMonitoring = () => {
       });
 
       // Log to database via edge function for server-side audit trail
-      await supabase.functions.invoke('log-security-event', {
+      await sb.functions.invoke('log-security-event', {
         body: {
           event_type: event.eventType,
           severity: event.severity,

@@ -7,7 +7,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Plus, Search, Filter, Eye, Edit2, Phone, Mail, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface Lead {

@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { tableExists, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -187,7 +187,7 @@ export default function RIALicenseWizard() {
 
   const createLicenseRequest = async () => {
     try {
-      const { data: user } = await supabase.auth.getUser();
+      const { data: user } = await sb.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
 
       const hasRequests = await tableExists('ria_state_license_requests');
@@ -237,7 +237,7 @@ export default function RIALicenseWizard() {
       const fileExt = file.name.split('.').pop();
       const fileName = `${requestId}/${docType}.${fileExt}`;
       
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await sb.storage
         .from('ria-documents')
         .upload(fileName, file);
 

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { EdgeFunctionClient } from '@/services/edgeFunction/EdgeFunctionClient';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 
 export interface Transfer {
@@ -61,7 +61,7 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
       console.log('TransfersContext: Starting fetchTransfers');
       setLoading(true);
       
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await sb.auth.getUser();
       
       if (userError) {
         console.error('TransfersContext: Authentication error:', userError);
@@ -188,7 +188,7 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       console.log('TransfersContext: Cleaning up real-time subscription');
-      supabase.removeChannel(channel);
+      sb.removeChannel(channel);
     };
   }, []);
 

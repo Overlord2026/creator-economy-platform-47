@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Download, Share2, Mail, FileText, Image, QrCode } from 'lucide-react';
 import { OnePageOverviewGenerator } from '@/components/founding20/OnePageOverviewGenerator';
 import { track } from '@/lib/analytics/track';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 const Founding20OverviewPage: React.FC = () => {
   useEffect(() => {
@@ -20,7 +20,7 @@ const Founding20OverviewPage: React.FC = () => {
       });
 
       // Track in Supabase
-      await supabase.from('overview_analytics').insert({
+      await sb.from('overview_analytics').insert({
         segment: 'all',
         action: 'page_viewed',
         utm_source: urlParams.get('utm_source'),

@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface ZoomMeetingData {
   topic: string;
@@ -37,7 +37,7 @@ export class ZoomIntegration {
   async createMeeting(leadId: string, advisorId: string, meetingData: ZoomMeetingData): Promise<ZoomMeeting> {
     try {
       // Call Zoom API through our edge function to avoid CORS issues
-      const { data, error } = await supabase.functions.invoke('zoom-integration', {
+      const { data, error } = await sb.functions.invoke('zoom-integration', {
         body: {
           action: 'create_meeting',
           leadId,
@@ -74,7 +74,7 @@ export class ZoomIntegration {
 
   async getMeetings(advisorId: string): Promise<ZoomMeeting[]> {
     try {
-      const { data, error } = await supabase.functions.invoke('zoom-integration', {
+      const { data, error } = await sb.functions.invoke('zoom-integration', {
         body: {
           action: 'list_meetings',
           advisorId
@@ -91,7 +91,7 @@ export class ZoomIntegration {
 
   async updateMeeting(meetingId: string, updates: Partial<ZoomMeetingData>): Promise<ZoomMeeting> {
     try {
-      const { data, error } = await supabase.functions.invoke('zoom-integration', {
+      const { data, error } = await sb.functions.invoke('zoom-integration', {
         body: {
           action: 'update_meeting',
           meetingId,
@@ -109,7 +109,7 @@ export class ZoomIntegration {
 
   async deleteMeeting(meetingId: string): Promise<void> {
     try {
-      const { error } = await supabase.functions.invoke('zoom-integration', {
+      const { error } = await sb.functions.invoke('zoom-integration', {
         body: {
           action: 'delete_meeting',
           meetingId

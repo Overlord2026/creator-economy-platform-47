@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Upload, Check, AlertCircle, Plus, X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from "sonner";
 
 const ONBOARDING_STEPS = [
@@ -210,7 +210,7 @@ export default function ProfessionalOnboarding() {
     setSubmitting(true);
     try {
       // Create professional account
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const { data: authData, error: authError } = await sb.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {

@@ -5,7 +5,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, CheckCircle, Key, RefreshCw, Settings, TestTube } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { useNavigate } from 'react-router-dom';
 
 interface APISecret {
@@ -140,7 +140,7 @@ export function APIKeyManager() {
     for (const secret of updatedSecrets) {
       try {
         // Call a test function to check if the secret exists
-        const { data, error } = await supabase.functions.invoke('check-api-keys', {
+        const { data, error } = await sb.functions.invoke('check-api-keys', {
           body: { secretName: secret.name }
         });
         

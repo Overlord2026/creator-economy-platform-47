@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 
 export interface BankAccount {
@@ -41,7 +41,7 @@ export function BankAccountsProvider({ children }: { children: React.ReactNode }
   const fetchAccounts = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) { setAccounts([]); return; }
       const res = await safeQueryOptionalTable<any>('bank_accounts', '*', { user_id: user.id });
       const mappedAccounts = res.ok ? (res.data || []).map((acc: any) => ({
@@ -63,7 +63,7 @@ export function BankAccountsProvider({ children }: { children: React.ReactNode }
   }): Promise<boolean> => {
     setSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) return false;
 
       const { data, error } = await supabase

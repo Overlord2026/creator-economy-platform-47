@@ -3,7 +3,7 @@
  * Maintains compatibility with existing advisor meetings
  */
 
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import type { OfferingFormData, WindowFormData, BookingFormData } from '../schedulerApi';
 
 export const advisorAdapter = {

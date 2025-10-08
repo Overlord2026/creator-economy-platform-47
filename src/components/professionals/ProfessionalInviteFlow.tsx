@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '@/context/UserContext';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 interface InviteData {
@@ -202,7 +202,7 @@ export function ProfessionalInviteFlow({ isOpen, onClose, professionalType = 'ad
 
           // Send email via edge function (if not scheduled)
           if (!inviteData.scheduledSend) {
-            const { error: emailError } = await supabase.functions.invoke('send-client-invitation', {
+            const { error: emailError } = await sb.functions.invoke('send-client-invitation', {
               body: {
                 to: recipient.email,
                 recipientName: recipient.name,

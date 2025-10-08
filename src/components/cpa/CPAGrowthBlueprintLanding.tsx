@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from '@/hooks/use-toast';
 import { CheckCircle, Download, ArrowRight, Star, Users, TrendingUp } from 'lucide-react';
 
@@ -40,7 +40,7 @@ export const CPAGrowthBlueprintLanding: React.FC = () => {
 
     try {
       // Call edge function to process lead magnet submission
-      const { data, error } = await supabase.functions.invoke('process-lead-magnet', {
+      const { data, error } = await sb.functions.invoke('process-lead-magnet', {
         body: {
           leadMagnetSlug: 'cpa-growth-blueprint',
           formData: formData

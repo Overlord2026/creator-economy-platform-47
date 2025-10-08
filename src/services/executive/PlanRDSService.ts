@@ -3,7 +3,7 @@
  * Manages Plan-RDS generation with verification and anchoring
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface PlanRDS {
   id: string;
@@ -94,7 +94,7 @@ export class PlanRDSService {
     const approvalsHash = await this.calculateApprovalsHash(approvals);
 
     // Generate RDS using database function
-    const { data: rdsId, error } = await supabase.rpc('generate_plan_rds', {
+    const { data: rdsId, error } = await sb.rpc('generate_plan_rds', {
       p_plan_id: planId,
       p_inputs_hash: inputsHash,
       p_model_version: modelVersion,

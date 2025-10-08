@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { tableExists, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 import { useToast } from '@/hooks/use-toast';
 import { MapPin, FileText, CheckCircle, Clock, AlertTriangle, Plus } from 'lucide-react';
@@ -149,7 +149,7 @@ export default function RIAStateLicensing() {
 
   const startLicenseProcess = async (stateCode: string) => {
     try {
-      const { data: user } = await supabase.auth.getUser();
+      const { data: user } = await sb.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
 
       const hasRequests = await tableExists('ria_state_license_requests');

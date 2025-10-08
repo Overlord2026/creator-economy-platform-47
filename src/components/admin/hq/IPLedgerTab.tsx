@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Download, ExternalLink } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 interface IPFiling {
@@ -43,7 +43,7 @@ export function IPLedgerTab() {
 
   const fetchIPFilings = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('ip-filings');
+      const { data, error } = await sb.functions.invoke('ip-filings');
 
       if (error) throw error;
 

@@ -2,7 +2,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { analytics } from '@/lib/analytics';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 // Export the missing types that components expect
 export interface AnalyticsData {
@@ -41,7 +41,7 @@ export const useAnalytics = (tenantId?: string, dateRange?: { from: Date; to: Da
     setError(null);
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       // Calculate date range

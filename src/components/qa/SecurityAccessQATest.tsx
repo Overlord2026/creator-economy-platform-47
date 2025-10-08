@@ -18,7 +18,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface QAResult {
   feature: string;
@@ -335,7 +335,7 @@ export const SecurityAccessQATest: React.FC = () => {
   const testSessionExpiration = async (): Promise<boolean> => {
     try {
       // Check if session expiration handling is in place
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await sb.auth.getSession();
       // In a real test, this would simulate an expired session
       return true; // Mock successful test
     } catch (error) {

@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/context/UserContext';
 import { useRoleContext } from '@/context/RoleContext';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { NavItem } from '@/types/navigation';
 import { 
   Accordion,
@@ -499,7 +499,7 @@ export function AccordionSidebar({ className }: AccordionSidebarProps) {
           size="sm"
           className="w-full justify-start gap-2 text-bfo-gold hover:bg-bfo-gold/10 hover:text-bfo-gold"
           onClick={async () => {
-            await supabase.auth.signOut();
+            await sb.auth.signOut();
             window.location.href = '/';
           }}
         >

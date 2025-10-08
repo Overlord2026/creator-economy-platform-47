@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "@/context/UserContext";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 
 /**
  * DynamicLandingController - Routes users to appropriate pages based on segment and profile

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FamilyOnboardingWelcome } from './FamilyOnboardingWelcome';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 export const OnboardingPage: React.FC = () => {
@@ -21,7 +21,7 @@ export const OnboardingPage: React.FC = () => {
       // Handle OAuth providers with proper callback URL
       console.log(`Initiating ${provider} OAuth with callback URL: https://my.bfocfo.com/auth/callback`);
       
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { error } = await sb.auth.signInWithOAuth({
         provider: provider as any,
         options: {
           redirectTo: 'https://my.bfocfo.com/auth/callback',

@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { Star, DollarSign, Calculator, FileDown, MessageSquare, TrendingUp } from 'lucide-react';
 
 interface LenderReview {
@@ -79,7 +79,7 @@ export function LendingEnhancedFeatures() {
       const result = await safeInsert('lender_reviews', {
         ...reviewForm,
         lender_partner_id: 'example-lender-id', // Would be dynamic
-        user_id: (await supabase.auth.getUser()).data.user?.id
+        user_id: (await sb.auth.getUser()).data.user?.id
       });
 
       if (!result.ok) throw new Error(result.error);
@@ -129,7 +129,7 @@ export function LendingEnhancedFeatures() {
         await safeInsert('loan_scenarios', {
           ...scenarioForm,
           calculated_results: mockCalculationResult,
-          user_id: (await supabase.auth.getUser()).data.user?.id
+          user_id: (await sb.auth.getUser()).data.user?.id
         });
       }
 
@@ -161,7 +161,7 @@ export function LendingEnhancedFeatures() {
             title: 'Lending Offers Summary',
             generated_at: new Date().toISOString()
           },
-          user_id: (await supabase.auth.getUser()).data.user?.id
+          user_id: (await sb.auth.getUser()).data.user?.id
         });
       }
 

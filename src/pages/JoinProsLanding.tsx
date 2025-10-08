@@ -23,7 +23,7 @@ import LinkedInSuccessModal from '@/components/professionals/LinkedInSuccessModa
 import OnboardingStepsModal from '@/components/professionals/OnboardingStepsModal';
 import ManualProfileForm from '@/components/professionals/ManualProfileForm';
 import CelebrationEffects from '@/components/effects/CelebrationEffects';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 const JoinProsLanding = () => {
@@ -39,7 +39,7 @@ const JoinProsLanding = () => {
     setLoading(true);
     
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await sb.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
         options: {
           redirectTo: `${window.location.origin}/professional-onboarding-success`
@@ -74,7 +74,7 @@ const JoinProsLanding = () => {
     setLoading(true);
     try {
       // Create user account
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+      const { data: authData, error: signUpError } = await sb.auth.signUp({
         email: formData.email,
         password: 'temp-password-' + Math.random().toString(36),
         options: {

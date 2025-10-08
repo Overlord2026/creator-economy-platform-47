@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { Users, ArrowRight } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface FormData {
   first_name: string;
@@ -45,7 +45,7 @@ export default function FamilyOnboarding() {
 
     try {
       // Get current user session
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await sb.auth.getSession();
       
       if (!session?.user) {
         toast({

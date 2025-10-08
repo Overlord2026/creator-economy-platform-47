@@ -18,7 +18,7 @@ import {
   Keyboard,
   Eye
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface ButtonState {
   component: string;
@@ -104,7 +104,7 @@ export default function ButtonsAuditPage() {
       setLoading(true);
       setError(null);
       
-      const { data, error: functionError } = await supabase.functions.invoke('buttons-audit');
+      const { data, error: functionError } = await sb.functions.invoke('buttons-audit');
       
       if (functionError) {
         throw new Error(functionError.message || 'Failed to fetch audit data');

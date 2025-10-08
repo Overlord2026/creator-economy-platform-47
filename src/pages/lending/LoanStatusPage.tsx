@@ -16,7 +16,7 @@ import {
   Calendar,
   Bell
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -153,7 +153,7 @@ export const LoanStatusPage: React.FC = () => {
       });
 
     return () => {
-      supabase.removeChannel(channel);
+      sb.removeChannel(channel);
     };
   };
 

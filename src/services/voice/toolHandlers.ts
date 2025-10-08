@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { analytics } from '@/lib/analytics';
 
 // Tool handler interfaces
@@ -201,7 +201,7 @@ export class VoiceToolHandlers {
   // Receipt emission helpers
   private static async emitClaimIntakeReceipt(intake: ClaimIntake, claimId: string): Promise<void> {
     try {
-      await supabase.functions.invoke('store-receipt', {
+      await sb.functions.invoke('store-receipt', {
         body: {
           receiptType: 'ClaimIntake-RDS',
           data: {
@@ -220,7 +220,7 @@ export class VoiceToolHandlers {
 
   private static async emitClaimRecordReceipt(claim: any): Promise<void> {
     try {
-      await supabase.functions.invoke('store-receipt', {
+      await sb.functions.invoke('store-receipt', {
         body: {
           receiptType: 'ClaimRecord-RDS',
           data: {
@@ -239,7 +239,7 @@ export class VoiceToolHandlers {
 
   private static async emitTaskReceipt(task: any): Promise<void> {
     try {
-      await supabase.functions.invoke('store-receipt', {
+      await sb.functions.invoke('store-receipt', {
         body: {
           receiptType: 'Task-RDS',
           data: {
@@ -258,7 +258,7 @@ export class VoiceToolHandlers {
 
   private static async emitAccessReceipt(accessType: string, resourceId: string, data: any): Promise<void> {
     try {
-      await supabase.functions.invoke('store-receipt', {
+      await sb.functions.invoke('store-receipt', {
         body: {
           receiptType: 'Access-RDS',
           data: {
@@ -277,7 +277,7 @@ export class VoiceToolHandlers {
 
   private static async emitQuoteSessionReceipt(quoteSession: any): Promise<void> {
     try {
-      await supabase.functions.invoke('store-receipt', {
+      await sb.functions.invoke('store-receipt', {
         body: {
           receiptType: 'QuoteSession-RDS',
           data: {

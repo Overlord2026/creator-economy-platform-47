@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/components/ui/Logo';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from '@/hooks/use-toast';
 import { playWelcome } from '@/utils/voiceAI';
 import { Loader2 } from 'lucide-react';
@@ -35,7 +35,7 @@ export function FullScreenWelcome({ onAuthSuccess }: FullScreenWelcomeProps) {
     setIsLoading(provider);
     
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await sb.auth.signInWithOAuth({
         provider: provider === 'apple' ? 'apple' : provider === 'azure' ? 'azure' : 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`

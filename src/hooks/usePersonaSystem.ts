@@ -3,7 +3,7 @@ import { AllPersonaTypes } from '@/types/personas';
 import { FeatureExtractor } from '@/services/persona/FeatureExtractor';
 import { HybridClassifier, ClassificationContext } from '@/services/persona/HybridClassifier';
 import { PersonaSelector } from '@/services/persona/PersonaSelector';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface PersonaSystemConfig {
   tenantId: string;
@@ -43,7 +43,7 @@ export const usePersonaSystem = (config: PersonaSystemConfig) => {
 
     try {
       // Get current user
-      const { data: user } = await supabase.auth.getUser();
+      const { data: user } = await sb.auth.getUser();
       if (!user.user) return;
 
       // Extract features
@@ -72,7 +72,7 @@ export const usePersonaSystem = (config: PersonaSystemConfig) => {
       }));
 
       // Log persona change
-      await supabase.from('persona_signals').insert({
+      await sb.from('persona_signals').insert({
         user_id: user.user.id,
         tenant_id: config.tenantId,
         signal_type: 'persona_switch',
@@ -92,7 +92,7 @@ export const usePersonaSystem = (config: PersonaSystemConfig) => {
 
   const forcePersona = useCallback(async (persona: AllPersonaTypes) => {
     // Get current user
-    const { data: user } = await supabase.auth.getUser();
+    const { data: user } = await sb.auth.getUser();
     if (!user.user) return;
 
     setState(prev => ({
@@ -104,7 +104,7 @@ export const usePersonaSystem = (config: PersonaSystemConfig) => {
     }));
 
     // Log manual override
-    await supabase.from('persona_signals').insert({
+    await sb.from('persona_signals').insert({
       user_id: user.user.id,
       tenant_id: config.tenantId,
       signal_type: 'manual_override',

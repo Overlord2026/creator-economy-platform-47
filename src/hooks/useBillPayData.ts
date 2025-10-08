@@ -1,6 +1,6 @@
 import { useMemo, useCallback, useEffect, useState } from "react";
 import { useSubscriptionAccess } from "@/hooks/useSubscriptionAccess";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from "@/hooks/use-toast";
 import { safeQueryOptionalTable } from "@/lib/db/safeSupabase";
 
@@ -204,7 +204,7 @@ export const useBillPayData = () => {
     }
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error("User not found");
 
       const { data, error } = await supabase
@@ -305,7 +305,7 @@ export const useBillPayData = () => {
 
   const payBill = async (billId: string, paymentDetails: Omit<BillTransaction, 'id' | 'user_id' | 'bill_id'>) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error("User not found");
 
       const { data, error } = await supabase

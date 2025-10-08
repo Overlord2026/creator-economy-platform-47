@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { analytics } from '@/lib/analytics';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface PostMeetingOutcomeModalProps {
   isOpen: boolean;
@@ -109,7 +109,7 @@ export function PostMeetingOutcomeModal({
       // For now, we'll just trigger the follow-up automation
 
       // Trigger follow-up automation via existing edge function
-      const { error } = await supabase.functions.invoke('automated-follow-up', {
+      const { error } = await sb.functions.invoke('automated-follow-up', {
         body: {
           leadId,
           outcome: selectedOutcome.id,

@@ -28,7 +28,7 @@ import {
   Settings
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface ClientInvitation {
   id: string;
@@ -138,7 +138,7 @@ export function ClientInviteOnboardingFlow() {
 
     setIsSending(true);
     try {
-      const { data, error } = await supabase.functions.invoke('bulk-invite', {
+      const { data, error } = await sb.functions.invoke('bulk-invite', {
         body: {
           invitations: bulkInviteList.map(invite => ({
             email: invite.email!,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useFeatureFlags } from '@/lib/featureFlags';
 import { useGate } from '@/hooks/useGate';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { analytics } from '@/lib/analytics';
 import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

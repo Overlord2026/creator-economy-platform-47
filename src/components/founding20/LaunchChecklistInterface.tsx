@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, Circle, Clock, User, Calendar, FileText, Mail } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { track } from '@/lib/analytics/track';
 
 interface ChecklistItem {
@@ -218,7 +218,7 @@ export const LaunchChecklistInterface: React.FC = () => {
     try {
       track('weekly_digest_requested', { timestamp: new Date().toISOString() });
       
-      const response = await supabase.functions.invoke('launch-digest', {
+      const response = await sb.functions.invoke('launch-digest', {
         body: { type: 'weekly' }
       });
 

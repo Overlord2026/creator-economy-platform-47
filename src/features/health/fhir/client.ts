@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 /**
  * SMART on FHIR client with OAuth shell and normalized summary

@@ -1,11 +1,11 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export async function healthcareFileOperations() {
   try {
     console.log('Starting healthcare file operations...');
     
     // Test storage operations for healthcare files
-    const { data: storageData, error: storageError } = await supabase.storage
+    const { data: storageData, error: storageError } = await sb.storage
       .from('healthcare-files')
       .list('', { limit: 10 });
     

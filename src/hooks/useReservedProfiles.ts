@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { ReservedProfile, CreateReservedProfileRequest, ClaimProfileRequest } from '@/types/reservedProfiles';
 import { useToast } from '@/hooks/use-toast';
 
@@ -37,7 +37,7 @@ export const useReservedProfiles = () => {
         .from('reserved_profiles')
         .insert([{
           ...profile,
-          created_by: (await supabase.auth.getUser()).data.user?.id
+          created_by: (await sb.auth.getUser()).data.user?.id
         }])
         .select()
         .single();
@@ -139,7 +139,7 @@ export const useReservedProfiles = () => {
         .insert([{
           reserved_profile_id: profileId,
           invitation_method: method,
-          sent_by: (await supabase.auth.getUser()).data.user?.id
+          sent_by: (await sb.auth.getUser()).data.user?.id
         }]);
 
       if (logError) throw logError;

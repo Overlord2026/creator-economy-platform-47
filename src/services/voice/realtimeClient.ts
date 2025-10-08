@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { VoiceContext } from '@/config/voice';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface EphemeralToken {
   token: string;
@@ -36,7 +36,7 @@ class RealtimeClient extends EventEmitter {
 
   async getEphemeralToken(): Promise<EphemeralToken> {
     try {
-      const { data, error } = await supabase.functions.invoke('rt-token', {
+      const { data, error } = await sb.functions.invoke('rt-token', {
         body: { purpose: 'voice_realtime' }
       });
 
@@ -122,7 +122,7 @@ class RealtimeClient extends EventEmitter {
     await this.pc.setLocalDescription(offer);
 
     // Send offer to OpenAI Realtime API via edge function
-    const response = await fetch(`https://xcmqjkvyvuhoslbzmlgi.functions.supabase.co/functions/v1/realtime-webrtc`, {
+    const response = await fetch(`https://xcmqjkvyvuhoslbzmlgi.functions.sb.co/functions/v1/realtime-webrtc`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,7 +147,7 @@ class RealtimeClient extends EventEmitter {
 
   private async connectWebSocket(options: ConnectionOptions): Promise<void> {
     return new Promise((resolve, reject) => {
-      const wsUrl = `wss://xcmqjkvyvuhoslbzmlgi.functions.supabase.co/functions/v1/realtime-chat`;
+      const wsUrl = `wss://xcmqjkvyvuhoslbzmlgi.functions.sb.co/functions/v1/realtime-chat`;
       
       this.ws = new WebSocket(wsUrl);
 

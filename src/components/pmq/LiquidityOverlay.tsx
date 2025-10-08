@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface LiquidityOverlayProps {
@@ -15,11 +15,11 @@ export default function LiquidityOverlay({ fundId, windowStart, windowEnd }: Liq
 
   useEffect(() => {
     (async () => {
-      const { data: rdiRow } = await supabase.from("rdi_scores").select("*")
+      const { data: rdiRow } = await sb.from("rdi_scores").select("*")
         .eq("fund_id", fundId).eq("window_start", windowStart).eq("window_end", windowEnd).maybeSingle();
       setRdi(rdiRow);
       
-      const { data: racRow } = await supabase.from("rac_scores").select("*")
+      const { data: racRow } = await sb.from("rac_scores").select("*")
         .eq("fund_id", fundId).eq("window_start", windowStart).eq("window_end", windowEnd).maybeSingle();
       setRac(racRow);
     })();

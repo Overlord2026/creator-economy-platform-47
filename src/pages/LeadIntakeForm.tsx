@@ -10,7 +10,7 @@ import { Slider } from '@/components/ui/slider';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { ArrowLeft, Phone, Mail, DollarSign, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -98,7 +98,7 @@ export const LeadIntakeForm: React.FC = () => {
     setIsSubmitting(true);
     try {
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       
       const leadData = {
         first_name: data.name.split(' ')[0],

@@ -3,7 +3,7 @@
  * Creates brand-safe sites with compliance injections
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { recordReceipt } from './receipts';
 import { inputs_hash } from '@/lib/canonical';
 

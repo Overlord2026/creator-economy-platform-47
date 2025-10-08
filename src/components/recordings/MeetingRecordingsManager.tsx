@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -115,7 +115,7 @@ export function MeetingRecordingsManager() {
       if (error) throw error;
 
       // Send share notification email
-      await supabase.functions.invoke('send-recording-share-notification', {
+      await sb.functions.invoke('send-recording-share-notification', {
         body: {
           to: shareEmail,
           recordingTitle: getRecordingTitle(selectedRecording),

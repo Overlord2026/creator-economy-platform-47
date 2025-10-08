@@ -13,7 +13,7 @@ import {
   Clock
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface ConsentRecord {
@@ -227,7 +227,7 @@ export const ConsentManager: React.FC = () => {
 
   const exportConsentHistory = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('export-user-data', {
+      const { data, error } = await sb.functions.invoke('export-user-data', {
         body: { 
           export_type: 'consent_history',
           format: 'pdf' 

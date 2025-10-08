@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { safeInsertOptionalTable, tableExists } from '@/lib/db/safeSupabase';
 import { useToast } from '@/hooks/use-toast';
 import { AlertTriangle, Shield, FileText, Users } from 'lucide-react';
@@ -72,7 +72,7 @@ export const SecurityIssueReportForm: React.FC<SecurityIssueReportFormProps> = (
   const onSubmit = async (data: ReportFormData) => {
     setIsSubmitting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       
       const reportData = {
         title: data.title,

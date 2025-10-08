@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-const sb = supabase as any;
+import { sb } from '@/lib/supabase-relaxed';
 
 import { useAuth } from '@/context/AuthContext';
 import { OnboardingStepData } from '@/types/onboarding';

@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import * as Canonical from "@/lib/canonical";
 
 export type PolicyBundle = {
@@ -59,7 +59,7 @@ export async function publishMockUpdate(domain: string, jurisdiction: string) {
     content_hash,
     effective_at: now,
     created_at: now,
-    created_by: (await supabase.auth.getUser()).data?.user?.id || "system"
+    created_by: (await sb.auth.getUser()).data?.user?.id || "system"
   };
 
   console.log("Mock policy bundle created:", mockBundle);

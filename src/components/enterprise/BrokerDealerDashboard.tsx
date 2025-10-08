@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useUser } from '@/context/UserContext';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 interface BrokerDealerStats {
@@ -108,7 +108,7 @@ export function BrokerDealerDashboard() {
 
   const handleComplianceExport = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('export-compliance-report', {
+      const { data, error } = await sb.functions.invoke('export-compliance-report', {
         body: { brokerDealerId: userProfile?.id, format: 'pdf' }
       });
 

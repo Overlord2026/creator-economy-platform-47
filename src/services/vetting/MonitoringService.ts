@@ -6,7 +6,7 @@
  * ===================================================
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { VettingEngine } from './VettingEngine';
 
 export interface MonitoringJob {
@@ -352,7 +352,7 @@ export class MonitoringService {
         .update({
           streak_count: 0,
           last_adverse_event_date: new Date().toISOString(),
-          flags: supabase.from('trust_scores').select('flags').eq('professional_id', anomaly.professional_id).single().then(
+          flags: sb.from('trust_scores').select('flags').eq('professional_id', anomaly.professional_id).single().then(
             result => [...(result.data?.flags || []), `${anomaly.anomaly_type}_detected`]
           )
         })

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, AlertTriangle, Play, Copy, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export const PlaidEnvironmentChecker: React.FC = () => {
   const [isChecking, setIsChecking] = useState(false);
@@ -17,7 +17,7 @@ export const PlaidEnvironmentChecker: React.FC = () => {
     setResult(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('check-plaid-environment', {});
+      const { data, error } = await sb.functions.invoke('check-plaid-environment', {});
       
       if (error) {
         throw error;
@@ -159,7 +159,7 @@ export const PlaidEnvironmentChecker: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <Button variant="outline" size="sm" asChild>
                           <a 
-                            href="https://supabase.com/dashboard/project/xcmqjkvyvuhoslbzmlgi/settings/functions" 
+                            href="https://sb.com/dashboard/project/xcmqjkvyvuhoslbzmlgi/settings/functions" 
                             target="_blank" 
                             rel="noopener noreferrer"
                           >

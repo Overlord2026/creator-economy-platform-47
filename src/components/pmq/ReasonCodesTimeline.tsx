@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type EventRow = { 
@@ -18,12 +18,12 @@ export default function ReasonCodesTimeline({ fundId }: ReasonCodesTimelineProps
 
   useEffect(() => {
     (async () => {
-      const { data: rdi } = await supabase.from("rdi_scores")
+      const { data: rdi } = await sb.from("rdi_scores")
         .select("created_at, reason_codes, receipt_sha256")
         .eq("fund_id", fundId)
         .order("created_at", { ascending: false });
         
-      const { data: rac } = await supabase.from("rac_scores")
+      const { data: rac } = await sb.from("rac_scores")
         .select("created_at, reason_codes, receipt_sha256")
         .eq("fund_id", fundId)
         .order("created_at", { ascending: false });

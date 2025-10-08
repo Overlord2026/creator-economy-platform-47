@@ -15,7 +15,7 @@ import {
   Download,
   RefreshCw
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface UsageStats {
@@ -140,7 +140,7 @@ export function CommunicationsAdminDashboard() {
 
   const addCredits = async (amount: number) => {
     try {
-      const { error } = await supabase.functions.invoke('add-communication-credits', {
+      const { error } = await sb.functions.invoke('add-communication-credits', {
         body: { amount }
       });
 
@@ -166,7 +166,7 @@ export function CommunicationsAdminDashboard() {
 
   const exportUsageReport = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('export-usage-report', {
+      const { data, error } = await sb.functions.invoke('export-usage-report', {
         body: { 
           startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
           endDate: new Date().toISOString()

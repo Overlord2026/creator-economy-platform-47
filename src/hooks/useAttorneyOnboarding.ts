@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 // Define types to match our database schema
@@ -68,7 +68,7 @@ export const useAttorneyOnboarding = () => {
   const fetchOnboardings = async () => {
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       // Use raw SQL query to work around type issues
@@ -100,7 +100,7 @@ export const useAttorneyOnboarding = () => {
   }) => {
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await (supabase as any).rpc('create_attorney_onboarding', {
@@ -235,7 +235,7 @@ export const useAttorneyOnboarding = () => {
       const fileName = `${Date.now()}_${file.name}`;
       const filePath = `attorney-documents/${onboardingId}/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await sb.storage
         .from('attorney-files')
         .upload(filePath, file);
 
@@ -278,7 +278,7 @@ export const useAttorneyOnboarding = () => {
       setLoading(true);
 
       // Delete from storage first
-      const { error: storageError } = await supabase.storage
+      const { error: storageError } = await sb.storage
         .from('attorney-files')
         .remove([filePath]);
 

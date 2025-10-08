@@ -3,7 +3,7 @@
  * Manages CLO policy DAG evaluation and legal gates
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export type PolicyNodeType = 'condition' | 'action' | 'gate';
 
@@ -167,7 +167,7 @@ export class CLOPolicyService {
     ];
 
     for (const node of defaultNodes) {
-      await supabase.from('clo_policy_nodes').insert(node);
+      await sb.from('clo_policy_nodes').insert(node);
     }
 
     // Create edges connecting the nodes
@@ -204,7 +204,7 @@ export class CLOPolicyService {
       ];
 
       for (const edge of defaultEdges) {
-        await supabase.from('clo_policy_edges').insert(edge);
+        await sb.from('clo_policy_edges').insert(edge);
       }
     }
   }

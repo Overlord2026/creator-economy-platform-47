@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/table';
 import { Download, Search, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { exportToCSV } from '@/utils/csv';
 import { CONFIG } from '@/config/flags';
 import { demoService } from '@/services/demoService';

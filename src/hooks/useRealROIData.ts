@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 
@@ -271,7 +271,7 @@ export function useRealROIData() {
           lead_status: leadData.status,
           lead_source: leadData.source,
           lead_value: leadData.budget,
-          advisor_id: (await supabase.auth.getUser()).data.user?.id || '',
+          advisor_id: (await sb.auth.getUser()).data.user?.id || '',
         }])
         .select()
         .single();
@@ -319,7 +319,7 @@ export function useRealROIData() {
           impressions: campaignData.impressions || 0,
           cpc: campaignData.clicks && campaignData.amount ? campaignData.amount / campaignData.clicks : 0,
           ctr: campaignData.clicks && campaignData.impressions ? (campaignData.clicks / campaignData.impressions) * 100 : 0,
-          advisor_id: (await supabase.auth.getUser()).data.user?.id || '',
+          advisor_id: (await sb.auth.getUser()).data.user?.id || '',
         }])
         .select()
         .single();
@@ -349,7 +349,7 @@ export function useRealROIData() {
   const importLeadsFromCSV = async (leads: any[]) => {
     setLoading(true);
     try {
-      const currentUser = await supabase.auth.getUser();
+      const currentUser = await sb.auth.getUser();
       const advisorId = currentUser.data.user?.id || '';
       
       const { data, error } = await supabase
@@ -391,7 +391,7 @@ export function useRealROIData() {
   const importAdSpendFromCSV = async (adSpend: any[]) => {
     setLoading(true);
     try {
-      const currentUser = await supabase.auth.getUser();
+      const currentUser = await sb.auth.getUser();
       const advisorId = currentUser.data.user?.id || '';
       
       const { data, error } = await supabase

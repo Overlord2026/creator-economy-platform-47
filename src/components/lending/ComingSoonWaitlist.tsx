@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Rocket, Zap, Globe, Brain, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface ComingSoonWaitlistProps {
   productType: 'ai_features' | 'international' | 'partner_signup';
@@ -96,7 +96,7 @@ const ComingSoonWaitlist: React.FC<ComingSoonWaitlistProps> = ({ productType }) 
       }
 
       // Send confirmation email via edge function
-      await supabase.functions.invoke('crm-notification-system', {
+      await sb.functions.invoke('crm-notification-system', {
         body: {
           action: 'send_notification',
           recipient_type: 'prospect',

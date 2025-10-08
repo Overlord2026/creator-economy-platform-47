@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { computeOverlap, persistOverlapResults, getSectorWeightConfigs, createSectorWeightConfig, type OverlapResult, type SectorWeightConfig } from '@/engines/private/overlap';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { Loader2, Settings, Info } from 'lucide-react';
 
 interface OverlapMatrixProps {
@@ -40,7 +40,7 @@ export function OverlapMatrix({ fundIds }: OverlapMatrixProps) {
 
   const loadSectorConfigs = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (user) {
         const configs = await getSectorWeightConfigs(user.id);
         setSectorConfigs(configs);
@@ -62,7 +62,7 @@ export function OverlapMatrix({ fundIds }: OverlapMatrixProps) {
 
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }
@@ -100,7 +100,7 @@ export function OverlapMatrix({ fundIds }: OverlapMatrixProps) {
 
   const handleCreateConfig = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }

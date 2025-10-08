@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { AdvisorCard } from '@/components/marketplace/AdvisorCard';
 import { InquiryModal } from '@/components/marketplace/InquiryModal';
 import { VoiceDrawer } from '@/components/voice/VoiceDrawer';

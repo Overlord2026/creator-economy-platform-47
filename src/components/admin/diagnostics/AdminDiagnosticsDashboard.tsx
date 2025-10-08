@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { RefreshCw, Download, Activity, Clock } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { EnvVariablesCheck, EnvFlags } from './EnvVariablesCheck';
 import { StripeApiCheck } from './StripeApiCheck';
@@ -35,7 +35,7 @@ export function AdminDiagnosticsDashboard() {
   const runDiagnostics = async () => {
     setIsLoading(true);
     try {
-      const { data: result, error } = await supabase.functions.invoke('admin-diagnostics');
+      const { data: result, error } = await sb.functions.invoke('admin-diagnostics');
       
       if (error) throw error;
       

@@ -1,7 +1,7 @@
 // Policy Token Service - Mints ephemeral JWT tokens with scopes
 // Signs tokens with server key and manages token lifecycle
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface PolicyTokenPayload {
   tenant_id: string;
@@ -266,7 +266,7 @@ export class TokenService {
     const canonicalBody = this.canonicalizeTokenBody(payload);
     const bodyHash = await this.computeHash('sha256', canonicalBody);
     
-    await supabase.from('policy_tokens').insert({
+    await sb.from('policy_tokens').insert({
       user_id: payload.user_id,
       tenant_id: payload.tenant_id,
       persona_id: payload.persona_id,

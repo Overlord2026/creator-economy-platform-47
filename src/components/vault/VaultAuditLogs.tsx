@@ -23,7 +23,7 @@ import {
   Monitor
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface AuditLogEntry {
   id: string;

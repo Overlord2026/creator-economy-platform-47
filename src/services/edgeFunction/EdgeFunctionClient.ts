@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export class EdgeFunctionClient {
   static async invoke<T = any>(
@@ -9,7 +9,7 @@ export class EdgeFunctionClient {
     }
   ): Promise<{ data: T | null; error: any }> {
     try {
-      const { data, error } = await supabase.functions.invoke(functionName, {
+      const { data, error } = await sb.functions.invoke(functionName, {
         body: options?.body,
         headers: options?.headers,
       });

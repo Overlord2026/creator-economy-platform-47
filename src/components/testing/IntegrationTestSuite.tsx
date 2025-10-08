@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, CheckCircle, XCircle, Clock, RefreshCw } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { safeInsertOptionalTable, safeQueryOptionalTable, safeUpdate, withFallback } from '@/lib/db/safeSupabase';
 
 interface SecurityTestResult {
@@ -178,7 +178,7 @@ export const IntegrationTestSuite: React.FC = () => {
     // Test 1: Database Connection
     updateTestStatus('Database Operations', 'db-connection', 'running');
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       updateTestStatus('Database Operations', 'db-connection', 'passed', 'Database connection successful');
     } catch (error) {
       updateTestStatus('Database Operations', 'db-connection', 'failed', undefined, 'Database connection failed');
@@ -207,7 +207,7 @@ export const IntegrationTestSuite: React.FC = () => {
     // Test 1: User Session
     updateTestStatus('Authentication', 'user-session', 'running');
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (user) {
         updateTestStatus('Authentication', 'user-session', 'passed', 'User session active');
       } else {
@@ -239,7 +239,7 @@ export const IntegrationTestSuite: React.FC = () => {
     // Test 1: Lead Creation (Mock)
     updateTestStatus('Lead Management', 'lead-creation', 'running');
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       // Mock lead creation test - simulate success

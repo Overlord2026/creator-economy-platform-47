@@ -12,7 +12,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useUser } from '@/context/UserContext';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -360,7 +360,7 @@ export function AttorneyOnboarding() {
 
     try {
       const fileName = `${userProfile?.id}/${fileType}_${Date.now()}_${file.name}`;
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await sb.storage
         .from('attorney-documents')
         .upload(fileName, file);
 

@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface AuthSmokeResult {
   testName: string;
@@ -53,7 +53,7 @@ export class AuthSmokeTest {
   private async testSignUp(): Promise<void> {
     const start = Date.now();
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await sb.auth.signUp({
         email: this.testEmail,
         password: this.testPassword,
         options: {
@@ -85,7 +85,7 @@ export class AuthSmokeTest {
   private async testSignIn(): Promise<void> {
     const start = Date.now();
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await sb.auth.signInWithPassword({
         email: this.testEmail,
         password: this.testPassword
       });
@@ -115,7 +115,7 @@ export class AuthSmokeTest {
   private async testSessionRefresh(): Promise<void> {
     const start = Date.now();
     try {
-      const { data, error } = await supabase.auth.refreshSession();
+      const { data, error } = await sb.auth.refreshSession();
 
       if (error) throw error;
 
@@ -142,7 +142,7 @@ export class AuthSmokeTest {
     const start = Date.now();
     try {
       // Test protected route access
-      const { data: session } = await supabase.auth.getSession();
+      const { data: session } = await sb.auth.getSession();
       
       if (!session.session) {
         throw new Error('No active session for guard test');
@@ -181,12 +181,12 @@ export class AuthSmokeTest {
   private async testSignOut(): Promise<void> {
     const start = Date.now();
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await sb.auth.signOut();
 
       if (error) throw error;
 
       // Verify session is cleared
-      const { data: session } = await supabase.auth.getSession();
+      const { data: session } = await sb.auth.getSession();
 
       this.results.push({
         testName: 'signout',

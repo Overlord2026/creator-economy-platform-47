@@ -1,5 +1,5 @@
 import React from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 type Filing = {
   id?: string;

@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Progress } from '@/components/ui/progress';
 import { Globe, Send, Users, Mail, Upload, Eye, Download, Languages, MapPin, Calendar, Star } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface VipInvitation {
   id: string;
@@ -88,7 +88,7 @@ const VipInviteManager: React.FC = () => {
         if (!invitation) continue;
 
         // Call edge function to send VIP invitation
-        const { error } = await supabase.functions.invoke('send-vip-invitation', {
+        const { error } = await sb.functions.invoke('send-vip-invitation', {
           body: {
             email: invitation.email,
             name: invitation.name,

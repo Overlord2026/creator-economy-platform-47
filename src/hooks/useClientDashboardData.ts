@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface DashboardMetrics {
   netWorth: number;
@@ -26,7 +26,7 @@ export const useClientDashboardData = () => {
 
   const fetchClientMetrics = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         setError('User not authenticated');
         return;
@@ -135,9 +135,9 @@ export const useClientDashboardData = () => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(dealsSubscription);
-      supabase.removeChannel(receiptsSubscription);
-      supabase.removeChannel(accountsSubscription);
+      sb.removeChannel(dealsSubscription);
+      sb.removeChannel(receiptsSubscription);
+      sb.removeChannel(accountsSubscription);
     };
   }, []);
 

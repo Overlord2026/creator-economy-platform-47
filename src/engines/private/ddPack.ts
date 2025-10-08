@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { calculatePM3Score } from '@/engines/portfolio/pm3';
 import { scoreLiquidity } from './liquidityIQ';
 import * as Canonical from '@/lib/canonical';

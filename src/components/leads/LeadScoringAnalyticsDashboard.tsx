@@ -27,7 +27,7 @@ import {
   Calendar,
   Filter
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface AnalyticsData {

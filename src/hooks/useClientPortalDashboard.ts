@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface ClientPortalMetrics {
@@ -22,7 +22,7 @@ export function useClientPortalDashboard() {
   const fetchMetrics = async () => {
     try {
       setLoading(true);
-      const user = (await supabase.auth.getUser()).data.user;
+      const user = (await sb.auth.getUser()).data.user;
       if (!user) throw new Error('Not authenticated');
 
       // Use existing tables to calculate metrics
@@ -91,8 +91,8 @@ export function useClientPortalDashboard() {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(profilesSubscription);
-      supabase.removeChannel(invitationsSubscription);
+      sb.removeChannel(profilesSubscription);
+      sb.removeChannel(invitationsSubscription);
     };
   }, []);
 

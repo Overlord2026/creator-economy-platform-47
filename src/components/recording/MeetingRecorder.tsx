@@ -26,7 +26,7 @@ import {
   Monitor,
   Camera
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface MeetingRecorderProps {
   clientId?: string;
@@ -250,7 +250,7 @@ const MeetingRecorder: React.FC<MeetingRecorderProps> = ({
     setUploadProgress(0);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       // Generate unique filename
@@ -259,7 +259,7 @@ const MeetingRecorder: React.FC<MeetingRecorderProps> = ({
       const fileName = `${user.id}/${timestamp}-${recordingTitle.replace(/[^a-zA-Z0-9]/g, '_')}.${extension}`;
 
       // Upload to Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await sb.storage
         .from('meeting-recordings')
         .upload(fileName, recordingBlob, {
           cacheControl: '3600',

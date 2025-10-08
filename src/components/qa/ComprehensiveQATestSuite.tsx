@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertCircle, CheckCircle, XCircle, Play, User, Shield, Globe, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useNavigate } from 'react-router-dom';
 
 interface TestResult {
@@ -81,11 +81,11 @@ export function ComprehensiveQATestSuite() {
     
     try {
       // First, ensure we're logged out
-      await supabase.auth.signOut();
+      await sb.auth.signOut();
       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Attempt to sign in
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await sb.auth.signInWithPassword({
         email: persona.email,
         password: persona.password,
       });
@@ -324,7 +324,7 @@ export function ComprehensiveQATestSuite() {
         }
         
         // Logout between personas
-        await supabase.auth.signOut();
+        await sb.auth.signOut();
         await new Promise(resolve => setTimeout(resolve, 500));
       }
 

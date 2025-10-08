@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,7 +22,7 @@ export function ConsentIssuerModal() {
     setLoading(true);
     try {
       const parsedScopes = JSON.parse(scopes);
-      const { data, error } = await supabase.functions.invoke('issue-consent', { 
+      const { data, error } = await sb.functions.invoke('issue-consent', { 
         body: { 
           subject_user: subject, 
           scopes: parsedScopes 

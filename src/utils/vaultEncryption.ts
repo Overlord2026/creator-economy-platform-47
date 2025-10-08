@@ -1,5 +1,5 @@
 import { MessageEncryption, KeyManager } from './messageEncryption';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export type VaultRole = 'owner' | 'admin' | 'member' | 'viewer' | 'executor';
 

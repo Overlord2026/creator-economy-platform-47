@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface ProofSlip {
   id: string;
@@ -60,7 +60,7 @@ export class NILProofSystem {
     
     // Emit receipt via edge function
     try {
-      const { data, error } = await supabase.functions.invoke('store-receipt', {
+      const { data, error } = await sb.functions.invoke('store-receipt', {
         body: {
           proofSlip,
           inputs,

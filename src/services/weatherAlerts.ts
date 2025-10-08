@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { recordReceipt } from '@/services/receipts';
 
 export interface WeatherAlert {

@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 async function saveDecisionRDS(p: { subject: string; action: string; reasons: string[] }) {
   const res = await fetch('/functions/v1/policy-eval', {
@@ -52,7 +52,7 @@ export async function recordInquiry(i: Inquiry) {
 
   // 3) send email via Edge function (Resend)
   try {
-    const res = await fetch(`https://xcmqjkvyvuhoslbzmlgi.supabase.co/functions/v1/resend-inquiry`, {
+    const res = await fetch(`https://xcmqjkvyvuhoslbzmlgi.sb.co/functions/v1/resend-inquiry`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

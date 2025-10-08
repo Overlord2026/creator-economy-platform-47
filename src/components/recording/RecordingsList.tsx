@@ -21,7 +21,7 @@ import {
   Filter,
   MoreHorizontal
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { formatDistanceToNow } from 'date-fns';
 
 interface Recording {
@@ -68,7 +68,7 @@ const RecordingsList: React.FC<RecordingsListProps> = ({
   const fetchRecordings = async () => {
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) return;
 
       let query = (supabase as any)
@@ -152,7 +152,7 @@ const RecordingsList: React.FC<RecordingsListProps> = ({
       });
 
       // Get signed URL for download
-      const { data, error } = await supabase.storage
+      const { data, error } = await sb.storage
         .from('meeting-recordings')
         .createSignedUrl(recording.file_path, 3600); // 1 hour expiry
 
@@ -453,7 +453,7 @@ const RecordingPlayer: React.FC<{ recording: Recording }> = ({ recording }) => {
 
   const getSignedUrl = async () => {
     try {
-      const { data, error } = await supabase.storage
+      const { data, error } = await sb.storage
         .from('meeting-recordings')
         .createSignedUrl(recording.file_path, 3600); // 1 hour expiry
 

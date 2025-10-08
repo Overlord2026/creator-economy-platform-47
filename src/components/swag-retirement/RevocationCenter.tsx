@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -64,7 +64,7 @@ export function RevocationCenter() {
   const revoke = async (id: string) => {
     setRevoking(id);
     try {
-      const { error } = await supabase.functions.invoke("propagate-revocation", {
+      const { error } = await sb.functions.invoke("propagate-revocation", {
         body: { consent_id: id, reason: "user request" },
       });
       if (error) throw error;

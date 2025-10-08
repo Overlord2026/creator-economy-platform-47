@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle, AlertTriangle, XCircle, ExternalLink, Key, Shield, Database } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 interface SecretConfig {
@@ -224,7 +224,7 @@ export default function APISecurityAudit() {
 
     for (const config of secretConfigs) {
       try {
-        const { data, error } = await supabase.functions.invoke('check-api-keys', {
+        const { data, error } = await sb.functions.invoke('check-api-keys', {
           body: { secretName: config.name }
         });
 
@@ -456,7 +456,7 @@ export default function APISecurityAudit() {
           <div className="p-4 bg-muted rounded-lg">
             <h3 className="font-semibold mb-2">How to add secrets to Supabase:</h3>
             <ol className="list-decimal list-inside space-y-1 text-sm">
-              <li>Go to <a href="https://supabase.com/dashboard" className="text-blue-600 hover:underline">Supabase Dashboard</a></li>
+              <li>Go to <a href="https://sb.com/dashboard" className="text-blue-600 hover:underline">Supabase Dashboard</a></li>
               <li>Select your project</li>
               <li>Navigate to Settings → Edge Functions</li>
               <li>Scroll to "Environment Variables" section</li>

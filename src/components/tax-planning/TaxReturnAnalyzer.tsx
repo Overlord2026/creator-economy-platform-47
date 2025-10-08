@@ -9,7 +9,7 @@ import { Upload, FileText, Brain, Eye, Download, Crown, Camera, Scan } from 'luc
 import { useDropzone } from 'react-dropzone';
 import { useToast } from '@/hooks/use-toast';
 import { analytics } from '@/lib/analytics';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface TaxDocument {
   id: string;
@@ -68,7 +68,7 @@ const TaxReturnAnalyzer: React.FC<{ subscriptionTier: string }> = ({ subscriptio
         const fileExt = file.name.split('.').pop();
         const fileName = `${newDoc.id}.${fileExt}`;
         
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError } = await sb.storage
           .from('tax-documents')
           .upload(fileName, file);
 
@@ -121,7 +121,7 @@ const TaxReturnAnalyzer: React.FC<{ subscriptionTier: string }> = ({ subscriptio
       );
 
       // Call AI analysis edge function
-      const { data, error } = await supabase.functions.invoke('tax-document-analysis', {
+      const { data, error } = await sb.functions.invoke('tax-document-analysis', {
         body: { documentId, fileName, year: selectedYear }
       });
 

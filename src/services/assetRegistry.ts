@@ -3,7 +3,7 @@
  * Manages HNW assets with privacy-preserving value bands
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { recordReceipt } from './receipts';
 import * as Canonical from '@/lib/canonical';
 
@@ -92,7 +92,7 @@ export async function createAsset(
     .from('assets')
     .insert({
       ...assetData,
-      user_id: (await supabase.auth.getUser()).data.user?.id
+      user_id: (await sb.auth.getUser()).data.user?.id
     })
     .select('id')
     .single();
@@ -151,10 +151,10 @@ export async function getAssetDetails(assetId: string): Promise<{
   reminders: AssetReminder[];
 }> {
   const [assetResult, docsResult, adviceResult, remindersResult] = await Promise.all([
-    supabase.from('assets').select('*').eq('id', assetId).single(),
-    supabase.from('asset_docs').select('*').eq('asset_id', assetId).order('upload_date', { ascending: false }),
-    supabase.from('asset_advice').select('*').eq('asset_id', assetId).order('created_at', { ascending: false }),
-    supabase.from('asset_reminders').select('*').eq('asset_id', assetId).order('reminder_date', { ascending: true })
+    sb.from('assets').select('*').eq('id', assetId).single(),
+    sb.from('asset_docs').select('*').eq('asset_id', assetId).order('upload_date', { ascending: false }),
+    sb.from('asset_advice').select('*').eq('asset_id', assetId).order('created_at', { ascending: false }),
+    sb.from('asset_reminders').select('*').eq('asset_id', assetId).order('reminder_date', { ascending: true })
   ]);
 
   if (assetResult.error) throw assetResult.error;
@@ -174,7 +174,7 @@ export async function addAssetDoc(
   assetId: string,
   docData: Omit<AssetDoc, 'id' | 'asset_id' | 'upload_date' | 'created_by'>
 ): Promise<string> {
-  const user = (await supabase.auth.getUser()).data.user;
+  const user = (await sb.auth.getUser()).data.user;
   if (!user) throw new Error('User not authenticated');
 
   const { data, error } = await supabase

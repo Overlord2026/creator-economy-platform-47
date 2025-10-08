@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useEdgeFunction } from '@/hooks/useEdgeFunction';
 import { toast } from 'sonner';
 
@@ -65,7 +65,7 @@ export const useEstateRequests = () => {
   const createRequest = async (data: CreateEstateRequestData) => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }

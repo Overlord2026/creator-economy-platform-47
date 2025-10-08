@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useUser } from '@/context/UserContext';
 import { OnboardingAnalytics } from './OnboardingAnalytics';
 import { 
@@ -151,7 +151,7 @@ export function OnboardingDashboard() {
 
   const resendInvitation = async (invitationId: string) => {
     try {
-      const { error } = await supabase.functions.invoke('resend-client-invitation', {
+      const { error } = await sb.functions.invoke('resend-client-invitation', {
         body: { invitationId }
       });
 

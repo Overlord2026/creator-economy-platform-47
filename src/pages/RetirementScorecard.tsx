@@ -12,7 +12,7 @@ import { Calculator, TrendingUp, AlertTriangle, CheckCircle, Shield, Clock } fro
 import CountUp from 'react-countup';
 import { Celebration } from '@/components/ConfettiAnimation';
 import { analytics } from '@/lib/analytics';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface ScorecardInputs {

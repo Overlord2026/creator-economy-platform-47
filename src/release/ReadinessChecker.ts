@@ -1,5 +1,5 @@
 import { SecurityValidator } from '@/test/SecurityValidator';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface ReadinessStatus {
   routes_404: number;

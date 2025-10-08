@@ -16,7 +16,7 @@ import {
   RefreshCw,
   Eye
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 export default function ReasonCodesTimeline() {

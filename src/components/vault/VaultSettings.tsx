@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Settings, Save, Trash2, Shield, Upload } from 'lucide-react';
 import { FileUpload } from '@/components/ui/file-upload';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { tableExists, safeUpdate } from '@/lib/db/safeSupabase';
 import FallbackBanner from '@/components/common/FallbackBanner';

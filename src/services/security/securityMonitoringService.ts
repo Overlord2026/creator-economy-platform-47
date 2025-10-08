@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { analytics } from '@/lib/analytics';
 
 export interface SecurityEvent {
@@ -79,7 +79,7 @@ class SecurityMonitoringService {
 
     try {
       // Send events to edge function for processing
-      await supabase.functions.invoke('log-security-event', {
+      await sb.functions.invoke('log-security-event', {
         body: { events: eventsToFlush }
       });
     } catch (error) {
@@ -91,7 +91,7 @@ class SecurityMonitoringService {
 
   async getSecurityMetrics(timeframe: 'hour' | 'day' | 'week' = 'day'): Promise<SecurityMetrics> {
     try {
-      const { data, error } = await supabase.functions.invoke('get-security-metrics', {
+      const { data, error } = await sb.functions.invoke('get-security-metrics', {
         body: { timeframe }
       });
 
@@ -132,7 +132,7 @@ class SecurityMonitoringService {
     // For critical incidents, also create an incident record
     if (severity === 'critical') {
       try {
-        await supabase.functions.invoke('create-security-incident', {
+        await sb.functions.invoke('create-security-incident', {
           body: {
             incident_type: incidentType,
             severity,
@@ -157,7 +157,7 @@ class SecurityMonitoringService {
 
     try {
       // Check if user has proper authentication setup
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       
       if (!user) {
         issues.push('User not authenticated');

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LeadMagnetLanding } from '@/components/lead-magnet/LeadMagnetLanding';
 import { ThankYouPage } from '@/components/lead-magnet/ThankYouPage';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface LeadMagnetFormData {
   name: string;
@@ -19,7 +19,7 @@ export const LeadMagnetPage: React.FC = () => {
   const handleFormSubmit = async (data: LeadMagnetFormData) => {
     try {
       // Call edge function to process lead magnet signup
-      const { error } = await supabase.functions.invoke('process-lead-magnet', {
+      const { error } = await sb.functions.invoke('process-lead-magnet', {
         body: {
           name: data.name,
           email: data.email,

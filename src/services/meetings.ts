@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { recordReceipt } from '@/services/receipts';
 import { anchorSingle } from '@/services/receipts';
 import { inputs_hash } from '@/lib/canonical';
@@ -161,7 +161,7 @@ export async function endSession(sessionId: string, audioBlob?: Blob): Promise<M
       .join('');
 
     // Upload to Supabase Storage (Vault)
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { data: uploadData, error: uploadError } = await sb.storage
       .from('vault')
       .upload(`meetings/${fileName}`, audioBlob, {
         contentType: 'audio/wav'

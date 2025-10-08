@@ -13,7 +13,7 @@ import {
   Globe, 
   Settings 
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 interface CheckResult {
@@ -40,7 +40,7 @@ export const LiveReadinessCheck: React.FC = () => {
 
     // Test 1: Supabase Analytics Event
     try {
-      const { data, error } = await supabase.functions.invoke('track-founding20', {
+      const { data, error } = await sb.functions.invoke('track-founding20', {
         body: {
           event_name: 'readiness_check_event',
           segment: 'test',
@@ -72,7 +72,7 @@ export const LiveReadinessCheck: React.FC = () => {
 
     // Test 2: Email Automation Function
     try {
-      const { data, error } = await supabase.functions.invoke('founding20-email-automation', {
+      const { data, error } = await sb.functions.invoke('founding20-email-automation', {
         body: {
           template_id: 'test-template',
           recipient_email: 'tony@awmfl.com',
@@ -121,7 +121,7 @@ export const LiveReadinessCheck: React.FC = () => {
 
     // Test 4: Asset Generator Function
     try {
-      const { data, error } = await supabase.functions.invoke('founding20-asset-generator', {
+      const { data, error } = await sb.functions.invoke('founding20-asset-generator', {
         body: {
           asset_type: 'readiness_test',
           segment: 'test',
@@ -148,7 +148,7 @@ export const LiveReadinessCheck: React.FC = () => {
 
     // Test 5: Launch Digest Function
     try {
-      const { data, error } = await supabase.functions.invoke('launch-digest', {
+      const { data, error } = await sb.functions.invoke('launch-digest', {
         body: {
           digest_type: 'readiness_test',
           test_mode: true

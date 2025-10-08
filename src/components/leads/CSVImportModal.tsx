@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { Upload, FileText, AlertCircle, CheckCircle, Download } from 'lucide-react';
 
 interface CSVImportModalProps {
@@ -141,7 +141,7 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
       }
 
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       
       // Add created_by to all rows
       const rowsWithUser = validRows.map(row => ({

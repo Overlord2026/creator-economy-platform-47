@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { initReceiptsEmitterAuto, hashActionRequest } from "@/lib/receiptsEmitter";
 import { evaluateAction } from "@/lib/policy/policyEvaluator";
 import { collectApprovals } from "@/lib/policy/hitlGate";
@@ -48,7 +48,7 @@ export default function ReceiptsConsole() {
       const action = { type: "TEST_TRANSFER", amount: 5000, currency: "USD" };
       const request_hash = await hashActionRequest(action);
       const evalRes = await evaluateAction(action, { domain: "general" });
-      const { data: user } = await supabase.auth.getUser();
+      const { data: user } = await sb.auth.getUser();
       const approvals = await collectApprovals({ approvers: [{ id: user?.user?.id || "me", role: "advisor" }], threshold: 1 });
 
       const pre = await emitter.emitPre({

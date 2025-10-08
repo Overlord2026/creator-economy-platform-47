@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -46,7 +46,7 @@ export function useVaultItems() {
       if (error) throw error;
 
       // Log the activity - vault_id not available in this table
-      // await supabase.rpc('log_vault_activity', {...});
+      // await sb.rpc('log_vault_activity', {...});
 
       toast({
         title: "Success",
@@ -78,7 +78,7 @@ export function useVaultItems() {
       if (error) throw error;
 
       // Log the activity - vault_id not available in this table
-      // await supabase.rpc('log_vault_activity', {...});
+      // await sb.rpc('log_vault_activity', {...});
 
       toast({
         title: "Success",
@@ -108,7 +108,7 @@ export function useVaultItems() {
       if (error) throw error;
 
       // Log the activity - vault_id not available in this table
-      // await supabase.rpc('log_vault_activity', {...});
+      // await sb.rpc('log_vault_activity', {...});
 
       toast({
         title: "Success",

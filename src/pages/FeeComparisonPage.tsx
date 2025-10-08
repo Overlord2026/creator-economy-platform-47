@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FeeScenarioBuilder } from '@/components/fees/FeeScenarioBuilder';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 export default function FeeComparisonPage() {
@@ -19,7 +19,7 @@ export default function FeeComparisonPage() {
   const handleCalculate = async (calculationData: any) => {
     try {
       setIsLoading(true);
-      const { data } = await supabase.functions.invoke('fees-calc', {
+      const { data } = await sb.functions.invoke('fees-calc', {
         body: calculationData
       });
       setResults(data);

@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface RegulatoryReport {

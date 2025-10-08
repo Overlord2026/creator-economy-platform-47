@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export type Result<T> = {
   ok: boolean;
@@ -9,7 +9,7 @@ export type Result<T> = {
 
 export async function tableExists(name: string): Promise<boolean> {
   try {
-    const { error } = await supabase.from(name).select('id', { head: true }).limit(1);
+    const { error } = await sb.from(name).select('id', { head: true }).limit(1);
     return !error;
   } catch {
     return false;
@@ -18,7 +18,7 @@ export async function tableExists(name: string): Promise<boolean> {
 
 export async function safeSelect<T = any>(tableName: string, columns: string = '*', filters: Record<string, any> = {}): Promise<Result<T[]>> {
   try {
-    let query = supabase.from(tableName).select(columns);
+    let query = sb.from(tableName).select(columns);
     
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
@@ -122,7 +122,7 @@ export async function safeInsertOptionalTable<T = any>(table: string, row: T): P
   if (!exists) return { ok: true, data: [row] as T[], warning: 'table_missing' };
   
   try {
-    const { data, error } = await supabase.from(table).insert(row).select();
+    const { data, error } = await sb.from(table).insert(row).select();
     if (error) throw error;
     return { ok: true, data: (data || []) as T[] };
   } catch (error) {

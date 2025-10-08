@@ -17,7 +17,7 @@ import {
   Pause
 } from 'lucide-react';
 import { analytics } from '@/lib/analytics';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface CadenceRule {
@@ -145,7 +145,7 @@ export function SmartCadencePanel({ className }: SmartCadencePanelProps) {
   const triggerRule = async (rule: CadenceRule, leadId: string = 'demo_lead') => {
     try {
       // Trigger smart cadence via existing edge function
-      const { error } = await supabase.functions.invoke('automated-follow-up', {
+      const { error } = await sb.functions.invoke('automated-follow-up', {
         body: {
           leadId,
           cadenceRule: rule.id,

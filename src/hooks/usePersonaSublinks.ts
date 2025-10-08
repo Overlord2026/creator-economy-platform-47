@@ -1,5 +1,5 @@
 import * as React from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { PersonaKind } from "@/types/persona";
 import { getPersonaLinks, DEFAULT_LINKS, Link } from "@/config/persona-links";
 
