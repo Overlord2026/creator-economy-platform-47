@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+const sb = supabase as any;
+
 export interface LeadWithScore {
   id: string;
   first_name: string | null;
@@ -60,7 +62,7 @@ export function useLeadScoring() {
 
   // Get all leads with scores, sorted by score
   const getLeadsWithScores = async (): Promise<LeadWithScore[]> => {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('leads')
       .select('*')
       .order('lead_score', { ascending: false });
@@ -77,7 +79,7 @@ export function useLeadScoring() {
   }) => {
     setLoading(true);
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('leads')
         .update(updates)
         .eq('id', leadId);
@@ -85,7 +87,7 @@ export function useLeadScoring() {
       if (error) throw error;
 
       // Recalculate score
-      const { error: scoreError } = await supabase.rpc('calculate_lead_score', { 
+      const { error: scoreError } = await sb.rpc('calculate_lead_score', { 
         p_lead_id: leadId 
       });
 
@@ -112,7 +114,7 @@ export function useLeadScoring() {
   const trackEngagement = async (leadId: string, engagementType: string, data?: any) => {
     setLoading(true);
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('lead_engagement_tracking')
         .insert({
           lead_id: leadId,
@@ -141,7 +143,7 @@ export function useLeadScoring() {
 
   // Get engagement history for a lead
   const getEngagementHistory = async (leadId: string): Promise<EngagementEvent[]> => {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('lead_engagement_tracking')
       .select('*')
       .eq('lead_id', leadId)
@@ -153,7 +155,7 @@ export function useLeadScoring() {
 
   // Get pipeline stage configurations
   const getPipelineConfigs = async (): Promise<PipelineStageConfig[]> => {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('pipeline_stage_config')
       .select('*')
       .order('stage_name');
@@ -166,7 +168,7 @@ export function useLeadScoring() {
   const updatePipelineConfig = async (stageId: string, config: Partial<PipelineStageConfig>) => {
     setLoading(true);
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('pipeline_stage_config')
         .update(config)
         .eq('id', stageId);
@@ -195,7 +197,7 @@ export function useLeadScoring() {
     setLoading(true);
     try {
       const currentUser = await supabase.auth.getUser();
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('pipeline_stage_config')
         .insert({
           ...config,
@@ -227,7 +229,7 @@ export function useLeadScoring() {
 
   // Get pending follow-ups
   const getPendingFollowUps = async (): Promise<AutomatedFollowUp[]> => {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('automated_follow_ups')
       .select(`
         *,
@@ -243,7 +245,7 @@ export function useLeadScoring() {
 
   // Mark follow-up as sent
   const markFollowUpSent = async (followUpId: string) => {
-    const { error } = await supabase
+    const { error } = await sb
       .from('automated_follow_ups')
       .update({
         status: 'sent',
@@ -256,7 +258,7 @@ export function useLeadScoring() {
 
   // Get top scoring leads for prioritization
   const getTopScoringLeads = async (limit: number = 10): Promise<LeadWithScore[]> => {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('leads')
       .select('*')
       .order('lead_score', { ascending: false })
@@ -270,7 +272,7 @@ export function useLeadScoring() {
   const updateLeadStatus = async (leadId: string, newStatus: string) => {
     setLoading(true);
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('leads')
         .update({ 
           lead_status: newStatus,

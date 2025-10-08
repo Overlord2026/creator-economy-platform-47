@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+const sb = supabase as any;
+
 export function useKpiData() {
   return useQuery({
     queryKey: ['admin-kpis'],
@@ -13,12 +15,12 @@ export function useKpiData() {
         feeReportsResponse,
         openTicketsResponse
       ] = await Promise.all([
-        supabase.rpc('count_clients'),
-        supabase.rpc('count_advisors'),
-        supabase.rpc('count_health_reports'),
-        supabase.rpc('count_ltc_tests'),
-        supabase.rpc('count_fee_reports'),
-        supabase.rpc('count_open_tickets')
+        sb.rpc('count_clients'),
+        sb.rpc('count_advisors'),
+        sb.rpc('count_health_reports'),
+        sb.rpc('count_ltc_tests'),
+        sb.rpc('count_fee_reports'),
+        sb.rpc('count_open_tickets')
       ]);
 
       if (clientsResponse.error) throw clientsResponse.error;
