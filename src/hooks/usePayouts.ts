@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 export interface ReferralPayout {
@@ -50,7 +50,7 @@ export const usePayouts = () => {
 
   const fetchPayouts = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('referral_payouts')
         .select(`
           *,
@@ -60,7 +60,7 @@ export const usePayouts = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPayouts(data as ReferralPayout[] || []);
+      setPayouts(data || []);
     } catch (error) {
       console.error('Error fetching payouts:', error);
       toast({
@@ -73,7 +73,7 @@ export const usePayouts = () => {
 
   const fetchUserPayouts = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('referral_payouts')
         .select(`
           *,
@@ -83,7 +83,7 @@ export const usePayouts = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setUserPayouts(data as ReferralPayout[] || []);
+      setUserPayouts(data || []);
     } catch (error) {
       console.error('Error fetching user payouts:', error);
     }
@@ -97,7 +97,7 @@ export const usePayouts = () => {
       };
 
       if (status === 'approved') {
-        updateData.approved_by = (await supabase.auth.getUser()).data.user?.id;
+        updateData.approved_by = (await sb.auth.getUser()).data.user?.id;
         updateData.approved_at = new Date().toISOString();
       } else if (status === 'paid') {
         updateData.paid_at = new Date().toISOString();
@@ -107,7 +107,7 @@ export const usePayouts = () => {
 
       if (notes) updateData.notes = notes;
 
-      const { error } = await supabase
+      const { error } = await sb
         .from('referral_payouts')
         .update(updateData)
         .eq('id', payoutId);
@@ -139,7 +139,7 @@ export const usePayouts = () => {
   const createNotification = async (payoutId: string, notificationType: 'payout_approved' | 'payout_paid') => {
     try {
       // Get payout details to find the user
-      const { data: payout } = await supabase
+      const { data: payout } = await sb
         .from('referral_payouts')
         .select(`
           *,
@@ -147,14 +147,14 @@ export const usePayouts = () => {
           advisor_override:advisor_overrides(referring_advisor_id)
         `)
         .eq('id', payoutId)
-        .single();
+        .maybeSingle();
 
       if (!payout) return;
 
       const userId = payout.referral?.referrer_id || payout.advisor_override?.referring_advisor_id;
       if (!userId) return;
 
-      const { error } = await supabase
+      const { error } = await sb
         .from('payout_notifications')
         .insert({
           user_id: userId,
@@ -170,7 +170,7 @@ export const usePayouts = () => {
 
   const createPayoutFromReferral = async (referralId: string) => {
     try {
-      const { data, error } = await supabase.rpc('create_referral_payout', {
+      const { data, error } = await sb.rpc('create_referral_payout', {
         p_referral_id: referralId
       });
 
@@ -195,7 +195,7 @@ export const usePayouts = () => {
 
   const createPayoutFromOverride = async (overrideId: string) => {
     try {
-      const { data, error } = await supabase.rpc('create_override_payout', {
+      const { data, error } = await sb.rpc('create_override_payout', {
         p_override_id: overrideId
       });
 
