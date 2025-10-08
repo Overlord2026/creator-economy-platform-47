@@ -1,4 +1,5 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
+const supabase = sb as any;
 
 export type Result<T> = {
   ok: boolean;

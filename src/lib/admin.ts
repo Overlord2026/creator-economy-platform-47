@@ -1,5 +1,6 @@
 import { Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
+const supabase = sb as any;
 
 /**
  * Secure admin role validation using JWT app_metadata

@@ -1,4 +1,5 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
+const supabase = sb as any;
 
 // Version-proof way to get one row from a Supabase query
 export async function firstRow<T = any>(q: any): Promise<T | null> {

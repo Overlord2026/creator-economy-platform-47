@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
+const supabase = sb as any;
 import { useEdgeFunction } from '@/hooks/useEdgeFunction';
 import { toast } from 'sonner';
 
