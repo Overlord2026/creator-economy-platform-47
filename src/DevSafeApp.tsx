@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import "./devsafe.css";

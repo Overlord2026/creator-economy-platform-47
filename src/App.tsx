@@ -1,14 +1,11 @@
-'use client';
 import React from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
-
-// Safe bootstrap wrapper (skips heavy providers while BOOTSTRAP_MODE === true)
 import SafeProviders from "@/app/SafeProviders";
 
-// Marketing routes (landing, personas, pros, discover, etc.)
-import MarketingRoutes from "@/routes/MarketingRoutes";
+import MarketingLayout from "@/routes/MarketingLayout";
+import PricingPage from "@/pages/Pricing";
+import Healthz from "@/routes/healthz";
 
-// Demo flows still available
 import DemoOfferLock from "@/pages/DemoOfferLock";
 import DemoContract from "@/pages/DemoContract";
 import DemoSettlement from "@/pages/DemoSettlement";
@@ -18,16 +15,24 @@ export default function App() {
     <HashRouter>
       <SafeProviders>
         <Routes>
-          {/* Marketing site as the root */}
-          <Route path="/*" element={<MarketingRoutes />} />
+          {/* Make marketing the parent at "/" (no /* here) */}
+          <Route path="/" element={<MarketingLayout />}>
+            {/* Default landing under "/" (replace with your real landing) */}
+            <Route index element={<div style={{padding:24}}>Landing</div>} />
+            {/* If you have /about, /contact, add them here as children */}
+          </Route>
 
-          {/* Demo rail (deep links keep working in both Lovable & Codespaces) */}
+          {/* Specific routes now always win */}
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/healthz" element={<Healthz />} />
+
+          {/* Demo rail */}
           <Route path="/demo/offerlock" element={<DemoOfferLock />} />
           <Route path="/demo/contract" element={<DemoContract />} />
           <Route path="/demo/settlement" element={<DemoSettlement />} />
 
-          {/* Fallback */}
-          <Route path="*" element={<MarketingRoutes />} />
+          {/* 404 fallback last */}
+          <Route path="*" element={<MarketingLayout />} />
         </Routes>
       </SafeProviders>
     </HashRouter>

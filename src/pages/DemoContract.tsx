@@ -1,4 +1,3 @@
-'use client';
 import React from 'react'; import { Link } from 'react-router-dom';
 export default function DemoContract(){
   return (<div style={{maxWidth:720,margin:'2rem auto',padding:16}}>

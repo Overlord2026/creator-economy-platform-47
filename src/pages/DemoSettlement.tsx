@@ -1,4 +1,3 @@
-'use client';
 import React from 'react'; import { Link } from 'react-router-dom';
 export default function DemoSettlement(){
   const id='RCPT-'+Math.random().toString(36).slice(2,10).toUpperCase();

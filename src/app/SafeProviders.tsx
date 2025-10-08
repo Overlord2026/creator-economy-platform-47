@@ -1,4 +1,3 @@
-'use client';
 import React from "react";
 import { BOOTSTRAP_MODE } from "@/config/bootstrap";
 // Your existing providers (import paths may differ — if a path 404s, tell me and I'll swap it)

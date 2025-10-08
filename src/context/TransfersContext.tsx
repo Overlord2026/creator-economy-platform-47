@@ -1,4 +1,3 @@
-'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { EdgeFunctionClient } from '@/services/edgeFunction/EdgeFunctionClient';

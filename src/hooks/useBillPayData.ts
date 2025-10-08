@@ -1,4 +1,3 @@
-'use client';
 import { useMemo, useCallback, useEffect, useState } from "react";
 import { useSubscriptionAccess } from "@/hooks/useSubscriptionAccess";
 import { supabase } from "@/integrations/supabase/client";
