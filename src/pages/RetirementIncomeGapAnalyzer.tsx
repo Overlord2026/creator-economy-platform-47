@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import Logo from '@/components/ui/Logo';
+import { Logo } from '@/components/ui/Logo';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, TrendingUp, AlertTriangle, CheckCircle, Calculator, DollarSign, Star } from 'lucide-react';
 import CountUp from 'react-countup';
@@ -104,9 +104,7 @@ export default function RetirementIncomeGapAnalyzer() {
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div onClick={() => navigate('/')} className="cursor-pointer">
-            <Logo variant="tree" />
-          </div>
+          <Logo variant="tree" onClick={() => navigate('/')} />
           <Button variant="outline" onClick={() => navigate('/')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home

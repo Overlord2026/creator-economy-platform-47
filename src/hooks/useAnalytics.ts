@@ -48,23 +48,15 @@ export const useAnalytics = (tenantId?: string, dateRange?: { from: Date; to: Da
       const endDate = dateRange?.to || new Date();
       const startDate = dateRange?.from || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-      // Use safe database helpers to handle missing table gracefully  
-      const { withFallback } = await import('@/lib/db/safeSupabase');
-      
-      const analyticsEvents = await withFallback(
-        'analytics_events',
-        async () => {
-          const { safeSelect } = await import('@/lib/db/safeSupabase');
-          return await safeSelect('analytics_events', '*', { tenant_id: tenantId || user.user_metadata?.tenant_id });
-        },
-        []
-      );
+      // Fetch analytics events data
+      const { data: analyticsEvents, error: analyticsError } = await supabase
+        .from('analytics_events')
+        .select('*')
+        .gte('created_at', startDate.toISOString())
+        .lte('created_at', endDate.toISOString())
+        .eq('tenant_id', tenantId || user.user_metadata?.tenant_id);
 
-      // Filter by date in memory since we can't use complex queries
-      const filteredEvents = analyticsEvents.filter(event => {
-        const eventDate = new Date(event.created_at);
-        return eventDate >= startDate && eventDate <= endDate;
-      });
+      if (analyticsError) throw analyticsError;
 
       // Fetch user metrics
       const { data: profiles, error: profilesError } = await supabase

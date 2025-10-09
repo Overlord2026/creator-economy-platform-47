@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { sb } from '@/lib/supabase-relaxed';
-const supabase = sb as any;
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTenant } from './useTenant';
 

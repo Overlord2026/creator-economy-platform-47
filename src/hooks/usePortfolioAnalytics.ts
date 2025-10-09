@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { sb } from '@/lib/supabase-relaxed';
+import { supabase } from '@/integrations/supabase/client';
 import { useMarketData } from '@/hooks/useMarketData';
 
 interface PortfolioPerformanceData {
@@ -64,10 +64,11 @@ export const usePortfolioAnalytics = () => {
       setLoading(true);
       setError(null);
 
-      const { data: { user } } = await sb.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const { data: portfolioPerformance, error: portfolioError } = await sb
+      // Fetch portfolio performance data
+      const { data: portfolioPerformance, error: portfolioError } = await supabase
         .from('portfolio_performance')
         .select('*')
         .eq('user_id', user.id)
@@ -76,33 +77,38 @@ export const usePortfolioAnalytics = () => {
 
       if (portfolioError) throw portfolioError;
 
-      const { data: investmentAccounts, error: accountsError } = await sb
+      // Fetch investment accounts
+      const { data: investmentAccounts, error: accountsError } = await supabase
         .from('investment_accounts')
         .select('*')
         .eq('user_id', user.id);
 
       if (accountsError) throw accountsError;
 
-      const { data: publicStocks, error: stocksError } = await sb
+      // Fetch public stocks data for real market prices
+      const { data: publicStocks, error: stocksError } = await supabase
         .from('public_stocks')
-        .select('*');
+        .select('*')
+        .eq('user_id', user.id);
 
       if (stocksError) throw stocksError;
 
+      // Get real-time market data for stocks
       let enrichedAccounts: InvestmentAccount[] = [];
       
       if (publicStocks && publicStocks.length > 0) {
-        const tickers = publicStocks.map((stock: any) => stock.ticker_symbol).filter(Boolean);
+        const tickers = publicStocks.map(stock => stock.ticker_symbol).filter(Boolean);
         
         if (tickers.length > 0) {
           try {
             const { data: marketStats } = await fetchStockStats(tickers);
             
-            enrichedAccounts = investmentAccounts?.map((account: any) => {
+            // Process investment accounts with real market data
+            enrichedAccounts = investmentAccounts?.map(account => {
               const holdings = publicStocks
-                .filter((stock: any) => stock.user_id === account.user_id)
-                .map((stock: any) => {
-                  const marketStat = marketStats?.find((stat: any) => stat.ticker === stock.ticker_symbol);
+                .filter(stock => stock.user_id === account.user_id)
+                .map(stock => {
+                  const marketStat = marketStats?.find(stat => stat.ticker === stock.ticker_symbol);
                   const currentPrice = marketStat?.price || stock.price_per_share;
                   const marketValue = currentPrice * stock.number_of_shares;
                   
@@ -115,8 +121,8 @@ export const usePortfolioAnalytics = () => {
                   };
                 });
 
-              const totalValue = holdings.reduce((sum: number, holding: any) => sum + holding.marketValue, 0);
-              const totalDayChange = holdings.reduce((sum: number, holding: any) => sum + holding.dayChange, 0);
+              const totalValue = holdings.reduce((sum, holding) => sum + holding.marketValue, 0);
+              const totalDayChange = holdings.reduce((sum, holding) => sum + holding.dayChange, 0);
               const dayChangePercentage = account.balance > 0 ? (totalDayChange / account.balance) * 100 : 0;
 
               return {
@@ -131,7 +137,7 @@ export const usePortfolioAnalytics = () => {
             }) || [];
           } catch (marketError) {
             console.warn('Failed to fetch market data, using stored values:', marketError);
-        enrichedAccounts = investmentAccounts?.map((account: any) => ({
+        enrichedAccounts = investmentAccounts?.map(account => ({
           id: account.id,
           accountName: account.name,
           accountType: account.account_type,
@@ -143,7 +149,7 @@ export const usePortfolioAnalytics = () => {
           }
         }
       } else {
-        enrichedAccounts = investmentAccounts?.map((account: any) => ({
+        enrichedAccounts = investmentAccounts?.map(account => ({
           id: account.id,
           accountName: account.name,
           accountType: account.account_type,
@@ -154,25 +160,28 @@ export const usePortfolioAnalytics = () => {
         })) || [];
       }
 
+      // Calculate portfolio-level metrics
       const totalPortfolioValue = enrichedAccounts.reduce((sum, account) => sum + account.balance, 0);
       const totalDayChange = enrichedAccounts.reduce((sum, account) => sum + account.dayChange, 0);
       const portfolioDayChangePercentage = totalPortfolioValue > 0 ? (totalDayChange / totalPortfolioValue) * 100 : 0;
 
+      // Calculate asset allocation
       const stocksValue = enrichedAccounts
         .filter(acc => acc.accountType === 'taxable' || acc.accountType === 'ira')
         .reduce((sum, acc) => sum + acc.balance, 0);
       
       const assetAllocation = {
         stocks: totalPortfolioValue > 0 ? (stocksValue / totalPortfolioValue) * 100 : 0,
-        bonds: 20,
-        alternatives: 15,
-        cash: 10
+        bonds: 20, // Placeholder - would calculate from real data
+        alternatives: 15, // Placeholder - would calculate from real data
+        cash: 10 // Placeholder - would calculate from real data
       };
 
+      // Get top holdings across all accounts
       const allHoldings = enrichedAccounts.flatMap(account => 
         account.holdings.map(holding => ({
           symbol: holding.symbol,
-          name: holding.symbol,
+          name: holding.symbol, // Would fetch company name from market data
           value: holding.marketValue,
           percentage: totalPortfolioValue > 0 ? (holding.marketValue / totalPortfolioValue) * 100 : 0,
           dayChange: (holding as any).dayChange || 0
@@ -183,8 +192,9 @@ export const usePortfolioAnalytics = () => {
         .sort((a, b) => b.value - a.value)
         .slice(0, 5);
 
-      const avgVolatility = 15;
-      const portfolioBeta = 1.1;
+      // Calculate risk metrics (simplified - would use more sophisticated calculations)
+      const avgVolatility = 15; // Would calculate from market data
+      const portfolioBeta = 1.1; // Would calculate from market data correlations
       
       const portfolioAnalyticsData: PortfolioPerformanceData = {
         id: portfolioPerformance?.[0]?.id || 'default',
@@ -225,10 +235,11 @@ export const usePortfolioAnalytics = () => {
     }
   }, [fetchStockStats]);
 
+  // Set up real-time subscriptions
   useEffect(() => {
     fetchPortfolioData();
 
-    const portfolioSubscription = sb
+    const portfolioSubscription = supabase
       .channel('portfolio-performance-updates')
       .on(
         'postgres_changes',
@@ -243,7 +254,7 @@ export const usePortfolioAnalytics = () => {
       )
       .subscribe();
 
-    const investmentSubscription = sb
+    const investmentSubscription = supabase
       .channel('investment-accounts-updates')
       .on(
         'postgres_changes',
@@ -258,7 +269,7 @@ export const usePortfolioAnalytics = () => {
       )
       .subscribe();
 
-    const stocksSubscription = sb
+    const stocksSubscription = supabase
       .channel('public-stocks-updates')
       .on(
         'postgres_changes',
@@ -274,9 +285,9 @@ export const usePortfolioAnalytics = () => {
       .subscribe();
 
     return () => {
-      sb.removeChannel(portfolioSubscription);
-      sb.removeChannel(investmentSubscription);
-      sb.removeChannel(stocksSubscription);
+      supabase.removeChannel(portfolioSubscription);
+      supabase.removeChannel(investmentSubscription);
+      supabase.removeChannel(stocksSubscription);
     };
   }, [fetchPortfolioData]);
 

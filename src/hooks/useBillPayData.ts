@@ -1,9 +1,7 @@
-'use client';
 import { useMemo, useCallback, useEffect, useState } from "react";
 import { useSubscriptionAccess } from "@/hooks/useSubscriptionAccess";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { safeQueryOptionalTable } from "@/lib/db/safeSupabase";
 
 export interface Bill {
   id: string;
@@ -56,6 +54,8 @@ export interface BillAnalytics {
   }>;
 }
 
+// Real Supabase data fetching
+
 export const useBillPayData = () => {
   const { checkFeatureAccess } = useSubscriptionAccess();
   const { toast } = useToast();
@@ -65,77 +65,59 @@ export const useBillPayData = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch bills from Supabase
   const fetchBills = useCallback(async () => {
     try {
-      const res = await safeQueryOptionalTable<any>('bills', '*');
-      const rows = res.ok ? (res.data || []) : [];
-      const mapped: Bill[] = rows.map((r: any) => ({
-        id: r.id,
-        user_id: r.user_id || '',
-        vendor_id: r.vendor_id ?? null,
-        biller_name: r.biller_name || r.name || 'Unknown',
-        category: (['utilities', 'mortgage', 'insurance', 'tuition', 'loans', 'subscriptions', 'transportation', 'healthcare', 'entertainment', 'other'].includes(r.category) ? r.category : 'other') as Bill['category'],
-        amount: Number(r.amount) || 0,
-        due_date: r.due_date || new Date().toISOString(),
-        frequency: (['one_time', 'weekly', 'monthly', 'quarterly', 'annual'].includes(r.frequency) ? r.frequency : 'monthly') as Bill['frequency'],
-        status: (['unpaid', 'paid', 'overdue', 'scheduled'].includes(r.status) ? r.status : 'unpaid') as Bill['status'],
-        payment_method: r.payment_method ?? null,
-        is_auto_pay: Boolean(r.is_auto_pay),
-        notes: r.notes ?? null,
-        reminder_days: Number(r.reminder_days ?? 3),
-        created_at: r.created_at || new Date().toISOString(),
-        updated_at: r.updated_at || new Date().toISOString(),
-      }));
-      setBills(mapped);
+      const { data, error } = await supabase
+        .from('bills')
+        .select('*')
+        .order('due_date', { ascending: true });
+
+      if (error) throw error;
+      setBills(data || []);
     } catch (err) {
       console.error('Error fetching bills:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch bills');
-      setBills([]);
     }
   }, []);
 
+  // Fetch transactions from Supabase
   const fetchTransactions = useCallback(async () => {
     try {
-      const res = await safeQueryOptionalTable<any>('bill_transactions', '*');
-      const rows = res.ok ? (res.data || []) : [];
-      const mapped: BillTransaction[] = rows.map((t: any) => ({
-        id: t.id,
-        bill_id: t.bill_id || '',
-        user_id: t.user_id || '',
-        amount: Number(t.amount) || 0,
-        payment_date: t.payment_date || new Date().toISOString(),
-        payment_method: t.payment_method,
-        transaction_status: (['completed', 'pending', 'failed'].includes(t.transaction_status) ? t.transaction_status : 'pending') as BillTransaction['transaction_status'],
-        confirmation_number: t.reference_number,
-        notes: t.notes,
-        created_at: t.created_at || new Date().toISOString(),
-      }));
-      setTransactions(mapped);
+      const { data, error } = await supabase
+        .from('bill_transactions')
+        .select('*')
+        .order('payment_date', { ascending: false });
+
+      if (error) throw error;
+      // Type assertion for transaction_status to ensure it matches our interface
+      const typedData = data?.map(t => ({
+        ...t,
+        transaction_status: t.transaction_status as 'completed' | 'pending' | 'failed'
+      })) || [];
+      setTransactions(typedData);
     } catch (err) {
       console.error('Error fetching transactions:', err);
-      setTransactions([]);
     }
   }, []);
 
+  // Fetch vendors from Supabase
   const fetchVendors = useCallback(async () => {
     try {
-      const res = await safeQueryOptionalTable<any>('vendors', '*');
-      const rows = res.ok ? (res.data || []) : [];
-      const mapped: Vendor[] = rows.map((v: any) => ({
-        id: v.id,
-        name: v.name,
-        type: v.category || 'other',
-        contact_info: { email: v.contact_email, phone: v.contact_phone, address: v.address },
-        logo_url: v.logo_url,
-        website_url: v.website_url,
-      }));
-      setVendors(mapped);
+      const { data, error } = await supabase
+        .from('vendors')
+        .select('*')
+        .eq('is_active', true)
+        .order('name', { ascending: true });
+
+      if (error) throw error;
+      setVendors(data || []);
     } catch (err) {
       console.error('Error fetching vendors:', err);
-      setVendors([]);
     }
   }, []);
 
+  // Initial data fetch
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
@@ -152,15 +134,17 @@ export const useBillPayData = () => {
     const automatedPayments = bills.filter(bill => bill.is_auto_pay).length;
     const potentialSavings = bills
       .filter(bill => !bill.is_auto_pay)
-      .reduce((sum, bill) => sum + (Number(bill.amount) * 0.02), 0);
+      .reduce((sum, bill) => sum + (Number(bill.amount) * 0.02), 0); // 2% potential savings
 
+    // Calculate payment history from actual transactions
     const paymentHistory = Array.from({ length: 12 }, (_, i) => {
-      const month = new Date(new Date().getFullYear(), i);
+      const month = new Date(2023, i);
       const monthTransactions = transactions.filter(t => {
         const transactionDate = new Date(t.payment_date);
         return transactionDate.getMonth() === month.getMonth() && 
                transactionDate.getFullYear() === month.getFullYear();
       });
+      
       return {
         month: month.toLocaleDateString('en-US', { month: 'short' }),
         amount: monthTransactions.reduce((sum, t) => sum + Number(t.amount), 0)
@@ -179,6 +163,7 @@ export const useBillPayData = () => {
   const upcomingBills = useMemo(() => {
     const now = new Date();
     const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    
     return bills
       .filter(bill => {
         const dueDate = new Date(bill.due_date);
@@ -195,93 +180,87 @@ export const useBillPayData = () => {
     });
   }, [bills]);
 
-  const addBill = async (newBill: Omit<Bill, 'id' | 'user_id'>) => {
-    if (!checkFeatureAccess('premium')) {
-      toast({
-        title: "Upgrade to Premium",
-        description: "Bill Management is a premium feature. Upgrade to access.",
-      });
-      return;
-    }
-
+  // Callback functions
+  const addBill = useCallback(async (billData: {
+    biller_name: string;
+    category: Bill['category'];
+    amount: number;
+    due_date: string;
+    frequency?: Bill['frequency'];
+    payment_method?: string;
+    is_auto_pay?: boolean;
+    notes?: string;
+    reminder_days?: number;
+  }) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not found");
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
 
       const { data, error } = await supabase
         .from('bills')
-        .insert([{ 
-          ...newBill, 
-          user_id: user.id,
-          frequency: newBill.frequency || 'monthly',
-          is_auto_pay: newBill.is_auto_pay || false,
-          reminder_days: newBill.reminder_days || 3
-        }])
+        .insert({
+          user_id: user.user.id,
+          biller_name: billData.biller_name,
+          category: billData.category,
+          amount: billData.amount,
+          due_date: billData.due_date,
+          frequency: billData.frequency || 'monthly',
+          payment_method: billData.payment_method,
+          is_auto_pay: billData.is_auto_pay || false,
+          notes: billData.notes,
+          reminder_days: billData.reminder_days || 3,
+          status: 'unpaid'
+        })
         .select()
         .single();
 
       if (error) throw error;
 
-      const mappedBill: Bill = {
-        ...data,
-        frequency: (data.frequency as Bill['frequency']) || 'monthly',
-        is_auto_pay: data.is_auto_pay || false,
-        reminder_days: data.reminder_days || 3,
-        category: (['utilities', 'mortgage', 'insurance', 'tuition', 'loans', 'subscriptions', 'transportation', 'healthcare', 'entertainment', 'other'].includes(data.category) ? data.category : 'other') as Bill['category'],
-        status: (['unpaid', 'paid', 'overdue', 'scheduled'].includes(data.status) ? data.status : 'unpaid') as Bill['status']
-      };
-
-      setBills(prevBills => [...prevBills, mappedBill]);
+      setBills(prev => [...prev, data]);
       toast({
         title: "Bill Added",
-        description: "Your bill has been successfully added.",
+        description: `${billData.biller_name} has been added successfully.`
       });
+      
+      return data;
     } catch (err) {
-      console.error("Error adding bill:", err);
+      console.error('Error adding bill:', err);
       toast({
         title: "Error",
         description: "Failed to add bill. Please try again.",
+        variant: "destructive"
       });
+      throw err;
     }
-  };
+  }, [toast]);
 
-  const updateBill = async (billId: string, updatedBill: Partial<Bill>) => {
+  const updateBill = useCallback(async (billId: string, updates: Partial<Bill>) => {
     try {
       const { data, error } = await supabase
         .from('bills')
-        .update(updatedBill)
+        .update(updates)
         .eq('id', billId)
         .select()
         .single();
 
       if (error) throw error;
 
-      const mappedBill: Bill = {
-        ...data,
-        frequency: (data.frequency as Bill['frequency']) || 'monthly',
-        is_auto_pay: data.is_auto_pay !== undefined ? data.is_auto_pay : false,
-        reminder_days: data.reminder_days !== undefined ? data.reminder_days : 3,
-        category: (['utilities', 'mortgage', 'insurance', 'tuition', 'loans', 'subscriptions', 'transportation', 'healthcare', 'entertainment', 'other'].includes(data.category) ? data.category : 'other') as Bill['category'],
-        status: (['unpaid', 'paid', 'overdue', 'scheduled'].includes(data.status) ? data.status : 'unpaid') as Bill['status']
-      };
-
-      setBills(prevBills =>
-        prevBills.map(bill => (bill.id === billId ? mappedBill : bill))
-      );
+      setBills(prev => prev.map(bill => bill.id === billId ? data : bill));
       toast({
         title: "Bill Updated",
-        description: "Your bill has been successfully updated.",
+        description: "Bill has been updated successfully."
       });
     } catch (err) {
-      console.error("Error updating bill:", err);
+      console.error('Error updating bill:', err);
       toast({
         title: "Error",
         description: "Failed to update bill. Please try again.",
+        variant: "destructive"
       });
     }
-  };
+  }, [toast]);
 
-  const deleteBill = async (billId: string) => {
+  const deleteBill = useCallback(async (billId: string) => {
     try {
       const { error } = await supabase
         .from('bills')
@@ -290,99 +269,128 @@ export const useBillPayData = () => {
 
       if (error) throw error;
 
-      setBills(prevBills => prevBills.filter(bill => bill.id !== billId));
+      setBills(prev => prev.filter(bill => bill.id !== billId));
       toast({
         title: "Bill Deleted",
-        description: "Your bill has been successfully deleted.",
+        description: "Bill has been deleted successfully."
       });
     } catch (err) {
-      console.error("Error deleting bill:", err);
+      console.error('Error deleting bill:', err);
       toast({
         title: "Error",
         description: "Failed to delete bill. Please try again.",
+        variant: "destructive"
       });
     }
-  };
+  }, [toast]);
 
-  const payBill = async (billId: string, paymentDetails: Omit<BillTransaction, 'id' | 'user_id' | 'bill_id'>) => {
+  const payBill = useCallback(async (billId: string, paymentMethod: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not found");
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
 
-      const { data, error } = await supabase
-        .from('bill_transactions')
-        .insert([{ ...paymentDetails, bill_id: billId, user_id: user.id }])
-        .select()
-        .single();
+      const bill = bills.find(b => b.id === billId);
+      if (!bill) throw new Error('Bill not found');
 
-      if (error) throw error;
-
-      const mappedTransaction: BillTransaction = {
-        ...data,
-        transaction_status: (['completed', 'pending', 'failed'].includes(data.transaction_status) ? data.transaction_status : 'completed') as BillTransaction['transaction_status']
-      };
-
-      setTransactions(prevTransactions => [...prevTransactions, mappedTransaction]);
-      setBills(prevBills =>
-        prevBills.map(bill => (bill.id === billId ? { ...bill, status: 'paid' as Bill['status'] } : bill))
-      );
-      toast({
-        title: "Bill Paid",
-        description: "Your bill has been successfully marked as paid.",
-      });
-    } catch (err) {
-      console.error("Error paying bill:", err);
-      toast({
-        title: "Error",
-        description: "Failed to pay bill. Please try again.",
-      });
-    }
-  };
-
-  const scheduleAutoPay = async (billId: string) => {
-    try {
-      const { error } = await supabase
+      // Update bill status to paid
+      const { error: billError } = await supabase
         .from('bills')
-        .update({ is_auto_pay: true })
+        .update({ status: 'paid' })
         .eq('id', billId);
 
-      if (error) throw error;
+      if (billError) throw billError;
 
-      setBills(prevBills =>
-        prevBills.map(bill => (bill.id === billId ? { ...bill, is_auto_pay: true } : bill))
-      );
+      // Create transaction record
+      const { error: transactionError } = await supabase
+        .from('bill_transactions')
+        .insert([{
+          bill_id: billId,
+          user_id: user.user.id,
+          amount: bill.amount,
+          payment_date: new Date().toISOString().split('T')[0],
+          payment_method: paymentMethod,
+          transaction_status: 'completed'
+        }]);
+
+      if (transactionError) throw transactionError;
+
+      // Refresh data
+      await Promise.all([fetchBills(), fetchTransactions()]);
+      
       toast({
-        title: "Auto-Pay Scheduled",
-        description: "Auto-pay has been successfully scheduled for this bill.",
+        title: "Payment Processed",
+        description: `Payment for ${bill.biller_name} has been recorded.`
       });
     } catch (err) {
-      console.error("Error scheduling auto-pay:", err);
+      console.error('Error paying bill:', err);
       toast({
         title: "Error",
-        description: "Failed to schedule auto-pay. Please try again.",
+        description: "Failed to process payment. Please try again.",
+        variant: "destructive"
       });
     }
-  };
+  }, [bills, fetchBills, fetchTransactions, toast]);
 
-  // Add missing properties with safe defaults
-  const hasAutomatedPayments = bills.some(bill => bill.is_auto_pay);
-  const hasAdvancedAnalytics = true; // Always available for now
+  const toggleAutoPay = useCallback(async (billId: string, enabled: boolean) => {
+    try {
+      await updateBill(billId, { is_auto_pay: enabled });
+      toast({
+        title: "Auto Pay Updated",
+        description: `Auto pay has been ${enabled ? 'enabled' : 'disabled'}.`
+      });
+    } catch (err) {
+      console.error('Error toggling autopay:', err);
+    }
+  }, [updateBill, toast]);
 
-  return { 
-    bills, 
-    transactions, 
-    vendors, 
-    isLoading, 
-    error, 
-    analytics, 
-    upcomingBills, 
-    overdueBills, 
+  const getBillsByCategory = useCallback((category: string) => {
+    return bills.filter(bill => bill.category === category);
+  }, [bills]);
+
+  const searchBills = useCallback((query: string) => {
+    const lowercaseQuery = query.toLowerCase();
+    return bills.filter(bill => 
+      bill.biller_name.toLowerCase().includes(lowercaseQuery) ||
+      bill.category.toLowerCase().includes(lowercaseQuery)
+    );
+  }, [bills]);
+
+  // Feature access checks
+  const hasAutomatedPayments = useMemo(() => 
+    checkFeatureAccess('premium'), [checkFeatureAccess]
+  );
+
+  const hasAdvancedAnalytics = useMemo(() => 
+    checkFeatureAccess('premium'), [checkFeatureAccess]
+  );
+
+  return {
+    // Data
+    bills,
+    transactions,
+    vendors,
+    analytics,
+    upcomingBills,
+    overdueBills,
+    
+    // Actions
+    addBill,
+    updateBill,
+    deleteBill,
+    payBill,
+    toggleAutoPay,
+    getBillsByCategory,
+    searchBills,
+    fetchBills,
+    fetchTransactions,
+    fetchVendors,
+    
+    // Feature flags
     hasAutomatedPayments,
     hasAdvancedAnalytics,
-    addBill, 
-    updateBill, 
-    deleteBill, 
-    payBill, 
-    scheduleAutoPay 
+    
+    // Loading states
+    isLoading,
+    error
   };
 };

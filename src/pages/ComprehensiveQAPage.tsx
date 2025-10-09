@@ -18,14 +18,14 @@ import {
   Smartphone,
   Database
 } from 'lucide-react';
-import { useComplianceQATesting } from '@/hooks/useComplianceQATesting';
+import { useComplianceQA } from '@/hooks/useComplianceQA';
 import { useMassOnboardingQA } from '@/hooks/useMassOnboardingQA';
 import { QATestResults } from '@/components/qa/QATestResults';
 import { QAProgressDashboard } from '@/components/qa/QAProgressDashboard';
 
 export default function ComprehensiveQAPage() {
   const [activeTest, setActiveTest] = useState<string | null>(null);
-  const complianceQA = useComplianceQATesting();
+  const complianceQA = useComplianceQA();
   const onboardingQA = useMassOnboardingQA();
 
   const testSuites = [
@@ -48,7 +48,7 @@ export default function ComprehensiveQAPage() {
   const runFullQASuite = async () => {
     setActiveTest('full');
     await Promise.all([
-      complianceQA.runComplianceQASuite(),
+      complianceQA.runTests(),
       onboardingQA.runTests()
     ]);
     setActiveTest(null);
@@ -60,15 +60,15 @@ export default function ComprehensiveQAPage() {
     const onboardingResults = onboardingQA.results || {};
     
     const allResults = { ...complianceResults, ...onboardingResults };
-    const allTests = Object.values(allResults).flat() as any[];
+    const allTests = Object.values(allResults).flat();
     
     const summary = {
       timestamp,
       totalTests: allTests.length,
-      passed: allTests.filter((t: any) => t.status === 'pass').length,
-      failed: allTests.filter((t: any) => t.status === 'fail').length,
-      warnings: allTests.filter((t: any) => t.status === 'warning').length,
-      passRate: allTests.length > 0 ? (allTests.filter((t: any) => t.status === 'pass').length / allTests.length) * 100 : 0
+      passed: allTests.filter(t => t.status === 'pass').length,
+      failed: allTests.filter(t => t.status === 'fail').length,
+      warnings: allTests.filter(t => t.status === 'warning').length,
+      passRate: allTests.length > 0 ? (allTests.filter(t => t.status === 'pass').length / allTests.length) * 100 : 0
     };
 
     const reportData = {
@@ -206,19 +206,19 @@ export default function ComprehensiveQAPage() {
                       <div className="grid grid-cols-3 gap-2 text-center">
                         <div className="p-2 border rounded">
                           <div className="text-lg font-bold text-green-600">
-                            {(Object.values(suite.hook.results || {}).flat() as any[]).filter((t: any) => t.status === 'pass').length}
+                            {Object.values(suite.hook.results || {}).flat().filter(t => t.status === 'pass').length}
                           </div>
                           <div className="text-xs text-muted-foreground">Passed</div>
                         </div>
                         <div className="p-2 border rounded">
                           <div className="text-lg font-bold text-yellow-600">
-                            {(Object.values(suite.hook.results || {}).flat() as any[]).filter((t: any) => t.status === 'warning').length}
+                            {Object.values(suite.hook.results || {}).flat().filter(t => t.status === 'warning').length}
                           </div>
                           <div className="text-xs text-muted-foreground">Warnings</div>
                         </div>
                         <div className="p-2 border rounded">
                           <div className="text-lg font-bold text-red-600">
-                            {(Object.values(suite.hook.results || {}).flat() as any[]).filter((t: any) => t.status === 'fail').length}
+                            {Object.values(suite.hook.results || {}).flat().filter(t => t.status === 'fail').length}
                           </div>
                           <div className="text-xs text-muted-foreground">Failed</div>
                         </div>
@@ -226,17 +226,9 @@ export default function ComprehensiveQAPage() {
                     )}
                     
                     <Button 
-                      onClick={async () => {
+                      onClick={() => {
                         setActiveTest(suite.id);
-                        try {
-                          if (suite.id === 'compliance') {
-                            await (suite.hook as any).runComplianceQASuite();
-                          } else {
-                            await (suite.hook as any).runTests();
-                          }
-                        } finally {
-                          setActiveTest(null);
-                        }
+                        suite.hook.runTests().finally(() => setActiveTest(null));
                       }}
                       disabled={isRunning}
                       className="w-full"

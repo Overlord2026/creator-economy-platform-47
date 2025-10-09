@@ -1,5 +1,4 @@
-import { sb } from '@/lib/supabase-relaxed';
-const supabase = sb as any;
+import { supabase } from '@/integrations/supabase/client';
 
 export type Result<T> = {
   ok: boolean;
@@ -17,7 +16,7 @@ export async function tableExists(name: string): Promise<boolean> {
   }
 }
 
-export async function safeSelect<T = any>(tableName: string, columns: string = '*', filters: Record<string, any> = {}): Promise<Result<T[]>> {
+export async function safeSelect<T>(tableName: string, columns: string = '*', filters: Record<string, any> = {}): Promise<Result<T[]>> {
   try {
     let query = supabase.from(tableName).select(columns);
     
@@ -36,7 +35,7 @@ export async function safeSelect<T = any>(tableName: string, columns: string = '
   }
 }
 
-export async function safeInsert<T = any>(tableName: string, data: any): Promise<Result<T[]>> {
+export async function safeInsert<T>(tableName: string, data: any): Promise<Result<T[]>> {
   try {
     const { data: result, error } = await (supabase as any).from(tableName).insert(data).select();
     if (error) throw error;
@@ -47,7 +46,7 @@ export async function safeInsert<T = any>(tableName: string, data: any): Promise
   }
 }
 
-export async function safeUpdate<T = any>(tableName: string, data: any, filters: Record<string, any> = {}): Promise<Result<T[]>> {
+export async function safeUpdate<T>(tableName: string, data: any, filters: Record<string, any> = {}): Promise<Result<T[]>> {
   try {
     let query = (supabase as any).from(tableName).update(data);
     
@@ -66,7 +65,7 @@ export async function safeUpdate<T = any>(tableName: string, data: any, filters:
   }
 }
 
-export async function safeDelete<T = any>(tableName: string, filters: Record<string, any> = {}): Promise<Result<T[]>> {
+export async function safeDelete<T>(tableName: string, filters: Record<string, any> = {}): Promise<Result<T[]>> {
   try {
     let query = (supabase as any).from(tableName).delete();
     
@@ -85,40 +84,22 @@ export async function safeDelete<T = any>(tableName: string, filters: Record<str
   }
 }
 
-export async function withFallback<T = any>(tableName: string, queryFn: () => Promise<Result<T[]>>, fallback: (() => Promise<T[]>) | (() => T[]) | T[]): Promise<T[]> {
+export async function withFallback<T>(tableName: string, queryFn: () => Promise<Result<T[]>>, fallback: T[]): Promise<T[]> {
   try {
     const exists = await tableExists(tableName);
     if (!exists) {
       console.warn(`Table ${tableName} does not exist, returning fallback`);
-      // Handle fallback as function or array
-      if (typeof fallback === 'function') {
-        const fallbackResult = fallback();
-        return fallbackResult instanceof Promise ? await fallbackResult : fallbackResult;
-      }
       return fallback;
     }
     const result = await queryFn();
-    if (result.ok && result.data) {
-      return result.data;
-    }
-    // Handle fallback as function or array for error case
-    if (typeof fallback === 'function') {
-      const fallbackResult = fallback();
-      return fallbackResult instanceof Promise ? await fallbackResult : fallbackResult;
-    }
-    return fallback;
+    return result.ok ? (result.data || fallback) : fallback;
   } catch (err) {
     console.warn(`withFallback failed for ${tableName}:`, err);
-    // Handle fallback as function or array for exception case
-    if (typeof fallback === 'function') {
-      const fallbackResult = fallback();
-      return fallbackResult instanceof Promise ? await fallbackResult : fallbackResult;
-    }
     return fallback;
   }
 }
 
-export async function safeInsertOptionalTable<T = any>(table: string, row: T): Promise<Result<T[]>> {
+export async function safeInsertOptionalTable<T>(table: string, row: T): Promise<Result<T[]>> {
   const exists = await tableExists(table);
   if (!exists) return { ok: true, data: [row] as T[], warning: 'table_missing' };
   
@@ -131,7 +112,7 @@ export async function safeInsertOptionalTable<T = any>(table: string, row: T): P
   }
 }
 
-export async function safeQueryOptionalTable<T = any>(tableName: string, columns: string = '*', filters: Record<string, any> = {}): Promise<Result<T[]>> {
+export async function safeQueryOptionalTable<T>(tableName: string, columns: string = '*', filters: Record<string, any> = {}): Promise<Result<T[]>> {
   try {
     const result = await safeSelect<T>(tableName, columns, filters);
     return result;

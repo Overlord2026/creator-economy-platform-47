@@ -9,12 +9,11 @@ import { Plus, Building2, CreditCard, ArrowRightLeft, History, Users } from "luc
 import { useBankAccounts } from "@/hooks/useBankAccounts";
 import { TransferForm } from "@/components/transfers/TransferForm";
 import { TransferHistory } from "@/components/transfers/TransferHistory";
-import BankAccountsList from "@/components/accounts/BankAccountsList";
+import { BankAccountsList } from "@/components/accounts/BankAccountsList";
 
 const Transfers = () => {
   const navigate = useNavigate();
-  const { accounts } = useBankAccounts();
-  const totalBalance = "$0.00"; // TODO: Implement getFormattedTotalBalance
+  const { accounts, getFormattedTotalBalance } = useBankAccounts();
   const [activeTab, setActiveTab] = useState("transfer");
 
   const handleAddFundingAccount = () => {
@@ -42,7 +41,7 @@ const Transfers = () => {
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Total Balance</p>
-                <p className="text-xl font-semibold">{totalBalance}</p>
+                <p className="text-xl font-semibold">{getFormattedTotalBalance()}</p>
               </div>
               <Button onClick={handleAddFundingAccount} variant="outline" className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />

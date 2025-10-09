@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { AdminPortalLayout } from '@/components/admin/AdminPortalLayout';
-import AdminPortalDashboard from '@/components/admin/AdminPortalDashboard';
+import { AdminPortalDashboard } from '@/components/admin/AdminPortalDashboard';
 import { useRoleAccess } from '@/hooks/useRoleAccess';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Shield } from 'lucide-react';

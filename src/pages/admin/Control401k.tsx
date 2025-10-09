@@ -3,29 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { initReceiptsEmitterAuto, hashActionRequest } from "@/lib/receiptsEmitter";
 import { runPlanBenchmark } from "@/lib/401k/planBenchmark";
 import { evalAdvGate } from "@/lib/401k/pteGate";
-import { BOOTSTRAP_MODE } from '@/config/bootstrap';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-
-export default function Control401k() {
-  if (BOOTSTRAP_MODE) {
-    return (
-      <div className="container mx-auto p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>🚧 Bootstrap Mode Active</CardTitle>
-            <CardDescription>
-              401k Control requires the aies_receipts table which doesn't exist yet.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
-  
-  return <Control401kContent />;
-}
-
-function Control401kContent() {
 
 /**
  * 401k Control Plane — admin console
@@ -236,5 +213,4 @@ export default function Control401k() {
       </table>
     </div>
   );
-}
 }

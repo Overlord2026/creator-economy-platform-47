@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-const sb = supabase as any;
 import { useToast } from '@/hooks/use-toast';
 
 export interface Lead {
@@ -37,7 +36,7 @@ export function useLeads(filters: LeadsFilters = {}) {
   return useQuery({
     queryKey: ['leads', filters],
     queryFn: async () => {
-      let query = sb
+      let query = supabase
         .from('leads')
         .select('*')
         .order('created_at', { ascending: false });
@@ -68,12 +67,12 @@ export function useUpdateLead() {
 
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<Lead> }) => {
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .from('leads')
         .update(updates)
         .eq('id', id)
         .select()
-        .maybeSingle();
+        .single();
 
       if (error) throw error;
       return data;
@@ -102,7 +101,7 @@ export function useDeleteLead() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await sb
+      const { error } = await supabase
         .from('leads')
         .delete()
         .eq('id', id);

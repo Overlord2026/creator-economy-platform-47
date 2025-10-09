@@ -10,8 +10,7 @@ import { Slider } from '@/components/ui/slider';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { sb } from '@/lib/supabase-relaxed';
-const supabase = sb as any;
+import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Phone, Mail, DollarSign, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 

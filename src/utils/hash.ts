@@ -22,7 +22,7 @@ export async function sha256Hex(data: string | Uint8Array | any): Promise<string
     bytes = canonicalizeToBytes(data);
   }
   
-  const hashBuffer = await crypto.subtle.digest('SHA-256', bytes.buffer as ArrayBuffer);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', bytes);
   const hashArray = new Uint8Array(hashBuffer);
   
   return Array.from(hashArray)

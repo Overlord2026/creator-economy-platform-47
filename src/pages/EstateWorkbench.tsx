@@ -58,7 +58,7 @@ export default function EstateWorkbench() {
     });
 
     // Download PDF
-    const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -142,7 +142,7 @@ Thank you.`;
       setLastReceiptId(receipt.id);
 
       // Download binder ZIP
-      const blob = new Blob([zip as any], { type: 'application/zip' });
+      const blob = new Blob([zip], { type: 'application/zip' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

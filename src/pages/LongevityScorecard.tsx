@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ArrowRight, ArrowLeft, RotateCcw } from 'lucide-react';
-import Logo from '@/components/ui/Logo';
+import { Logo } from '@/components/ui/Logo';
 import { useNavigate } from 'react-router-dom';
 import { useLongevityScorecard } from '@/hooks/useLongevityScorecard';
 import { LongevityInputForm } from '@/components/longevity-scorecard/LongevityInputForm';
@@ -176,9 +176,7 @@ export default function LongevityScorecard() {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-          <div onClick={() => navigate('/')} className="cursor-pointer">
-            <Logo variant="tree" />
-          </div>
+            <Logo variant="tree" onClick={() => navigate('/')} />
             <div className="flex items-center gap-4">
               <Button 
                 variant="ghost" 

@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react';
-import { sb } from '@/lib/supabase-relaxed';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import type { Database } from '@/integrations/supabase/types';
 
-type PortfolioPosition = any;
-type PortfolioTarget = any;
-type RebalancingEvent = any;
-type PrivateFundHolding = any;
+type PortfolioPosition = Database['public']['Tables']['portfolio_positions']['Row'];
+type PortfolioTarget = Database['public']['Tables']['portfolio_targets']['Row'];
+type RebalancingEvent = Database['public']['Tables']['rebalancing_events']['Row'];
+type PrivateFundHolding = Database['public']['Tables']['private_fund_holdings']['Row'];
 
 export interface PortfolioData {
   positions: PortfolioPosition[];
@@ -47,10 +48,10 @@ export const usePortfolio = () => {
       setLoading(true);
       
       const [positionsRes, targetsRes, privateFundsRes, eventsRes] = await Promise.all([
-        sb.from('portfolio_positions').select('*').eq('user_id', userId),
-        sb.from('portfolio_targets').select('*').eq('user_id', userId),
-        sb.from('private_fund_holdings').select('*').eq('user_id', userId),
-        sb.from('rebalancing_events').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(10)
+        supabase.from('portfolio_positions').select('*').eq('user_id', userId),
+        supabase.from('portfolio_targets').select('*').eq('user_id', userId),
+        supabase.from('private_fund_holdings').select('*').eq('user_id', userId),
+        supabase.from('rebalancing_events').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(10)
       ]);
 
       if (positionsRes.error) throw positionsRes.error;
@@ -83,7 +84,7 @@ export const usePortfolio = () => {
       setLoading(true);
       
       // Call the rebalance edge function
-      const { data: result, error } = await sb.functions.invoke('rebalance', {
+      const { data: result, error } = await supabase.functions.invoke('rebalance', {
         body: {
           accountId: 'current_user',
           currentPositions: data.positions.reduce((acc, pos) => {
@@ -133,10 +134,10 @@ export const usePortfolio = () => {
     try {
       setLoading(true);
       
-      const { data: user } = await sb.auth.getUser();
+      const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
 
-      const { error } = await sb.from('rebalancing_events').insert({
+      const { error } = await supabase.from('rebalancing_events').insert({
         user_id: user.user.id,
         account_id: 'default-account', // Required field
         trigger_type: 'drift',
@@ -168,7 +169,7 @@ export const usePortfolio = () => {
 
   const savePortfolioPosition = useCallback(async (position: Omit<PortfolioPosition, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      const { data: user } = await sb.auth.getUser();
+      const { data: user } = await supabase.auth.getUser();
       if (!user.user) {
         toast({
           title: "Authentication Required",
@@ -178,7 +179,7 @@ export const usePortfolio = () => {
         return;
       }
 
-      const { error } = await sb.from('portfolio_positions').insert({
+      const { error } = await supabase.from('portfolio_positions').insert({
         ...position,
         user_id: user.user.id
       });

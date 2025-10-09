@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
 interface Lead {
   id: string;
@@ -567,7 +566,7 @@ export default function PipelineBoard() {
                 {filteredLeads.length > 0 
                   ? Math.round((filteredLeads.filter(l => l.client_converted).length / filteredLeads.length) * 100)
                   : 0}%
-            </div>
+              </div>
               <div className="text-sm text-muted-foreground">Conversion Rate</div>
             </div>
           </CardContent>
@@ -576,5 +575,3 @@ export default function PipelineBoard() {
     </div>
   );
 }
-
-export default PipelineBoard;

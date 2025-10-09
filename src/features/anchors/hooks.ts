@@ -15,7 +15,7 @@ export async function maybeAnchor(tag: string, hash: string) {
 export async function generateHash(data: Uint8Array | string): Promise<string> {
   const encoder = new TextEncoder();
   const dataArray = typeof data === 'string' ? encoder.encode(data) : data;
-  const hashBuffer = await crypto.subtle.digest('SHA-256', dataArray.buffer as ArrayBuffer);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', dataArray);
   const hashArray = new Uint8Array(hashBuffer);
   return Array.from(hashArray).map(b => b.toString(16).padStart(2, '0')).join('');
 }

@@ -2,8 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@/context/UserContext";
 import { supabase } from "@/integrations/supabase/client";
 
-const sb = supabase as any;
-
 export interface InvestmentStrategy {
   id: string;
   name: string;
@@ -85,7 +83,7 @@ export const useInvestmentStrategies = (defaultSegment?: string) => {
     setError(null);
     
     try {
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .from('investment_strategies')
         .select('*');
       
@@ -110,7 +108,7 @@ export const useInvestmentStrategies = (defaultSegment?: string) => {
   const fetchEducationalContent = useCallback(async () => {
     try {
       // Fetch the strategy-content mappings
-      const { data: mappings, error: mappingError } = await sb
+      const { data: mappings, error: mappingError } = await supabase
         .from('strategy_educational_content')
         .select('strategy_id, content_id');
       
@@ -121,7 +119,7 @@ export const useInvestmentStrategies = (defaultSegment?: string) => {
         const contentIds = [...new Set(mappings.map(m => m.content_id))];
         
         // Fetch the content details
-        const { data: contents, error: contentError } = await sb
+        const { data: contents, error: contentError } = await supabase
           .from('educational_content')
           .select('*')
           .in('id', contentIds);
@@ -258,7 +256,7 @@ export const useInvestmentStrategies = (defaultSegment?: string) => {
     if (!userProfile?.id) return;
     
     try {
-      await sb.from('strategy_engagement_tracking').insert({
+      await supabase.from('strategy_engagement_tracking').insert({
         user_id: userProfile.id,
         strategy_id: strategyId,
         event_type: eventType,

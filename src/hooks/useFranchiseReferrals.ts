@@ -2,10 +2,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTenant } from './useTenant';
-import { BOOTSTRAP_MODE } from '@/config/bootstrap';
-
-// Relax Supabase generics for franchise tables that may not have codegen types
-const sb = supabase as any;
 
 export interface FranchiseReferral {
   id: string;
@@ -54,22 +50,6 @@ export interface FranchiseReferralPayout {
 }
 
 export const useFranchiseReferrals = () => {
-  // Bootstrap mode: return UI-only stub (before any hooks)
-  if (BOOTSTRAP_MODE) {
-    return {
-      referrals: [],
-      payouts: [],
-      loading: false,
-      generateReferralCode: async () => null,
-      updateReferralStatus: async () => {},
-      createPayout: async () => {},
-      updatePayoutStatus: async () => {},
-      getReferralLink: () => '',
-      copyReferralLink: () => {},
-      refreshData: async () => {}
-    };
-  }
-
   const { currentTenant } = useTenant();
   const [referrals, setReferrals] = useState<FranchiseReferral[]>([]);
   const [payouts, setPayouts] = useState<FranchiseReferralPayout[]>([]);
@@ -88,14 +68,19 @@ export const useFranchiseReferrals = () => {
     if (!currentTenant) return;
 
     try {
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .from('franchise_referrals')
         .select('*')
         .or(`tenant_id.eq.${currentTenant.id},referring_tenant_id.eq.${currentTenant.id}`)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setReferrals(data || []);
+      setReferrals((data || []).map(referral => ({
+        ...referral,
+        status: referral.status as FranchiseReferral['status'],
+        referral_reward_type: referral.referral_reward_type as FranchiseReferral['referral_reward_type'],
+        reward_status: referral.reward_status as FranchiseReferral['reward_status']
+      })));
     } catch (err) {
       console.error('Failed to fetch franchise referrals:', err);
       toast.error('Failed to load franchise referrals');
@@ -106,14 +91,18 @@ export const useFranchiseReferrals = () => {
     if (!currentTenant) return;
 
     try {
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .from('franchise_referral_payouts')
         .select('*')
         .or(`tenant_id.eq.${currentTenant.id},referring_tenant_id.eq.${currentTenant.id}`)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPayouts(data || []);
+      setPayouts((data || []).map(payout => ({
+        ...payout,
+        payout_type: payout.payout_type as FranchiseReferralPayout['payout_type'],
+        status: payout.status as FranchiseReferralPayout['status']
+      })));
     } catch (err) {
       console.error('Failed to fetch franchise payouts:', err);
       toast.error('Failed to load franchise payouts');
@@ -134,7 +123,7 @@ export const useFranchiseReferrals = () => {
 
     try {
       // Validate franchise referral creation (prevent duplicates, self-referral, rate limiting)
-      const { error: validationError } = await sb
+      const { error: validationError } = await supabase
         .rpc('validate_franchise_referral_creation', {
           p_referring_tenant_id: currentTenant.id,
           p_contact_email: referralData.referred_contact_email || '',
@@ -144,12 +133,12 @@ export const useFranchiseReferrals = () => {
       if (validationError) throw validationError;
 
       // Generate referral code
-      const { data: codeData, error: codeError } = await sb
+      const { data: codeData, error: codeError } = await supabase
         .rpc('generate_franchise_referral_code');
 
       if (codeError) throw codeError;
 
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .from('franchise_referrals')
         .insert({
           referral_code: codeData,
@@ -208,7 +197,7 @@ export const useFranchiseReferrals = () => {
       if (status === 'demo_scheduled') updateData.demo_scheduled_at = new Date().toISOString();
       if (status === 'signed') updateData.signed_at = new Date().toISOString();
 
-      const { error } = await sb
+      const { error } = await supabase
         .from('franchise_referrals')
         .update(updateData)
         .eq('id', referralId);
@@ -231,7 +220,7 @@ export const useFranchiseReferrals = () => {
     periodEnd?: string
   ) => {
     try {
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .rpc('create_franchise_referral_payout', {
           p_franchise_referral_id: franchiseReferralId,
           p_payout_type: payoutType,
@@ -267,7 +256,7 @@ export const useFranchiseReferrals = () => {
         if (paymentReference) updateData.payment_reference = paymentReference;
       }
 
-      const { error } = await sb
+      const { error } = await supabase
         .from('franchise_referral_payouts')
         .update(updateData)
         .eq('id', payoutId);

@@ -12,36 +12,16 @@ import { LinkAccounts } from "./onboarding/steps/LinkAccounts";
 import { UploadDoc } from "./onboarding/steps/UploadDoc";
 import { Goals } from "./onboarding/steps/Goals";
 import { InvitePro } from "./onboarding/steps/InvitePro";
-import { BOOTSTRAP_MODE } from '@/config/bootstrap';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 type StepKey =
   | "email-verify" | "profile" | "household" | "link-accounts"
   | "upload-doc" | "goals" | "invite-pro";
 
-export default function OnboardingPage() {
-  if (BOOTSTRAP_MODE) {
-    return (
-      <div className="container mx-auto p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>🚧 Bootstrap Mode Active</CardTitle>
-            <CardDescription>
-              Onboarding requires the user_onboarding_progress table which doesn't exist yet.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
-
-  return <OnboardingPageContent />;
-}
-
-function OnboardingPageContent() {
 const STEPS: StepKey[] = [
   "email-verify","profile","household","link-accounts","upload-doc","goals","invite-pro"
 ];
+
+export default function OnboardingPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);

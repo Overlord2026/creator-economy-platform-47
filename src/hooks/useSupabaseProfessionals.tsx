@@ -46,7 +46,7 @@ export const useSupabaseProfessionals = () => {
             id: '1',
             name: 'Demo Advisor',
             email: 'advisor@demo.com',
-            type: 'advisor' as ProfessionalType,
+            type: 'advisor',
             company: 'Demo Wealth Management',
             phone: '+1-555-0123',
             rating: 4.8,

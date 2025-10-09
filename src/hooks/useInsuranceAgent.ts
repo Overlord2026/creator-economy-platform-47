@@ -2,10 +2,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
-import { BOOTSTRAP_MODE } from '@/config/bootstrap';
-
-// Relax Supabase generics for insurance tables
-const sb = supabase as any;
 
 export interface InsuranceAgent {
   id?: string;
@@ -53,35 +49,18 @@ export interface CEReminder {
 }
 
 export const useInsuranceAgent = () => {
-  // Bootstrap mode: return UI-only stub (before any hooks)
-  if (BOOTSTRAP_MODE) {
-    return {
-      agent: null,
-      courses: [],
-      reminders: [],
-      isLoading: false,
-      addCourse: async () => {},
-      updateAgent: async () => {},
-      createAgent: async () => {},
-      getDaysUntilExpiry: () => null,
-      getDaysUntilPeriodEnd: () => null,
-      getCEProgress: () => ({ percentage: 0, status: 'unknown' }),
-      refreshData: () => {}
-    };
-  }
-
-  const { user } = useAuth();
   const [agent, setAgent] = useState<InsuranceAgent | null>(null);
   const [courses, setCourses] = useState<CECourse[]>([]);
   const [reminders, setReminders] = useState<CEReminder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
   const fetchAgent = async () => {
     if (!user) return;
 
     try {
       setIsLoading(true);
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .from('insurance_agents')
         .select('*')
         .eq('user_id', user.id)
@@ -90,7 +69,13 @@ export const useInsuranceAgent = () => {
       if (error) throw error;
 
       if (data) {
-        setAgent(data);
+        setAgent({
+          ...data,
+          status: data.status as 'active' | 'inactive' | 'suspended',
+          license_expiry: data.license_expiry ? new Date(data.license_expiry) : undefined,
+          ce_reporting_period_start: data.ce_reporting_period_start ? new Date(data.ce_reporting_period_start) : undefined,
+          ce_reporting_period_end: data.ce_reporting_period_end ? new Date(data.ce_reporting_period_end) : undefined,
+        });
       }
     } catch (error) {
       console.error('Error fetching agent:', error);
@@ -104,7 +89,7 @@ export const useInsuranceAgent = () => {
     if (!agent?.id) return;
 
     try {
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .from('ce_courses')
         .select('*')
         .eq('agent_id', agent.id)
@@ -112,7 +97,12 @@ export const useInsuranceAgent = () => {
 
       if (error) throw error;
 
-      setCourses(data || []);
+      const formattedCourses = data?.map(course => ({
+        ...course,
+        completion_date: course.completion_date ? new Date(course.completion_date) : undefined,
+      })) || [];
+
+      setCourses(formattedCourses);
     } catch (error) {
       console.error('Error fetching courses:', error);
       toast.error('Failed to load CE courses');
@@ -123,7 +113,7 @@ export const useInsuranceAgent = () => {
     if (!agent?.id) return;
 
     try {
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .from('ce_reminders')
         .select('*')
         .eq('agent_id', agent.id)
@@ -132,7 +122,15 @@ export const useInsuranceAgent = () => {
 
       if (error) throw error;
 
-      setReminders(data || []);
+      const formattedReminders = data?.map(reminder => ({
+        ...reminder,
+        reminder_type: reminder.reminder_type as 'CE Due Soon' | 'License Expiry' | 'Deficiency' | 'Compliance Check',
+        reminder_status: reminder.reminder_status as 'pending' | 'sent' | 'acknowledged' | 'resolved',
+        trigger_date: reminder.trigger_date ? new Date(reminder.trigger_date) : undefined,
+        resolved_date: reminder.resolved_date ? new Date(reminder.resolved_date) : undefined,
+      })) || [];
+
+      setReminders(formattedReminders);
     } catch (error) {
       console.error('Error fetching reminders:', error);
       toast.error('Failed to load reminders');
@@ -143,7 +141,7 @@ export const useInsuranceAgent = () => {
     if (!agent?.id) return;
 
     try {
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .from('ce_courses')
         .insert([{
           ...course,
@@ -155,13 +153,18 @@ export const useInsuranceAgent = () => {
 
       if (error) throw error;
 
-      setCourses(prev => [data, ...prev]);
+      const newCourse = {
+        ...data,
+        completion_date: data.completion_date ? new Date(data.completion_date) : undefined,
+      };
+
+      setCourses(prev => [newCourse, ...prev]);
       toast.success('CE course added successfully!');
       
       // Refresh agent data to update credits
       await fetchAgent();
       
-      return data;
+      return newCourse;
     } catch (error) {
       console.error('Error adding course:', error);
       toast.error('Failed to add CE course');
@@ -184,7 +187,7 @@ export const useInsuranceAgent = () => {
         (updateData as any).ce_reporting_period_end = updateData.ce_reporting_period_end.toISOString().split('T')[0];
       }
 
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .from('insurance_agents')
         .update(updateData as any)
         .eq('id', agent.id)
@@ -193,10 +196,18 @@ export const useInsuranceAgent = () => {
 
       if (error) throw error;
 
-      setAgent(data);
+      const updatedAgent = {
+        ...data,
+        status: data.status as 'active' | 'inactive' | 'suspended',
+        license_expiry: data.license_expiry ? new Date(data.license_expiry) : undefined,
+        ce_reporting_period_start: data.ce_reporting_period_start ? new Date(data.ce_reporting_period_start) : undefined,
+        ce_reporting_period_end: data.ce_reporting_period_end ? new Date(data.ce_reporting_period_end) : undefined,
+      };
+
+      setAgent(updatedAgent);
       toast.success('Agent profile updated successfully!');
       
-      return data;
+      return updatedAgent;
     } catch (error) {
       console.error('Error updating agent:', error);
       toast.error('Failed to update agent profile');
@@ -208,7 +219,7 @@ export const useInsuranceAgent = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .from('insurance_agents')
         .insert([{
           ...agentData,
@@ -222,10 +233,18 @@ export const useInsuranceAgent = () => {
 
       if (error) throw error;
 
-      setAgent(data);
+      const newAgent = {
+        ...data,
+        status: data.status as 'active' | 'inactive' | 'suspended',
+        license_expiry: data.license_expiry ? new Date(data.license_expiry) : undefined,
+        ce_reporting_period_start: data.ce_reporting_period_start ? new Date(data.ce_reporting_period_start) : undefined,
+        ce_reporting_period_end: data.ce_reporting_period_end ? new Date(data.ce_reporting_period_end) : undefined,
+      };
+
+      setAgent(newAgent);
       toast.success('Agent profile created successfully!');
       
-      return data;
+      return newAgent;
     } catch (error) {
       console.error('Error creating agent:', error);
       toast.error('Failed to create agent profile');

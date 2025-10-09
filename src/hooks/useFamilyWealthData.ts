@@ -19,7 +19,8 @@ interface FamilyWealthSummary {
 export const useFamilyWealthData = (): FamilyWealthSummary => {
   const { 
     accounts, 
-    loading: accountsLoading
+    loading: accountsLoading, 
+    getFormattedTotalBalance 
   } = useBankAccounts();
   
   const { 
@@ -36,12 +37,8 @@ export const useFamilyWealthData = (): FamilyWealthSummary => {
 
   // Memoize expensive calculations
   const totalBalance = useMemo(() => {
-    const total = accounts.reduce((sum, account) => sum + (account.balance || 0), 0);
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(total);
-  }, [accounts]);
+    return getFormattedTotalBalance();
+  }, [getFormattedTotalBalance]);
 
   const accountCount = useMemo(() => {
     return accounts.length;

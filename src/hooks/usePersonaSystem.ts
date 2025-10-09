@@ -3,7 +3,7 @@ import { AllPersonaTypes } from '@/types/personas';
 import { FeatureExtractor } from '@/services/persona/FeatureExtractor';
 import { HybridClassifier, ClassificationContext } from '@/services/persona/HybridClassifier';
 import { PersonaSelector } from '@/services/persona/PersonaSelector';
-import { sb } from '@/lib/supabase-relaxed';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PersonaSystemConfig {
   tenantId: string;
@@ -42,17 +42,21 @@ export const usePersonaSystem = (config: PersonaSystemConfig) => {
     setState(prev => ({ ...prev, isDetecting: true }));
 
     try {
-      const { data: user } = await sb.auth.getUser();
+      // Get current user
+      const { data: user } = await supabase.auth.getUser();
       if (!user.user) return;
 
+      // Extract features
       const features = await extractor.extractFeatures(events, user.user.id, 'session-' + Date.now());
 
+      // Classify persona with proper context
       const ctx: ClassificationContext = {
         tenantId: config.tenantId,
         userId: user.user.id || 'anonymous'
       } as any;
       const predictions = await classifier.classify(features, ctx);
 
+      // Select with hysteresis - simplified for now
       const selection = {
         selectedPersona: 'client' as AllPersonaTypes,
         confidence: 0.8,
@@ -67,7 +71,8 @@ export const usePersonaSystem = (config: PersonaSystemConfig) => {
         switchReason: selection.reason
       }));
 
-      await sb.from('persona_signals').insert({
+      // Log persona change
+      await supabase.from('persona_signals').insert({
         user_id: user.user.id,
         tenant_id: config.tenantId,
         signal_type: 'persona_switch',
@@ -86,7 +91,8 @@ export const usePersonaSystem = (config: PersonaSystemConfig) => {
   }, [config, state.isDetecting, extractor, classifier, selector, state.currentPersona]);
 
   const forcePersona = useCallback(async (persona: AllPersonaTypes) => {
-    const { data: user } = await sb.auth.getUser();
+    // Get current user
+    const { data: user } = await supabase.auth.getUser();
     if (!user.user) return;
 
     setState(prev => ({
@@ -97,7 +103,8 @@ export const usePersonaSystem = (config: PersonaSystemConfig) => {
       switchReason: 'Manual override'
     }));
 
-    await sb.from('persona_signals').insert({
+    // Log manual override
+    await supabase.from('persona_signals').insert({
       user_id: user.user.id,
       tenant_id: config.tenantId,
       signal_type: 'manual_override',
@@ -108,19 +115,24 @@ export const usePersonaSystem = (config: PersonaSystemConfig) => {
     });
   }, [config.tenantId]);
 
+  // Auto-detection effect
   useEffect(() => {
     if (!config.autoDetect) return;
 
+    // Set up event listeners for user interactions
     const handleUserEvent = (event: Event) => {
+      // Collect relevant events for persona detection
       const eventData = {
         type: event.type,
         timestamp: Date.now(),
         target: event.target ? (event.target as Element).tagName : null
       };
 
+      // Trigger detection with recent events
       detectPersona([eventData]);
     };
 
+    // Listen for various user interaction events
     const events = ['click', 'scroll', 'keydown', 'focus'];
     events.forEach(eventType => {
       document.addEventListener(eventType, handleUserEvent);

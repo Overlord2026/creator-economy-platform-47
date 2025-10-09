@@ -10,8 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LinkedinIcon, CheckCircle, Edit, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
-import { sb } from '@/lib/supabase-relaxed';
-const supabase = sb as any;
+import { supabase } from '@/integrations/supabase/client';
 
 interface LinkedInProfile {
   id: string;

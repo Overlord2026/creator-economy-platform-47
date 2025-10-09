@@ -1,5 +1,4 @@
-import { sb } from '@/lib/supabase-relaxed';
-const supabase = sb as any;
+import { supabase } from '@/integrations/supabase/client';
 import { HealthRDSReceipt, createHealthRDSReceipt } from '@/types/health-rds';
 
 // Store Health-RDS receipt using the edge function

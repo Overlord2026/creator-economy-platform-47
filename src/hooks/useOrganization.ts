@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-const sb = supabase as any;
 import { Employee, Organization, OrganizationRole } from '@/types/operations';
 
 export const useOrganization = () => {
@@ -20,11 +19,11 @@ export const useOrganization = () => {
     const fetchOrganizationData = async () => {
       try {
         // First, get the current user's employee record
-        const { data: employeeData, error: employeeError } = await sb
+        const { data: employeeData, error: employeeError } = await supabase
           .from('employees')
           .select('*')
           .eq('user_id', user.id)
-          .maybeSingle();
+          .single();
 
         if (employeeError) {
           if (employeeError.code === 'PGRST116') {
@@ -40,11 +39,11 @@ export const useOrganization = () => {
         setCurrentEmployee(employeeData as Employee);
 
         // Then get the organization data
-        const { data: orgData, error: orgError } = await sb
+        const { data: orgData, error: orgError } = await supabase
           .from('organizations')
           .select('*')
           .eq('id', employeeData.organization_id)
-          .maybeSingle();
+          .single();
 
         if (orgError) {
           setError(orgError.message);

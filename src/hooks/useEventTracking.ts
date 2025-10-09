@@ -1,7 +1,6 @@
 
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 import { useAuth } from '@/context/AuthContext';
 import { useTenant } from '@/context/TenantContext';
 import { useAnalyticsTracking } from './useAnalytics';
@@ -175,7 +174,7 @@ export const useEventTracking = () => {
         console.log('🎯 App Event Tracked:', eventData);
       }
 
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('app_events')
         .insert(eventData);
 

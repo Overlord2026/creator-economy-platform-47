@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import AgencyDirectory from '@/components/agencies/AgencyDirectory';
-import AgencyProfile from '@/components/agencies/AgencyProfile';
-import CampaignBookingModal from '@/components/agencies/CampaignBookingModal';
+import { AgencyDirectory } from '@/components/agencies/AgencyDirectory';
+import { AgencyProfile } from '@/components/agencies/AgencyProfile';
+import { CampaignBookingModal } from '@/components/agencies/CampaignBookingModal';
 import { useToast } from '@/hooks/use-toast';
 
 export const AgenciesPage: React.FC = () => {

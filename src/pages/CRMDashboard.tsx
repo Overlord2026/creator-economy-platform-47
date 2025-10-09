@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import ContactBook from '@/components/crm/ContactBook';
-import PipelineManager from '@/components/crm/PipelineManager';
-import ActivityFeed from '@/components/crm/ActivityFeed';
-import SmartReminders from '@/components/crm/SmartReminders';
-import CRMAnalytics from '@/components/crm/CRMAnalytics';
-import ImportExport from '@/components/crm/ImportExport';
+import { ContactBook } from '@/components/crm/ContactBook';
+import { PipelineManager } from '@/components/crm/PipelineManager';
+import { ActivityFeed } from '@/components/crm/ActivityFeed';
+import { SmartReminders } from '@/components/crm/SmartReminders';
+import { CRMAnalytics } from '@/components/crm/CRMAnalytics';
+import { ImportExport } from '@/components/crm/ImportExport';
 import { SWAGLeadScoreCard } from '@/components/leads/SWAGLeadScoreCard';
 import { SWAGViralShare } from '@/components/leads/SWAGViralShare';
 import { Users, ArrowRightLeft, Activity, Bell, BarChart3, Upload, Trophy, Share2 } from 'lucide-react';

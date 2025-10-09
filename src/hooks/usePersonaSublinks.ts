@@ -1,5 +1,5 @@
 import * as React from "react";
-import { sb } from "@/lib/supabase-relaxed";
+import { supabase } from "@/integrations/supabase/client";
 import { PersonaKind } from "@/types/persona";
 import { getPersonaLinks, DEFAULT_LINKS, Link } from "@/config/persona-links";
 
@@ -16,7 +16,8 @@ export function usePersonaSublinks() {
       }
       
       try {
-        const { data } = await sb
+        // First try to get from database
+        const { data } = await supabase
           .from("personas")
           .select("persona_kind")
           .eq("id", personaId)
@@ -27,16 +28,19 @@ export function usePersonaSublinks() {
         if (kind) {
           setLinks(getPersonaLinks(kind));
         } else {
+          // Fallback to localStorage persona_kind
           const storedKind = localStorage.getItem("persona_kind") as PersonaKind;
           setLinks(getPersonaLinks(storedKind));
         }
       } catch (error) {
         console.error('Error fetching persona links:', error);
+        // Fallback to localStorage
         const storedKind = localStorage.getItem("persona_kind") as PersonaKind;
         setLinks(getPersonaLinks(storedKind));
       }
     };
 
+    // Check for persona_id first, then persona_kind
     const pid = typeof window !== "undefined" ? localStorage.getItem("persona_id") : null;
     const pkind = typeof window !== "undefined" ? localStorage.getItem("persona_kind") : null;
     
@@ -48,6 +52,7 @@ export function usePersonaSublinks() {
       setLinks(DEFAULT_LINKS);
     }
 
+    // Listen for persona switching events
     const handler = (e: any) => {
       if (e.detail?.personaId) {
         apply(e.detail.personaId);

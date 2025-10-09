@@ -4,7 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { AICFODashboard } from '@/components/executive/AICFODashboard';
 import { AICMODashboard } from '@/components/executive/AICMODashboard';
 import { AICOODashboard } from '@/components/executive/AICOODashboard';
-import AICTODashboard from '@/components/executive/AICTODashboard';
+import { AICTODashboard } from '@/components/executive/AICTODashboard';
 
 export default function ExecutiveSuite() {
   const [activeTab, setActiveTab] = useState("ai-cfo");

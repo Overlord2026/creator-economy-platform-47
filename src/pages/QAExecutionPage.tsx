@@ -22,7 +22,7 @@ import {
   Zap,
   Target
 } from 'lucide-react';
-import { useComplianceQATesting } from '@/hooks/useComplianceQATesting';
+import { useComplianceQA } from '@/hooks/useComplianceQA';
 import { useMassOnboardingQA } from '@/hooks/useMassOnboardingQA';
 import { usePersonaQATesting } from '@/hooks/usePersonaQATesting';
 
@@ -33,7 +33,7 @@ export default function QAExecutionPage() {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
 
-  const complianceQA = useComplianceQATesting();
+  const complianceQA = useComplianceQA();
   const onboardingQA = useMassOnboardingQA();
   const personaQA = usePersonaQATesting();
 

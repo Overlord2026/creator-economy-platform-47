@@ -1,5 +1,4 @@
-import { sb } from '@/lib/supabase-relaxed';
-const supabase = sb as any;
+import { supabase } from '@/integrations/supabase/client';
 
 export interface IPFiling {
   family_code: string;

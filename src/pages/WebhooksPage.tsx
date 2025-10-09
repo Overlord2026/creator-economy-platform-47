@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
-import WebhookManager from '@/components/webhooks/WebhookManager';
+import { WebhookManager } from '@/components/webhooks/WebhookManager';
 
 export const WebhooksPage: React.FC = () => {
   return (

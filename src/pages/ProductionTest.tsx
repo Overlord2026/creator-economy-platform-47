@@ -1,6 +1,6 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProductionReadinessTest from "@/components/testing/ProductionReadinessTest";
+import { ProductionReadinessTest } from "@/components/testing/ProductionReadinessTest";
 import { StripeWebhookTest } from "@/components/testing/StripeWebhookTest";
 import { AnalyticsChecklist } from "@/components/testing/AnalyticsChecklist";
 import { PlaidConnectionTest } from "@/components/accounts/PlaidConnectionTest";

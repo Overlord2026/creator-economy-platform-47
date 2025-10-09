@@ -35,7 +35,10 @@ export const useEnhancedErrorHandling = () => {
     setErrors(prev => [...prev, error]);
     
     // Enhanced logging with correlation ID
-    logger.error(`Enhanced Error Handler | ${JSON.stringify(error)} | Component: useEnhancedErrorHandling`);
+    logger.error('Enhanced Error Handler', {
+      ...error,
+      stack: error instanceof Error ? error.stack : undefined
+    }, 'useEnhancedErrorHandling');
   }, []);
 
   const handleError = useCallback((
@@ -151,17 +154,21 @@ export const useEnhancedErrorHandling = () => {
     
     try {
       // Use the centralized EdgeFunctionClient
-      const response = await edgeFunctionClient.invoke(functionName, payload);
+      const response = await edgeFunctionClient.invoke(functionName, payload, {
+        retryConfig: options?.retryConfig,
+        showSuccessMessage: options?.showSuccessMessage,
+        successMessage: options?.successMessage
+      });
 
       if (!response.success && response.error) {
         // Error already handled by EdgeFunctionClient, just log locally
         const errorDetails: ErrorDetails = {
-          message: response.error.userMessage || 'Unknown error',
-          code: 'EDGE_FUNCTION_ERROR',
+          message: response.error.message,
+          code: response.error.code,
           context,
           timestamp: new Date(),
-          retryable: false,
-          correlationId: response.error.correlationId || 'unknown'
+          retryable: response.error.retryable,
+          correlationId: response.error.correlationId
         };
         
         logError(errorDetails);

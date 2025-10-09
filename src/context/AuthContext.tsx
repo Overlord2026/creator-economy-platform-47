@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import type { ReactNode } from 'react';
+'use client';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { shouldEnforceAuthentication, isQABypassAllowed } from '@/utils/environment';
@@ -32,25 +32,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isChecking2FA, setIsChecking2FA] = useState(false);
   const [isQABypassActive, setIsQABypassActive] = useState(MOCK_MODE);
-  
-  // Create a safe hook instance that won't break React
-  const toolInstaller = (() => {
-    try {
-      if (typeof window !== 'undefined' && user) {
-        return useFirstLoginToolInstaller();
-      }
-      return { checkAndInstallDefaultTools: () => Promise.resolve() };
-    } catch {
-      return { checkAndInstallDefaultTools: () => Promise.resolve() };
-    }
-  })();
+  const { checkAndInstallDefaultTools } = useFirstLoginToolInstaller();
 
   // Mock mode user profile
   const mockUserProfile: UserProfile = {
@@ -86,15 +75,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log("Loading user profile for user:", userId);
       
-      const { safeSelect } = await import('@/lib/db/safeSupabase');
-      const result = await safeSelect('profiles', '*, two_factor_enabled', { id: userId });
-      
-      if (!result.ok || !result.data?.length) {
-        console.error('Error loading profile:', result.error);
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*, two_factor_enabled')
+        .eq('id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading profile:', error);
         return;
       }
 
-      const profile = result.data[0] as any;
       if (profile) {
         console.log("Loaded profile from database:", profile);
         
@@ -132,13 +123,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserProfile(userProfileData);
         setIsQABypassActive(isQABypassAllowed(profile.email));
         
-        // Check for first login and auto-install tools (safely)
-        if (userProfileData.role && toolInstaller?.checkAndInstallDefaultTools) {
-          try {
-            toolInstaller.checkAndInstallDefaultTools(userProfileData.role as PersonaType);
-          } catch (error) {
-            console.warn('Tool installation failed:', error);
-          }
+        // Check for first login and auto-install tools
+        if (userProfileData.role) {
+          checkAndInstallDefaultTools(userProfileData.role as PersonaType);
         }
       }
     } catch (error) {
@@ -492,7 +479,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);

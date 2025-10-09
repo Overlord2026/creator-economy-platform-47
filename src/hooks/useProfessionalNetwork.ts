@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { sb } from '@/lib/supabase-relaxed';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export interface Professional {
@@ -113,17 +113,17 @@ export const useProfessionalNetwork = () => {
   const submitReview = async (reviewData: Omit<ProfessionalReview, 'id' | 'reviewer_id' | 'created_at'>) => {
     try {
       setSaving(true);
-      const { data: { user } } = await sb.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const { data, error } = await sb
+      const { data, error } = await supabase
         .from('professional_reviews')
         .insert({
           ...reviewData,
           reviewer_id: user.id
         })
         .select()
-        .maybeSingle();
+        .single();
 
       if (error) throw error;
 

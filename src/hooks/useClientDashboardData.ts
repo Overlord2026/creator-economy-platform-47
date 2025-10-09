@@ -32,21 +32,21 @@ export const useClientDashboardData = () => {
         return;
       }
 
-      // Use existing tables for metrics calculation
-      const { count: dealCount, error: dealError } = await supabase
-        .from('deal_ledger')
-        .select('*', { count: 'exact', head: true })
-        .eq('org_id', user.id);
+      // Fetch portfolio data for net worth
+      const { data: portfolioData, error: portfolioError } = await supabase
+        .from('portfolio_performance')
+        .select('value_amount')
+        .eq('user_id', user.id);
 
-      if (dealError) {
-        console.error('Error fetching deal data:', dealError);
+      if (portfolioError) {
+        console.error('Error fetching portfolio data:', portfolioError);
       }
 
-      const netWorth = dealCount ? dealCount * 50000 : 0; // Mock calculation
+      const netWorth = portfolioData?.reduce((sum, item) => sum + item.value_amount, 0) || 0;
 
-      // Fetch vault files count (using receipts table)
+      // Fetch vault files count (using existing storage table or professional metrics)
       const { count: vaultCount, error: vaultError } = await supabase
-        .from('receipts')
+        .from('professional_metrics')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', user.id);
 
@@ -54,14 +54,25 @@ export const useClientDashboardData = () => {
         console.error('Error fetching vault count:', vaultError);
       }
 
-      // Mock goals progress using available data
-      const goalProgress = 75; // Mock value
+      // Fetch goals progress (use professional metrics for now)
+      const { data: goalsData, error: goalsError } = await supabase
+        .from('professional_metrics')
+        .select('metric_value')
+        .eq('user_id', user.id)
+        .eq('metric_type', 'goal_progress');
 
-      // Fetch accounts count from bank_accounts table
-      const { count: accountsCount, error: accountsError } = await supabase
-        .from('bank_accounts')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id);
+      if (goalsError) {
+        console.error('Error fetching goals:', goalsError);
+      }
+
+      const goalProgress = goalsData?.[0]?.metric_value || 0;
+
+      // Fetch accounts count from professional metrics
+      const { data: accountsData, error: accountsError } = await supabase
+        .from('professional_metrics')
+        .select('metric_value')
+        .eq('user_id', user.id)
+        .eq('metric_type', 'active_accounts');
 
       if (accountsError) {
         console.error('Error fetching accounts count:', accountsError);
@@ -74,7 +85,7 @@ export const useClientDashboardData = () => {
         vaultFiles: vaultCount || 0,
         portfolioReturn: 8.2, // Calculate from portfolio performance
         upcomingGoals: 0, // Calculate from goal completion rates
-        accounts: accountsCount || 0
+        accounts: accountsData?.[0]?.metric_value || 0
       });
 
     } catch (error) {
@@ -88,15 +99,15 @@ export const useClientDashboardData = () => {
   useEffect(() => {
     fetchClientMetrics();
 
-    // Set up real-time subscriptions for existing tables
-    const dealsSubscription = supabase
-      .channel('deals-updates')
+    // Set up real-time subscriptions
+    const portfolioSubscription = supabase
+      .channel('portfolio-updates')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'deal_ledger'
+          table: 'portfolio_performance'
         },
         () => {
           fetchClientMetrics();
@@ -104,14 +115,14 @@ export const useClientDashboardData = () => {
       )
       .subscribe();
 
-    const receiptsSubscription = supabase
-      .channel('receipts-updates')
+    const vaultSubscription = supabase
+      .channel('vault-updates')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'receipts'
+          table: 'vault_items'
         },
         () => {
           fetchClientMetrics();
@@ -119,14 +130,14 @@ export const useClientDashboardData = () => {
       )
       .subscribe();
 
-    const accountsSubscription = supabase
-      .channel('accounts-updates')
+    const goalsSubscription = supabase
+      .channel('goals-updates')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'bank_accounts'
+          table: 'financial_goals'
         },
         () => {
           fetchClientMetrics();
@@ -135,9 +146,9 @@ export const useClientDashboardData = () => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(dealsSubscription);
-      supabase.removeChannel(receiptsSubscription);
-      supabase.removeChannel(accountsSubscription);
+      supabase.removeChannel(portfolioSubscription);
+      supabase.removeChannel(vaultSubscription);
+      supabase.removeChannel(goalsSubscription);
     };
   }, []);
 

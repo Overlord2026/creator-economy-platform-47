@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import Logo from '@/components/ui/Logo';
+import { Logo } from '@/components/ui/Logo';
 import { PublicValueCalculator } from '@/components/PublicValueCalculator';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star } from 'lucide-react';
@@ -24,9 +24,7 @@ export default function PublicFeeCalculator() {
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div onClick={() => navigate('/')} className="cursor-pointer">
-            <Logo variant="tree" />
-          </div>
+          <Logo variant="tree" onClick={() => navigate('/')} />
           <Button variant="outline" onClick={() => navigate('/')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home

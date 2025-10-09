@@ -72,7 +72,7 @@ export const useAttorneyOnboarding = () => {
       if (!user) throw new Error('Not authenticated');
 
       // Use raw SQL query to work around type issues
-      const { data, error } = await (supabase as any).rpc('get_attorney_onboardings', {
+      const { data, error } = await supabase.rpc('get_attorney_onboardings', {
         p_user_id: user.id
       });
 
@@ -103,7 +103,7 @@ export const useAttorneyOnboarding = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await (supabase as any).rpc('create_attorney_onboarding', {
+      const { data, error } = await supabase.rpc('create_attorney_onboarding', {
         p_first_name: clientData.client_name.split(' ')[0] || '',
         p_last_name: clientData.client_name.split(' ').slice(1).join(' ') || '',
         p_email: clientData.client_email,
@@ -140,7 +140,7 @@ export const useAttorneyOnboarding = () => {
     try {
       setLoading(true);
       
-      const { data, error } = await (supabase as any).rpc('get_onboarding_documents', {
+      const { data, error } = await supabase.rpc('get_onboarding_documents', {
         p_onboarding_id: onboardingId
       });
 
@@ -164,7 +164,7 @@ export const useAttorneyOnboarding = () => {
     try {
       setLoading(true);
 
-      const { error } = await (supabase as any).rpc('update_onboarding_status', {
+      const { error } = await supabase.rpc('update_onboarding_status', {
         p_onboarding_id: onboardingId,
         p_status: status
       });
@@ -196,7 +196,7 @@ export const useAttorneyOnboarding = () => {
     try {
       setLoading(true);
 
-      const { error } = await (supabase as any).rpc('send_onboarding_reminder', {
+      const { error } = await supabase.rpc('send_onboarding_reminder', {
         p_onboarding_id: onboardingId
       });
 
@@ -242,7 +242,7 @@ export const useAttorneyOnboarding = () => {
       if (uploadError) throw uploadError;
 
       // Create document record
-      const { error: docError } = await (supabase as any).rpc('create_attorney_document', {
+      const { error: docError } = await supabase.rpc('create_attorney_document', {
         p_onboarding_id: onboardingId,
         p_document_type: documentType,
         p_document_name: file.name,
@@ -285,7 +285,7 @@ export const useAttorneyOnboarding = () => {
       if (storageError) throw storageError;
 
       // Delete document record
-      const { error } = await (supabase as any).rpc('delete_attorney_document', {
+      const { error } = await supabase.rpc('delete_attorney_document', {
         p_document_id: documentId
       });
 
@@ -316,7 +316,7 @@ export const useAttorneyOnboarding = () => {
     try {
       setLoading(true);
 
-      const { error } = await (supabase as any).rpc('complete_attorney_onboarding', {
+      const { error } = await supabase.rpc('complete_attorney_onboarding', {
         p_onboarding_id: onboardingId
       });
 
