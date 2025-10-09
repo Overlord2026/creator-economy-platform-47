@@ -270,6 +270,7 @@ export function useComplianceQATesting() {
     progress,
     results,
     runComplianceQASuite,
+    runTests: runComplianceQASuite,
     generateComplianceReport
   };
 }

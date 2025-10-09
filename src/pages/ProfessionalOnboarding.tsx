@@ -12,6 +12,28 @@ import { Progress } from "@/components/ui/progress";
 import { Upload, Check, AlertCircle, Plus, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { BOOTSTRAP_MODE } from '@/config/bootstrap';
+
+export default function ProfessionalOnboarding() {
+  if (BOOTSTRAP_MODE) {
+    return (
+      <div className="container mx-auto p-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>🚧 Bootstrap Mode Active</CardTitle>
+            <CardDescription>
+              Professional onboarding requires the professional_invitations table which doesn't exist yet.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+  
+  return <ProfessionalOnboardingContent />;
+}
+
+function ProfessionalOnboardingContent() {
 
 const ONBOARDING_STEPS = [
   { id: 1, title: "Account Setup", description: "Create your account and verify email" },
@@ -665,4 +687,5 @@ export default function ProfessionalOnboarding() {
       </div>
     </div>
   );
+}
 }

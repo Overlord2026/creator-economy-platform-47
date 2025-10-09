@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +15,28 @@ import { LinkedinIcon, CheckCircle, Upload, Plus, X, User, Building, Award, MapP
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { GDPRConsentModal } from '@/components/professionals/GDPRConsentModal';
+import { BOOTSTRAP_MODE } from '@/config/bootstrap';
+
+export default function ProOnboarding() {
+  if (BOOTSTRAP_MODE) {
+    return (
+      <div className="container mx-auto p-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>🚧 Bootstrap Mode Active</CardTitle>
+            <CardDescription>
+              Pro onboarding requires the advisor_profiles table which doesn't exist yet.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+  
+  return <ProOnboardingContent />;
+}
+
+function ProOnboardingContent() {
 
 interface LinkedInProfile {
   id: string;
@@ -804,4 +826,5 @@ export default function ProOnboarding() {
       />
     </div>
   );
+}
 }

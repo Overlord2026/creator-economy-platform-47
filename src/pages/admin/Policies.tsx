@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,9 +11,32 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { AlertTriangle, CheckCircle, Plus, Edit, Hash } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
+import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
-type Policy = Database['public']['Tables']['policies']['Row'];
-type PolicyInsert = Database['public']['Tables']['policies']['Insert'];
+export default function Policies() {
+  if (BOOTSTRAP_MODE) {
+    return (
+      <div className="container mx-auto p-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>🚧 Bootstrap Mode Active</CardTitle>
+            <CardDescription>
+              Policy management requires full database schema.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+  
+  return <PoliciesContent />;
+}
+
+function PoliciesContent() {
+  const dummyPolicy: any = {}; // type stub
+
+type Policy = typeof dummyPolicy;
+type PolicyInsert = typeof dummyPolicy;
 
 interface QueueItem {
   item_id: string;
@@ -450,6 +473,5 @@ const AdminPolicies: React.FC = () => {
       </Tabs>
     </div>
   );
-};
-
-export default AdminPolicies;
+}
+}

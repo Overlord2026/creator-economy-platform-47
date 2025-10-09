@@ -1,4 +1,5 @@
-export type Plan = 'basic' | 'premium' | 'elite';
+export type Plan = 'free' | 'basic' | 'premium' | 'elite';
+export type SubscriptionTier = Plan;
 
 export type FeatureKey = 
   | 'doc_vault'

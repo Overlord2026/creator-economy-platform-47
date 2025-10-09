@@ -1,7 +1,7 @@
 import type { Database as GenDB } from './types';
 
 declare module './types' {
-  export interface Database {
+  interface Database {
     public: GenDB['public'] & {
       Tables: GenDB['public']['Tables'] & {
         leads: { 

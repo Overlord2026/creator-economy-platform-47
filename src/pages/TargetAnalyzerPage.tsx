@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AudienceGuard from '@/components/AudienceGuard';
 import { runTarget, downloadCSV } from '@/lib/target/engine';
@@ -10,6 +10,28 @@ import { TargetParams, TargetResult } from '@/lib/target/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Download, Save, FileText, TrendingUp, AlertTriangle } from 'lucide-react';
+import { BOOTSTRAP_MODE } from '@/config/bootstrap';
+
+export default function TargetAnalyzerPage() {
+  if (BOOTSTRAP_MODE) {
+    return (
+      <div className="container mx-auto p-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>🚧 Bootstrap Mode Active</CardTitle>
+            <CardDescription>
+              Target Analyzer requires the target_runs table which doesn't exist yet.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+  
+  return <TargetAnalyzerContent />;
+}
+
+function TargetAnalyzerContent() {
 
 const DEFAULTS: TargetParams = {
   currentAge: 52,
@@ -336,4 +358,5 @@ export default function TargetAnalyzerPage() {
       </div>
     </div>
   );
+}
 }
