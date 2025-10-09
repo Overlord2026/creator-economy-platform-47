@@ -39,4 +39,4 @@ export class EdgeFunctionClient {
   }
 }
 
-export default EdgeFunctionClient;
+// default export removed
