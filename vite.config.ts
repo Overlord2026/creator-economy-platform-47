@@ -1,22 +1,21 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
-import { componentTagger } from "lovable-tagger";
-
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "::",
-    port: 8080,
-  },
+export default defineConfig({
   plugins: [
-    react(),
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
+    react({
+      include: [/\.[jt]sx?$/, /packages\/creator\/src\/.*\.js$/],
+      jsxRuntime: "automatic",
+    }),
+  ],
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-    dedupe: ['react', 'react-dom'],
+    alias: { "@": path.resolve(__dirname, "src") },
+    dedupe: ["react", "react-dom"], // force a single React at runtime
   },
-}));
+  optimizeDeps: {
+    include: ["react", "react-dom"],
+    esbuildOptions: { loader: { ".js": "jsx" } }, // allow JSX in .js files
+  },
+  server: { port: 8080, strictPort: false },
+});
