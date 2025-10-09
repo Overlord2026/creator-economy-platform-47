@@ -6,7 +6,9 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: { '@': path.resolve(__dirname, 'src') },
-    dedupe: ['react', 'react-dom'],        // force single copy
+    dedupe: ['react', 'react-dom'],        // force same copy
   },
-  optimizeDeps: { include: ['react', 'react-dom'] }, // prebundle same pair
+  optimizeDeps: {
+    include: ['react', 'react-dom'],       // prebundle same pair
+  },
 });
