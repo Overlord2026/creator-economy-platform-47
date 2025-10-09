@@ -17,13 +17,10 @@ export function useEntitlements() {
 }
 
 export function EntitlementsProvider({ children }: { children: React.ReactNode }) {
-  // In bootstrap, return an inert context so nothing heavy runs at boot.
   const value = React.useMemo<Entitlements>(() => {
     if (BOOTSTRAP_MODE) return { tier: "free", flags: {}, can: () => true };
-    // TODO: replace with real entitlements when wiring data
     return { tier: "free", flags: {}, can: () => true };
   }, []);
-
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

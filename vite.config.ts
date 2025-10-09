@@ -11,11 +11,11 @@ export default defineConfig({
   ],
   resolve: {
     alias: { "@": path.resolve(__dirname, "src") },
-    dedupe: ["react", "react-dom"], // force a single React at runtime
+    dedupe: ["react", "react-dom"],
   },
   optimizeDeps: {
     include: ["react", "react-dom"],
-    esbuildOptions: { loader: { ".js": "jsx" } }, // allow JSX in .js files
+    esbuildOptions: { loader: { ".js": "jsx" } },
   },
   server: { port: 8080, strictPort: false },
 });
