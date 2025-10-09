@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 /**
  * AI Executive Suite - CLO Policy Service
  * Manages CLO policy DAG evaluation and legal gates
@@ -468,7 +469,7 @@ export class CLOPolicyService {
 
     const encoder = new TextEncoder();
     const data = encoder.encode(JSON.stringify(policyData));
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }

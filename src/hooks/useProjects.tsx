@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { sb } from '@/lib/supabase-relaxed';
+import { sb } from '@/lib/sb-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 export interface Project {
@@ -133,7 +133,7 @@ export const useProjects = () => {
   // Fetch user's projects
   const fetchProjects = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('projects')
         .select('*')
         .order('created_at', { ascending: false });
@@ -157,7 +157,7 @@ export const useProjects = () => {
   // Fetch milestones
   const fetchMilestones = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('project_milestones')
         .select('*')
         .order('due_date', { ascending: true });
@@ -175,7 +175,7 @@ export const useProjects = () => {
   // Fetch tasks
   const fetchTasks = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('project_tasks')
         .select('*')
         .order('created_at', { ascending: false });
@@ -198,7 +198,7 @@ export const useProjects = () => {
       const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('projects')
         .insert({
           name: projectData.name,
@@ -241,7 +241,7 @@ export const useProjects = () => {
   const updateProject = async (projectId: string, updates: Partial<Project>) => {
     setSaving(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('projects')
         .update(updates)
         .eq('id', projectId)
@@ -274,7 +274,7 @@ export const useProjects = () => {
   const deleteProject = async (projectId: string) => {
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('projects')
         .delete()
         .eq('id', projectId);
@@ -310,7 +310,7 @@ export const useProjects = () => {
     fetchAll();
 
     // Set up real-time subscriptions
-    const projectsChannel = supabase
+    const projectsChannel = sb
       .channel('projects-changes')
       .on('postgres_changes', 
           { event: '*', schema: 'public', table: 'projects' }, 
@@ -321,7 +321,7 @@ export const useProjects = () => {
       )
       .subscribe();
 
-    const milestonesChannel = supabase
+    const milestonesChannel = sb
       .channel('milestones-changes')
       .on('postgres_changes', 
           { event: '*', schema: 'public', table: 'project_milestones' }, 
@@ -332,7 +332,7 @@ export const useProjects = () => {
       )
       .subscribe();
 
-    const tasksChannel = supabase
+    const tasksChannel = sb
       .channel('tasks-changes')
       .on('postgres_changes', 
           { event: '*', schema: 'public', table: 'project_tasks' }, 
@@ -377,7 +377,7 @@ export const useProjectMilestones = (projectId?: string) => {
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('project_milestones')
         .select('*')
         .eq('project_id', projectId)
@@ -405,7 +405,7 @@ export const useProjectMilestones = (projectId?: string) => {
 
     setSaving(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('project_milestones')
         .insert({
           project_id: projectId,
@@ -442,7 +442,7 @@ export const useProjectMilestones = (projectId?: string) => {
   const updateMilestone = async (milestoneId: string, updates: Partial<ProjectMilestone>) => {
     setSaving(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('project_milestones')
         .update(updates)
         .eq('id', milestoneId)
@@ -476,7 +476,7 @@ export const useProjectMilestones = (projectId?: string) => {
       fetchMilestones();
 
       // Set up real-time subscription for milestones
-      const channel = supabase
+      const channel = sb
         .channel(`milestones-${projectId}`)
         .on('postgres_changes', 
             { 
@@ -522,7 +522,7 @@ export const useProjectTasks = (projectId?: string) => {
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('project_tasks')
         .select('*')
         .eq('project_id', projectId)
@@ -554,7 +554,7 @@ export const useProjectTasks = (projectId?: string) => {
       const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('project_tasks')
         .insert({
           project_id: projectId,
@@ -594,7 +594,7 @@ export const useProjectTasks = (projectId?: string) => {
   const updateTask = async (taskId: string, updates: Partial<ProjectTask>) => {
     setSaving(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('project_tasks')
         .update(updates)
         .eq('id', taskId)
@@ -628,7 +628,7 @@ export const useProjectTasks = (projectId?: string) => {
       fetchTasks();
 
       // Set up real-time subscription for tasks
-      const channel = supabase
+      const channel = sb
         .channel(`tasks-${projectId}`)
         .on('postgres_changes', 
             { 
@@ -674,7 +674,7 @@ export const useProjectCommunications = (projectId?: string) => {
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('project_communications')
         .select('*')
         .eq('project_id', projectId)
@@ -705,7 +705,7 @@ export const useProjectCommunications = (projectId?: string) => {
       const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('project_communications')
         .insert({
           project_id: projectId,
@@ -740,7 +740,7 @@ export const useProjectCommunications = (projectId?: string) => {
       fetchCommunications();
 
       // Set up real-time subscription for communications
-      const channel = supabase
+      const channel = sb
         .channel(`communications-${projectId}`)
         .on('postgres_changes', 
             { 

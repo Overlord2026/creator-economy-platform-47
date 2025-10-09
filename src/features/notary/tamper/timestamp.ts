@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 /**
  * PDF sealing and timestamp utilities for tamper-evident outputs
  */
@@ -103,7 +104,7 @@ async function addTimestampToPDF(pdfBytes: Uint8Array): Promise<string> {
 }
 
 async function calculateSHA256(data: Uint8Array): Promise<string> {
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   return `sha256:${hashHex}`;

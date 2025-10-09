@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 /**
  * AI Fabric Decision DSL
  * Declarative rules engine that produces actions, reasons, and Proof Slips
@@ -155,7 +156,7 @@ async function generateDecisionProofSlip(
 
 async function generateHash(data: string): Promise<string> {
   const encoder = new TextEncoder();
-  const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(data));
+  const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(encoder.encode(data)));
   const hashArray = new Uint8Array(hashBuffer);
   return Array.from(hashArray).map(b => b.toString(16).padStart(2, '0')).join('');
 }

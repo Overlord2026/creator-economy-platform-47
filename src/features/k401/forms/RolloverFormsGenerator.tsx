@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 import React from 'react';
 import { RULES_TOP8, getProviderRule } from '@/features/k401/forms/rulesTop8';
 import { generatePdfFromTemplate, saveFormToVault, logFormGenerated, anchorFormIfEnabled } from '@/features/k401/forms/merge';
@@ -31,7 +32,7 @@ export async function createRolloverForms(provider: string, ctx: MergeCtx): Prom
       await logFormGenerated(paperwork.templateId, fileId, provider);
       
       // Optional anchoring
-      const sha256 = await crypto.subtle.digest('SHA-256', pdf).then(buf => 
+      const sha256 = await crypto.subtle.digest('SHA-256', toBufferSource(pdf)).then(buf => 
         Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
       );
       await anchorFormIfEnabled(fileId, sha256);

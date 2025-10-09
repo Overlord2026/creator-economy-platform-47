@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -65,7 +66,7 @@ const AdminPolicies: React.FC = () => {
   const computePolicyHash = async (policyData: any) => {
     const encoder = new TextEncoder();
     const data = encoder.encode(JSON.stringify(policyData));
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   };

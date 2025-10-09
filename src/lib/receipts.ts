@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 
 
 import { supabase } from '@/lib/supabase';
@@ -52,7 +53,7 @@ export function canonicalStringify(obj: any): string {
 export async function sha256Hex(str: string): Promise<string> {
   const data = new TextEncoder().encode(str);
   // @ts-ignore - globalThis.crypto exists in browser and Node >=19
-  const hashBuffer: ArrayBuffer = await globalThis.crypto.subtle.digest('SHA-256', data);
+  const hashBuffer: ArrayBuffer = await globalThis.crypto.subtle.digest('SHA-256', toBufferSource(data));
   return [...new Uint8Array(hashBuffer)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 

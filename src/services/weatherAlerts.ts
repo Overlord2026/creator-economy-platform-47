@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 import { sb } from '@/lib/supabase-relaxed';
 import { recordReceipt } from '@/services/receipts';
 
@@ -176,7 +177,7 @@ async function hashInputs(inputs: any): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(inputString);
   const crypto = window.crypto || (globalThis as any).crypto;
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
   return Array.from(new Uint8Array(hashBuffer))
     .map(b => b.toString(16).padStart(2, '0'))
     .join('');

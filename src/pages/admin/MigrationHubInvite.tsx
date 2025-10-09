@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 import React from 'react';
 import { renderInvite, renderReminder, renderComplete, type Persona, type Incumbent } from '@/features/migrate/email/templates';
 import { sendEmail } from '@/features/migrate/email/sender';
@@ -205,7 +206,7 @@ export default function MigrationHubInvite() {
 async function hashString(str: string): Promise<string> {
   if (typeof window !== "undefined" && window.crypto?.subtle) {
     const enc = new TextEncoder().encode(str);
-    const dig = await window.crypto.subtle.digest("SHA-256", enc);
+    const dig = await window.crypto.subtle.digest("SHA-256", toBufferSource(enc));
     return [...new Uint8Array(dig)].map(b => b.toString(16).padStart(2, "0")).join("");
   }
   return btoa(str).slice(0, 32);

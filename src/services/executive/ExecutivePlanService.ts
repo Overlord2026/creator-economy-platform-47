@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 /**
  * AI Executive Suite - Executive Plan Service
  * Manages execution plans, steps, approvals, and workflow
@@ -341,7 +342,7 @@ export class ExecutivePlanService {
   private async calculateArtifactHash(content: any): Promise<string> {
     const encoder = new TextEncoder();
     const data = encoder.encode(JSON.stringify(content));
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }

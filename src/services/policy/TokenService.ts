@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 // Policy Token Service - Mints ephemeral JWT tokens with scopes
 // Signs tokens with server key and manages token lifecycle
 
@@ -62,7 +63,7 @@ export class TokenService {
     const dataBuffer = encoder.encode(data);
     
     try {
-      const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(dataBuffer));
       const hashArray = new Uint8Array(hashBuffer);
       const hashHex = Array.from(hashArray)
         .map(b => b.toString(16).padStart(2, '0'))
@@ -303,7 +304,7 @@ export class TokenService {
   private static async computeHash(algorithm: string, data: string): Promise<string> {
     if (typeof crypto !== 'undefined' && crypto.subtle) {
       const encoder = new TextEncoder();
-      const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(data));
+      const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(encoder.encode(data)));
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }

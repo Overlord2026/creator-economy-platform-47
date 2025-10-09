@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 import { sb } from '@/lib/supabase-relaxed';
 import { recordReceipt } from '@/services/receipts';
 import { anchorSingle } from '@/services/receipts';
@@ -155,7 +156,7 @@ export async function endSession(sessionId: string, audioBlob?: Blob): Promise<M
     const arrayBuffer = await audioBlob.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     const crypto = window.crypto || (globalThis as any).crypto;
-    const hashBuffer = await crypto.subtle.digest('SHA-256', uint8Array);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(uint8Array));
     audioHash = Array.from(new Uint8Array(hashBuffer))
       .map(b => b.toString(16).padStart(2, '0'))
       .join('');
@@ -179,7 +180,7 @@ export async function endSession(sessionId: string, audioBlob?: Blob): Promise<M
           // Create transcript hash (content-free)
           const transcriptString = JSON.stringify({ length: transcript.length, timestamp });
           const transcriptData = new TextEncoder().encode(transcriptString);
-          const transcriptHashBuffer = await crypto.subtle.digest('SHA-256', transcriptData);
+          const transcriptHashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(transcriptData));
           transcriptHash = Array.from(new Uint8Array(transcriptHashBuffer))
             .map(b => b.toString(16).padStart(2, '0'))
             .join('');
