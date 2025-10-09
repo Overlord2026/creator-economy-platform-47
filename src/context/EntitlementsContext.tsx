@@ -1,5 +1,7 @@
+console.log('[BOOT] zero-hook EntitlementsProvider loaded');
+
 "use client";
-import * as React from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { BOOTSTRAP_MODE } from "@/config/bootstrap";
 import type { FeatureKey, SubscriptionTier, SubscriptionPlan, UsageCheck } from "@/types/subscription";
 
@@ -22,10 +24,10 @@ export type Entitlements = {
   incrementUsage: (key: FeatureKey, by?: number) => Promise<void>;
 };
 
-const Ctx = React.createContext<Entitlements | undefined>(undefined);
+const Ctx = createContext<Entitlements | undefined>(undefined);
 
 export function useEntitlements() {
-  const ctx = React.useContext(Ctx);
+  const ctx = useContext(Ctx);
   if (ctx === undefined) throw new Error("useEntitlements must be used within EntitlementsProvider");
   return ctx;
 }
@@ -45,81 +47,54 @@ const BOOTSTRAP_QUOTAS: Record<FeatureKey, number | "unlimited"> = {
   reports: "unlimited",
 };
 
-export function EntitlementsProvider({ children }: { children: React.ReactNode }) {
-  // Small in-memory usage ledger for demo/preview (resets on reload).
-  const usageRef = React.useRef<Record<FeatureKey, number>>({});
+// In-memory usage ledger (resets on reload)
+const usageLedger: Record<FeatureKey, number> = {};
 
-  const value = React.useMemo<Entitlements>(() => {
-    // In bootstrap, return a full, inert entitlement surface so all components compile/run.
-    if (BOOTSTRAP_MODE) {
-      const plan: SubscriptionTier = "free";
-      const subscriptionPlan: SubscriptionPlan = {
-        tier: plan,
-        name: "Free (Bootstrap)",
-        features: BOOTSTRAP_FEATURES,
-        quotas: BOOTSTRAP_QUOTAS,
-      };
+// Static boot value - NO HOOKS
+const plan: SubscriptionTier = BOOTSTRAP_MODE ? "premium" : "free";
+const subscriptionPlan: SubscriptionPlan = {
+  tier: plan,
+  subscription_tier: plan,
+  name: BOOTSTRAP_MODE ? "Premium (Bootstrap)" : "Free",
+  features: BOOTSTRAP_MODE ? BOOTSTRAP_FEATURES : {},
+  quotas: BOOTSTRAP_MODE ? BOOTSTRAP_QUOTAS : {},
+  usage_counters: {},
+  usage_limits: {},
+};
 
-      const has = (key: FeatureKey) => Boolean(subscriptionPlan.features[key]);
-      const checkFeatureAccess = has;
+const has = (key: FeatureKey) => Boolean(subscriptionPlan.features[key]);
+const checkFeatureAccess = has;
 
-      const checkUsageLimit = (key: FeatureKey): UsageCheck => {
-        const quotas = subscriptionPlan.quotas ?? {};
-        const q = quotas[key];
-        if (q === "unlimited" || q == null) return { hasAccess: has(key), remaining: q ?? null, isAtLimit: false };
-        const used = usageRef.current[key] ?? 0;
-        const remaining = Math.max(0, q - used);
-        return { hasAccess: has(key), remaining, isAtLimit: remaining <= 0 };
-      };
+const checkUsageLimit = (key: FeatureKey): UsageCheck => {
+  const quotas = subscriptionPlan.quotas ?? {};
+  const q = quotas[key];
+  if (q === "unlimited" || q == null) return { hasAccess: has(key), remaining: q ?? null, isAtLimit: false };
+  const used = usageLedger[key] ?? 0;
+  const remaining = Math.max(0, q - used);
+  return { hasAccess: has(key), remaining, isAtLimit: remaining <= 0 };
+};
 
-      const incrementUsage = async (key: FeatureKey, by = 1) => {
-        const prev = usageRef.current[key] ?? 0;
-        usageRef.current[key] = prev + by;
-      };
+const incrementUsage = async (key: FeatureKey, by = 1) => {
+  const prev = usageLedger[key] ?? 0;
+  usageLedger[key] = prev + by;
+};
 
-      return {
-        // minimal fields (kept for back-compat)
-        tier: plan,
-        flags: subscriptionPlan.features,
-        can: has,
+const BOOT_VALUE: Entitlements = {
+  tier: plan,
+  flags: subscriptionPlan.features,
+  can: has,
+  plan,
+  persona: "user",
+  segment: BOOTSTRAP_MODE ? "bootstrap" : "default",
+  subscriptionPlan,
+  has,
+  checkFeatureAccess,
+  checkUsageLimit,
+  incrementUsage,
+};
 
-        // full interface
-        plan,
-        persona: "user",
-        segment: "bootstrap",
-        subscriptionPlan,
-        has,
-        checkFeatureAccess,
-        checkUsageLimit,
-        incrementUsage,
-      };
-    }
-
-    // Non-bootstrap: until wired, expose the same full surface with conservative defaults
-    const plan: SubscriptionTier = "free";
-    const subscriptionPlan: SubscriptionPlan = { tier: plan, name: "Free", features: {}, quotas: {} };
-
-    const has = (_: FeatureKey) => false;
-    const checkFeatureAccess = has;
-    const checkUsageLimit = (_: FeatureKey): UsageCheck => ({ hasAccess: false, remaining: 0, isAtLimit: true });
-    const incrementUsage = async () => {};
-
-    return {
-      tier: plan,
-      flags: {},
-      can: has,
-      plan,
-      persona: "user",
-      segment: "default",
-      subscriptionPlan,
-      has,
-      checkFeatureAccess,
-      checkUsageLimit,
-      incrementUsage,
-    };
-  }, []);
-
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+export function EntitlementsProvider({ children }: { children: ReactNode }) {
+  return <Ctx.Provider value={BOOT_VALUE}>{children}</Ctx.Provider>;
 }
 
 export default EntitlementsProvider;
