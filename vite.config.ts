@@ -1,27 +1,35 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import path from "path";
-import { componentTagger } from "lovable-tagger";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
-export default defineConfig(({ mode }) => ({
-  plugins: [
+// Async config to safely handle optional lovable-tagger plugin
+export default defineConfig(async ({ mode }) => {
+  const plugins = [
     react({
       include: [/\.[jt]sx?$/, /packages\/creator\/src\/.*\.js$/],
-      jsxRuntime: "automatic",
+      jsxRuntime: 'automatic',
     }),
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
-  resolve: {
-    alias: { "@": path.resolve(__dirname, "src") },
-    dedupe: ["react", "react-dom"],
-  },
-  optimizeDeps: {
-    include: ["react", "react-dom"],
-    esbuildOptions: { loader: { ".js": "jsx" } },
-  },
-  server: {
-    host: "::",
-    port: 8080,
-    strictPort: false,
-  },
-}));
+  ];
+
+  if (mode === 'development') {
+    try {
+      const { componentTagger } = await import('lovable-tagger');
+      plugins.push(componentTagger());
+    } catch {
+      // OK if lovable-tagger isn't present
+    }
+  }
+
+  return {
+    plugins,
+    resolve: {
+      alias: { '@': path.resolve(__dirname, 'src') },
+      dedupe: ['react', 'react-dom'],
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom'],
+      esbuildOptions: { loader: { '.js': 'jsx' } },
+    },
+    server: { port: 8080, strictPort: false },
+  };
+});
