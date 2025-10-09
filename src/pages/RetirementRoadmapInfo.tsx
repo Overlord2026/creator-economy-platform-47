@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Logo } from '@/components/ui/Logo';
+import Logo from '@/components/ui/Logo';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Calendar, DollarSign, Shield, Star, Clock, Users, TrendingUp, Award } from 'lucide-react';
 import { withTrademarks } from '@/utils/trademark';
@@ -28,7 +28,9 @@ export default function RetirementRoadmapInfo() {
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Logo variant="tree" onClick={() => navigate('/')} />
+          <div onClick={() => navigate('/')} className="cursor-pointer">
+            <Logo variant="tree" />
+          </div>
           <Button variant="outline" onClick={() => navigate('/')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home

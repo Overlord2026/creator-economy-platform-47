@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
-import { TaxRulesAdmin } from '@/components/admin/TaxRulesAdmin';
+import TaxRulesAdmin from '@/components/admin/TaxRulesAdmin';
 import { DashboardHeader } from '@/components/ui/DashboardHeader';
 
 export const TaxRulesAdminPage: React.FC = () => {

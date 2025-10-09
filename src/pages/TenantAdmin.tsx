@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
-import { TenantAdminDashboard } from '@/components/admin/TenantAdminDashboard';
-import { SuperAdminDashboard } from '@/components/admin/SuperAdminDashboard';
+import TenantAdminDashboard from '@/components/admin/TenantAdminDashboard';
+import SuperAdminDashboard from '@/components/admin/SuperAdminDashboard';
 import { useRoleAccess } from '@/hooks/useRoleAccess';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Shield } from 'lucide-react';

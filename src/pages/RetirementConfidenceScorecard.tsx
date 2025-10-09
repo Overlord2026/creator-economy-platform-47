@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Logo } from '@/components/ui/Logo';
+import Logo from '@/components/ui/Logo';
 import { useNavigate } from 'react-router-dom';
 import { Trophy, Calendar, ArrowRight, ArrowLeft, Shield, CheckCircle } from 'lucide-react';
 import { withTrademarks } from '@/utils/trademark';
@@ -222,7 +222,9 @@ export default function RetirementConfidenceScorecard() {
         {/* Header */}
         <header className="border-b bg-card/50 backdrop-blur-sm">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <Logo variant="tree" onClick={() => navigate('/')} />
+            <div onClick={() => navigate('/')} className="cursor-pointer">
+              <Logo variant="tree" />
+            </div>
             <Button variant="outline" onClick={() => navigate('/')}>
               Back to Home
             </Button>
@@ -367,7 +369,9 @@ export default function RetirementConfidenceScorecard() {
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Logo variant="tree" onClick={() => navigate('/')} />
+          <div onClick={() => navigate('/')} className="cursor-pointer">
+            <Logo variant="tree" />
+          </div>
           <Button variant="outline" onClick={() => navigate('/')}>
             Back to Home
           </Button>
