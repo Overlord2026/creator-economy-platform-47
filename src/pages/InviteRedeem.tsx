@@ -13,9 +13,7 @@ import { Eye, EyeOff, UserPlus, Shield, CheckCircle } from "lucide-react";
 interface InvitationData {
   id: string;
   email: string;
-  advisor_id: string;
-  client_segment: string;
-  personal_note: string | null;
+  invited_by: string;
   status: string;
   expires_at: string;
   advisor_name?: string;
@@ -53,16 +51,8 @@ export default function InviteRedeem() {
       // Get invitation details
       const { data: invitationData, error: invitationError } = await supabase
         .from("prospect_invitations")
-        .select(`
-          id,
-          email,
-          advisor_id,
-          client_segment,
-          personal_note,
-          status,
-          expires_at
-        `)
-        .eq("magic_token", token)
+        .select("id, email, invited_by, status, expires_at")
+        .eq("token", token)
         .eq("status", "pending")
         .single();
 
@@ -79,7 +69,7 @@ export default function InviteRedeem() {
       const { data: advisorData, error: advisorError } = await supabase
         .from("profiles")
         .select("display_name, first_name, last_name")
-        .eq("id", invitationData.advisor_id)
+        .eq("id", invitationData.invited_by)
         .single();
 
       const advisorName = advisorData?.display_name || 
@@ -90,11 +80,6 @@ export default function InviteRedeem() {
         ...invitationData,
         advisor_name: advisorName
       });
-
-      setFormData(prev => ({
-        ...prev,
-        clientSegment: invitationData.client_segment
-      }));
 
     } catch (error: any) {
       console.error("Error validating token:", error);
@@ -150,22 +135,14 @@ export default function InviteRedeem() {
         const { error: profileError } = await supabase
           .from("profiles")
           .insert({
-            id: authData.user.id,
+            user_id: authData.user.id,
             email: invitation!.email,
             first_name: formData.firstName,
             last_name: formData.lastName,
             display_name: `${formData.firstName} ${formData.lastName}`,
-            phone: formData.phone,
-            address: formData.address,
-            city: formData.city,
-            state: formData.state,
-            zip_code: formData.zipCode,
+            phone: formData.phone || null,
             date_of_birth: formData.dateOfBirth || null,
-            role: "client",
-            lead_stage: "qualified",
-            client_segment: formData.clientSegment,
-            advisor_id: invitation!.advisor_id,
-            tenant_id: "default", // You may want to get this from the advisor
+            role: "client"
           });
 
         if (profileError) {
@@ -246,12 +223,6 @@ export default function InviteRedeem() {
               {invitation.advisor_name} has invited you to join. Complete your profile to get started.
             </p>
             
-            {invitation.personal_note && (
-              <div className="bg-accent p-4 rounded-lg mt-4">
-                <h4 className="font-medium mb-2">Personal Message from {invitation.advisor_name}:</h4>
-                <p className="text-sm italic">"{invitation.personal_note}"</p>
-              </div>
-            )}
           </CardHeader>
           
           <CardContent>

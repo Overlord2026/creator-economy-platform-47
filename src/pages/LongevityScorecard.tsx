@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ArrowRight, ArrowLeft, RotateCcw } from 'lucide-react';
-import { Logo } from '@/components/ui/Logo';
+import Logo from '@/components/ui/Logo';
 import { useNavigate } from 'react-router-dom';
 import { useLongevityScorecard } from '@/hooks/useLongevityScorecard';
 import { LongevityInputForm } from '@/components/longevity-scorecard/LongevityInputForm';

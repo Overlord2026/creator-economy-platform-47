@@ -1,5 +1,5 @@
 import React from 'react';
-import { EntityManagementDashboard } from '@/components/business/EntityManagementDashboard';
+import EntityManagementDashboard from '@/components/business/EntityManagementDashboard';
 
 const BusinessCenter = () => {
   return <EntityManagementDashboard />;
