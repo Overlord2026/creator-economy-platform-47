@@ -26,7 +26,7 @@ export function useSubscriptionAccess() {
     tier,
     flags,
     can,
-    subscriptionPlan: { name: tier, tier, quotas: {}, features: {}, usage_counters: {}, usage_limits: {} },
+    subscriptionPlan: { name: tier, tier, subscription_tier: tier, quotas: {}, features: {}, usage_counters: {}, usage_limits: {} },
     checkFeatureAccess,
     checkUsageLimit,
     incrementUsage,

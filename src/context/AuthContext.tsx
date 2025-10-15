@@ -9,6 +9,7 @@ export interface AuthContextShape {
     email?: string;
     user_metadata?: any;
     email_confirmed_at?: string;
+    created_at?: string;
   } | null;
   userProfile: { 
     id: string; 
@@ -18,6 +19,10 @@ export interface AuthContextShape {
     first_name?: string;
     displayName?: string;
     display_name?: string;
+    bio?: string;
+    created_at?: string;
+    total_referrals?: number;
+    successful_referrals?: number;
     role?: string; 
     plan?: 'free'|'basic'|'pro'|'enterprise';
     twoFactorEnabled?: boolean;

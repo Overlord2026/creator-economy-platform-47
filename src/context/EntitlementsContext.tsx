@@ -4,8 +4,12 @@ import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
 export type Entitlements = {
   tier?: 'free' | 'basic' | 'premium' | 'pro' | 'elite' | 'enterprise';
+  subscription_tier?: 'free' | 'basic' | 'premium' | 'pro' | 'elite' | 'enterprise';
   flags?: Record<string, boolean>;
   can?: (key: string) => boolean;
+  has: (key: string) => boolean;
+  quota: (key: string) => number | 'unlimited';
+  remainingQuota: (key: string) => number | 'unlimited';
   plan?: 'free' | 'basic' | 'premium' | 'pro' | 'elite' | 'enterprise';
   persona?: string;
   segment?: string;
@@ -23,15 +27,28 @@ export function EntitlementsProvider({ children }: { children: React.ReactNode }
   const value = React.useMemo<Entitlements>(() => {
     if (BOOTSTRAP_MODE) {
       return { 
-        tier: 'premium', 
+        tier: 'premium',
+        subscription_tier: 'premium',
         plan: 'premium', 
         flags: {}, 
-        can: () => true, 
+        can: () => true,
+        has: () => true,
+        quota: () => 'unlimited',
+        remainingQuota: () => 'unlimited',
         persona: 'user', 
         segment: 'bootstrap' 
       };
     }
-    return { tier: 'free', plan: 'free', flags: {}, can: () => true };
+    return { 
+      tier: 'free',
+      subscription_tier: 'free',
+      plan: 'free', 
+      flags: {}, 
+      can: () => true,
+      has: () => false,
+      quota: () => 0,
+      remainingQuota: () => 0
+    };
   }, []);
   
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

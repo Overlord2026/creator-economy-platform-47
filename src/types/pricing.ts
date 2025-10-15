@@ -1,4 +1,4 @@
-export type Plan = 'basic' | 'premium' | 'elite';
+export type Plan = 'free' | 'basic' | 'premium' | 'pro' | 'elite' | 'enterprise';
 
 export type FeatureKey = 
   | 'doc_vault'
@@ -42,12 +42,18 @@ export interface UserEntitlements {
 }
 
 export const PLAN_FEATURES: Record<Plan, FeatureKey[]> = {
+  free: [],
   basic: ['doc_vault'],
   premium: ['doc_vault', 'advanced_analytics', 'priority_support', 'advanced_reporting'],
-  elite: ['doc_vault', 'advanced_analytics', 'priority_support', 'advanced_reporting', 'unlimited_clients', 'custom_branding', 'api_access', 'white_label', 'multi_user', 'sso_integration']
+  pro: ['doc_vault', 'advanced_analytics', 'priority_support', 'advanced_reporting'],
+  elite: ['doc_vault', 'advanced_analytics', 'priority_support', 'advanced_reporting', 'unlimited_clients', 'custom_branding', 'api_access', 'white_label', 'multi_user', 'sso_integration'],
+  enterprise: ['doc_vault', 'advanced_analytics', 'priority_support', 'advanced_reporting', 'unlimited_clients', 'custom_branding', 'api_access', 'white_label', 'multi_user', 'sso_integration']
 };
 
 export const FEATURE_QUOTAS: Record<Plan, Partial<Record<FeatureKey, number | 'unlimited'>>> = {
+  free: {
+    doc_vault: 0,
+  },
   basic: {
     doc_vault: 10,
   },
@@ -55,7 +61,17 @@ export const FEATURE_QUOTAS: Record<Plan, Partial<Record<FeatureKey, number | 'u
     doc_vault: 100,
     advanced_analytics: 'unlimited',
   },
+  pro: {
+    doc_vault: 100,
+    advanced_analytics: 'unlimited',
+  },
   elite: {
+    doc_vault: 'unlimited',
+    advanced_analytics: 'unlimited',
+    unlimited_clients: 'unlimited',
+    api_access: 'unlimited',
+  },
+  enterprise: {
     doc_vault: 'unlimited',
     advanced_analytics: 'unlimited',
     unlimited_clients: 'unlimited',
