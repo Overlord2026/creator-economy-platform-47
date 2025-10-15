@@ -104,12 +104,13 @@ export const ConsentManager: React.FC = () => {
         }
       ];
       
-      const consents = await withFallback('user_consent',
+      const consentsData = await withFallback('user_consent',
         () => safeSelect('user_consent', '*', { 
           order: { column: 'given_at', ascending: false } 
         }),
         async () => mockConsent
       );
+      const consents = consentsData || [];
       
       setConsents(consents as ConsentRecord[]);
     } catch (error) {

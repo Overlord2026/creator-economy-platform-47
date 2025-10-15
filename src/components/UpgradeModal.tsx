@@ -23,6 +23,12 @@ interface UpgradeModalProps {
 }
 
 const PLAN_DETAILS: Record<Plan, { name: string; price: string; description: string; color: string }> = {
+  free: {
+    name: 'Free',
+    price: '$0/mo',
+    description: 'Get started with basic features',
+    color: 'bg-gray-500'
+  },
   basic: {
     name: 'Basic',
     price: '$29/mo',
@@ -35,11 +41,23 @@ const PLAN_DETAILS: Record<Plan, { name: string; price: string; description: str
     description: 'Advanced features for growing businesses',
     color: 'bg-purple-500'
   },
+  pro: {
+    name: 'Pro',
+    price: '$199/mo',
+    description: 'Professional features for serious businesses',
+    color: 'bg-indigo-500'
+  },
   elite: {
     name: 'Elite',
     price: '$299/mo',
     description: 'Enterprise-grade capabilities',
     color: 'bg-gold-500'
+  },
+  enterprise: {
+    name: 'Enterprise',
+    price: 'Custom',
+    description: 'White-glove service for large organizations',
+    color: 'bg-black'
   }
 };
 

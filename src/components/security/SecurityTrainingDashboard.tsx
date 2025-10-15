@@ -84,7 +84,7 @@ export const SecurityTrainingDashboard: React.FC = () => {
   const fetchTrainingData = async () => {
     try {
       // Use safe queries for training data with fallbacks
-      const schedules = await withFallback(
+      const schedulesData = await withFallback(
         'security_training_schedules',
         async () => {
           const result = await safeQueryOptionalTable('security_training_schedules', '*', {
@@ -94,8 +94,9 @@ export const SecurityTrainingDashboard: React.FC = () => {
         },
         async () => []
       );
+      const schedules = schedulesData || [];
 
-      const userCompletions = await withFallback(
+      const completionsData = await withFallback(
         'security_training_completions',
         async () => {
           const user = await supabase.auth.getUser();
@@ -116,8 +117,9 @@ export const SecurityTrainingDashboard: React.FC = () => {
         },
         async () => []
       );
+      const userCompletions = completionsData || [];
 
-      const phishing = await withFallback(
+      const phishingData = await withFallback(
         'phishing_simulation_results',
         async () => {
           const user = await supabase.auth.getUser();
@@ -138,6 +140,7 @@ export const SecurityTrainingDashboard: React.FC = () => {
         },
         async () => []
       );
+      const phishing = phishingData || [];
 
       setTrainingSchedules(schedules || []);
       setCompletions(userCompletions || []);

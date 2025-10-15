@@ -57,7 +57,7 @@ export function SegmentDashboard({ userRole, segment }: SegmentDashboardProps) {
       }
 
       // Fetch professional metrics using safe database pattern
-      const metrics = await withFallback<any>(
+      const metricsData = await withFallback<any>(
         'professional_metrics',
         () => safeSelect<any>('professional_metrics', '*', {
           order: { column: 'created_at', ascending: false }, 
@@ -65,6 +65,7 @@ export function SegmentDashboard({ userRole, segment }: SegmentDashboardProps) {
         }),
         async () => []
       );
+      const metrics = metricsData || [];
 
       // Process metrics data into dashboard format
       const processedData = {

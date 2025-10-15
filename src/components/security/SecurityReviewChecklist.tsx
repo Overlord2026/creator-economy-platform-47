@@ -57,7 +57,7 @@ export const SecurityReviewChecklist: React.FC<SecurityReviewChecklistProps> = (
   const fetchChecklist = async () => {
     try {
       // Use withFallback pattern to handle missing table gracefully
-      const checklistData = await withFallback(
+      const checklistResult = await withFallback(
         'security_review_checklists',
         async () => {
           const result = await safeQueryOptionalTable('security_review_checklists', '*', {
@@ -91,6 +91,7 @@ export const SecurityReviewChecklist: React.FC<SecurityReviewChecklistProps> = (
           }];
         }
       );
+      const checklistData = checklistResult || [];
 
       if (checklistData.length > 0) {
         const data = checklistData[0];

@@ -50,7 +50,7 @@ export function LoanScenarioCalculator() {
         const tableAvailable = await tableExists('loan_scenarios');
         setIsTableAvailable(tableAvailable);
         
-        const scenarioData = await withFallback(
+        const scenariosData = await withFallback(
           'loan_scenarios',
           async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -62,6 +62,7 @@ export function LoanScenarioCalculator() {
           },
           () => mockLoanScenarios
         );
+        const scenarioData = scenariosData || [];
 
         setSavedScenarios(scenarioData);
       } catch (error) {
@@ -185,13 +186,14 @@ export function LoanScenarioCalculator() {
       setResults(null);
       
       // Reload scenarios
-      const scenarioData2 = await withFallback(
+      const reloadedData = await withFallback(
         'loan_scenarios',
         async () => safeSelect<LoanScenario>('loan_scenarios', '*', {
           order: { column: 'created_at', ascending: false }
         }),
         () => mockLoanScenarios
       );
+      const scenarioData2 = reloadedData || [];
       
       setSavedScenarios(scenarioData2);
     } catch (error) {

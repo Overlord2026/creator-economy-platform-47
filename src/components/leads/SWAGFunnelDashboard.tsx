@@ -93,13 +93,14 @@ export function SWAGFunnelDashboard() {
 
       // Fetch leads data with schema-aware fallback
       const { withFallback, safeSelect } = await import('@/lib/db/safeSupabase');
-      const leads = await withFallback('leads',
+      const leadsData = await withFallback('leads',
         () => safeSelect('leads', '*', { 
           order: { column: 'created_at', ascending: false },
           limit: 100 
         }),
         async () => (await import('@/lib/mocks/leads.mock')).mockLeads
       );
+      const leads = leadsData || [];
 
       // Filter by date range
       const filteredLeads = leads.filter(lead => {

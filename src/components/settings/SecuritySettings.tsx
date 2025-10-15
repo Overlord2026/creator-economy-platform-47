@@ -73,10 +73,11 @@ export const SecuritySettings: React.FC = () => {
     setIsLoading(true);
     try {
       // Load user profile for 2FA status using safe database pattern
-      const profileData = await withFallback('profiles', 
+      const profilesData = await withFallback('profiles', 
         () => safeQueryOptionalTable('profiles', 'two_factor_enabled', { limit: 1 }),
         () => []
       );
+      const profileData = profilesData || [];
       
       if (profileData.length > 0) {
         setTwoFactorEnabled((profileData[0] as any)?.two_factor_enabled || false);

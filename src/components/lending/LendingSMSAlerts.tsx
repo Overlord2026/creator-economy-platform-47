@@ -38,13 +38,14 @@ export function LendingSMSAlerts() {
     try {
       const { withFallback, safeSelect } = await import('@/lib/db/safeSupabase');
       
-      const data = await withFallback('lending_sms_alerts',
+      const alertsData = await withFallback('lending_sms_alerts',
         () => safeSelect('lending_sms_alerts', '*', { 
           order: { column: 'created_at', ascending: false },
           limit: 10 
         }),
         async () => []
       );
+      const data = alertsData || [];
       
       setRecentAlerts(data as SMSAlert[]);
     } catch (error) {

@@ -30,6 +30,9 @@ export function useSubscriptionAccess() {
     checkFeatureAccess,
     checkUsageLimit,
     incrementUsage,
+    syncWithStripe: async () => {
+      console.log('[BOOTSTRAP] syncWithStripe called - no-op in bootstrap mode');
+    },
     isLoading: false,
   };
 }

@@ -90,11 +90,12 @@ export const PersonalizationSettings: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const result = await withFallback(
+      const profilesData = await withFallback(
         'profiles',
         () => safeQueryOptionalTable('profiles', '*'),
         () => []
       );
+      const result = profilesData || [];
       
       const profileData = result.find((p: any) => p.id === user.id);
       if (profileData && (profileData as any)?.personalization_settings) {

@@ -69,12 +69,13 @@ export const LeadRoutingOptimizer: React.FC = () => {
     try {
       const { withFallback, safeSelect } = await import('@/lib/db/safeSupabase');
       
-      const data = await withFallback('lead_routing_rules',
+      const rulesData = await withFallback('lead_routing_rules',
         () => safeSelect('lead_routing_rules', '*', { 
           order: { column: 'weight_score', ascending: false } 
         }),
         async () => []
       );
+      const data = rulesData || [];
       
       setRules(data as RoutingRule[]);
     } catch (error) {
