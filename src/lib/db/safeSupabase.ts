@@ -84,18 +84,30 @@ export async function safeDelete<T>(tableName: string, filters: Record<string, a
   }
 }
 
-export async function withFallback<T>(tableName: string, queryFn: () => Promise<Result<T[]>>, fallback: T[]): Promise<T[]> {
+export async function withFallback<T>(
+  tableName: string, 
+  queryFn: () => Promise<Result<T[]>>, 
+  fallback: T[] | (() => T[] | Promise<T[]>)
+): Promise<T[]> {
+  const resolveFallback = async (): Promise<T[]> => {
+    if (typeof fallback === 'function') {
+      const result = fallback();
+      return result instanceof Promise ? await result : result;
+    }
+    return fallback;
+  };
+
   try {
     const exists = await tableExists(tableName);
     if (!exists) {
       console.warn(`Table ${tableName} does not exist, returning fallback`);
-      return fallback;
+      return await resolveFallback();
     }
     const result = await queryFn();
-    return result.ok ? (result.data || fallback) : fallback;
+    return result.ok ? (result.data || await resolveFallback()) : await resolveFallback();
   } catch (err) {
     console.warn(`withFallback failed for ${tableName}:`, err);
-    return fallback;
+    return await resolveFallback();
   }
 }
 
