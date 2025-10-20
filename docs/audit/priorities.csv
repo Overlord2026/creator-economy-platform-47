@@ -1,0 +1,13 @@
+Feature,Priority,Why,Owner,Target Sprint
+Public Marketplace,P0,Table-stakes browse & briefs,UI,S-1
+School Exchange,P0,Institutional hook & local sponsors,UI,S-1
+Compliance Dashboard,P0,Must-have for schools,UI,S-1
+Offer→Contract→E-Sign,P0,Core money path,Core,S-1
+Payments/Escrow,P0,Core money path,Core,S-1
+Disclosure Pack Builder,P0,Compliance proof & differentiator,Core,S-2
+Education Modules,P1,Expected by schools,UI,S-2
+Mobile PWA & Push,P1,On-the-go approvals,Core,S-2
+Analytics & NIL Index,P1,Decision support + discovery,UI,S-3
+Integrations (Univ+Social),P1,Reduce manual work proof posts,Core,S-3
+Proof Explorer,P2,Moat/Trust,Core,S-3
+Secure Vault UX,P2,Moat/Trust,UI,S-3
