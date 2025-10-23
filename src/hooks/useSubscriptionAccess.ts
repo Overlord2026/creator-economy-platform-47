@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import * as React from 'react';
-import { useEntitlements } from '@/context/EntitlementsContext';
-
-export type AccessFlag = string;
-export type SubscriptionTier = 'free' | 'basic' | 'premium' | 'pro' | 'elite' | 'enterprise';
-=======
 import { useState, useEffect } from 'react';
 import { sb } from '@/lib/supabase-relaxed';  // ← Fixed import
 import { useToast } from '@/hooks/use-toast';
@@ -22,21 +15,12 @@ interface UserProfile {
   usage_limits?: UsageLimits;
   is_active?: boolean;
 }
->>>>>>> demo/offerlock-202509261311
 
 export function useSubscriptionAccess() {
-  const ctx = useEntitlements();
+  const [isLoading, setIsLoading] = useState(true);
+  const [subscriptionPlan, setSubscriptionPlan] = useState<UserProfile | null>(null);
+  const { toast } = useToast();
 
-<<<<<<< HEAD
-  const [tier, setTier] = React.useState<SubscriptionTier>(ctx.tier ?? 'free');
-  const [flags, setFlags] = React.useState<Record<string, boolean>>(ctx.flags ?? {});
-
-  React.useEffect(() => {
-    if (ctx.tier && ctx.tier !== tier) setTier(ctx.tier);
-    if (ctx.flags && ctx.flags !== flags) setFlags(ctx.flags);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ctx.tier, ctx.flags]);
-=======
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await sb.auth.getUser();
@@ -95,15 +79,12 @@ export function useSubscriptionAccess() {
         `)
         .eq('id', (await sb.auth.getUser()).data.user?.id)
         .single();
->>>>>>> demo/offerlock-202509261311
 
-  const can = React.useCallback((flag: AccessFlag) => Boolean(flags?.[flag]), [flags]);
+      if (error) {
+        console.error('Error fetching subscription data:', error);
+        return;
+      }
 
-<<<<<<< HEAD
-  const checkFeatureAccess = React.useCallback((_feature: string) => true, []);
-  const checkUsageLimit = React.useCallback((_feature: string) => ({ hasAccess: true, remaining: 999, isAtLimit: false }), []);
-  const incrementUsage = React.useCallback(async (_feature: string) => {}, []);
-=======
       if (profile) {
         const tier = (profile as any).subscription_tier || 'free';
         setSubscriptionPlan({
@@ -204,19 +185,16 @@ export function useSubscriptionAccess() {
       });
     }
   };
->>>>>>> demo/offerlock-202509261311
 
   return {
-    tier,
-    flags,
-    can,
-    subscriptionPlan: { name: tier, tier, subscription_tier: tier, quotas: {}, features: {}, usage_counters: {}, usage_limits: {} },
+    subscriptionPlan,
+    isLoading,
     checkFeatureAccess,
+    checkAddOnAccess,
     checkUsageLimit,
     incrementUsage,
-    syncWithStripe: async () => {
-      console.log('[BOOTSTRAP] syncWithStripe called - no-op in bootstrap mode');
-    },
-    isLoading: false,
+    isSubscriptionActive,
+    syncWithStripe,
+    fetchSubscriptionData
   };
 }

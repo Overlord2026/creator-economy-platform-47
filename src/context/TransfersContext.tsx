@@ -1,13 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-<<<<<<< HEAD
-import { edgeFunctionClient } from '@/services/edgeFunction/EdgeFunctionClient';
-import { supabase } from '@/lib/supabase';
-=======
 import { EdgeFunctionClient } from '@/services/edgeFunction/EdgeFunctionClient';
 import { sb } from '@/lib/supabase-relaxed';
 import { safeQueryOptionalTable } from '@/lib/db/safeSupabase';
->>>>>>> demo/offerlock-202509261311
 
 export interface Transfer {
   id: string;
@@ -81,11 +76,9 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
 
       console.log('TransfersContext: Fetching transfers for user:', user.id);
       
-      const { data, error } = await supabase
-        .from('transfers')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+      const result = await safeQueryOptionalTable<Transfer>('transfers', '*', { user_id: user.id });
+      const data = result.ok ? (result.data || []) : [];
+      const error = result.ok ? null : result.error as any;
 
       console.log('TransfersContext: Fetch result:', { 
         userId: user.id,
@@ -126,9 +119,9 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
   }) => {
     setProcessing(true);
     
-    const response = await edgeFunctionClient.invokeTransferFunction('process-transfer', transferData);
+    const response = await EdgeFunctionClient.invoke('process-transfer', { body: transferData });
     
-    if (response.success && response.data?.transfer) {
+    if (!response.error && response.data?.transfer) {
       setTransfers(prev => [response.data.transfer, ...prev]);
       await fetchTransfers();
       setProcessing(false);
@@ -147,9 +140,9 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
   }) => {
     setProcessing(true);
     
-    const response = await edgeFunctionClient.invokeTransferFunction('stripe-ach-transfer', transferData);
+    const response = await EdgeFunctionClient.invoke('stripe-ach-transfer', { body: transferData });
     
-    if (response.success && response.data?.transfer) {
+    if (!response.error && response.data?.transfer) {
       setTransfers(prev => [response.data.transfer, ...prev]);
       await fetchTransfers();
       setProcessing(false);

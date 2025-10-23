@@ -14,8 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-<<<<<<< HEAD
-=======
       app_events: {
         Row: {
           created_at: string
@@ -985,7 +983,6 @@ export type Database = {
           },
         ]
       }
->>>>>>> demo/offerlock-202509261311
       receipts: {
         Row: {
           anchor_ref: Json | null
@@ -1043,8 +1040,6 @@ export type Database = {
         }
         Relationships: []
       }
-<<<<<<< HEAD
-=======
       school_caps: {
         Row: {
           cap_amount: number
@@ -1342,15 +1337,11 @@ export type Database = {
         }
         Relationships: []
       }
->>>>>>> demo/offerlock-202509261311
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-<<<<<<< HEAD
-      [_ in never]: never
-=======
       graphql_is_configured: { Args: never; Returns: boolean }
       is_org_member: { Args: { row_org: string }; Returns: boolean }
       run_database_review_tests: {
@@ -1384,7 +1375,6 @@ export type Database = {
         }[]
       }
       vault_is_configured: { Args: never; Returns: boolean }
->>>>>>> demo/offerlock-202509261311
     }
     Enums: {
       [_ in never]: never

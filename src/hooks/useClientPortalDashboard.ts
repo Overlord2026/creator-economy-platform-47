@@ -1,12 +1,21 @@
 import { useState, useEffect } from 'react';
 import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
-import type { Database } from '@/integrations/supabase/types';
 
-type AttorneyDashboardMetrics = Database['public']['Tables']['attorney_dashboard_metrics']['Row'];
+interface ClientPortalMetrics {
+  totalClients: number;
+  pendingInvitations: number;
+  recentMessages: number;
+  sharedDocuments: number;
+}
 
 export function useClientPortalDashboard() {
-  const [metrics, setMetrics] = useState<AttorneyDashboardMetrics | null>(null);
+  const [metrics, setMetrics] = useState<ClientPortalMetrics>({
+    totalClients: 0,
+    pendingInvitations: 0,
+    recentMessages: 0,
+    sharedDocuments: 0
+  });
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -16,96 +25,39 @@ export function useClientPortalDashboard() {
       const user = (await sb.auth.getUser()).data.user;
       if (!user) throw new Error('Not authenticated');
 
-      // Get today's metrics
-      const today = new Date().toISOString().split('T')[0];
-      
-      let { data: existingMetrics, error } = await supabase
-        .from('attorney_dashboard_metrics')
-        .select('*')
-        .eq('attorney_id', user.id)
-        .eq('metric_date', today)
-        .single();
+      // Use existing tables to calculate metrics
+      const { count: clientsCount } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .eq('role', 'client');
 
-      if (error && error.code !== 'PGRST116') {
-        throw error;
-      }
+      const { count: invitationsCount } = await supabase
+        .from('prospect_invitations')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending');
 
-      // If no metrics exist for today, calculate and create them
-      if (!existingMetrics) {
-        // Calculate metrics
-        const [clientsResult, invitationsResult, messagesResult, documentsResult] = await Promise.all([
-          // Active clients count
-          supabase
-            .from('attorney_client_links')
-            .select('id', { count: 'exact' })
-            .eq('attorney_id', user.id)
-            .eq('status', 'active'),
-          
-          // Pending invitations count
-          supabase
-            .from('attorney_client_invitations')
-            .select('id', { count: 'exact' })
-            .eq('attorney_id', user.id)
-            .eq('status', 'pending'),
-          
-          // Unread messages count
-          supabase
-            .from('attorney_client_messages')
-            .select('id', { count: 'exact' })
-            .eq('attorney_id', user.id)
-            .is('read_at', null),
-          
-          // Documents shared today count
-          supabase
-            .from('attorney_client_shared_documents')
-            .select('id', { count: 'exact' })
-            .eq('attorney_id', user.id)
-            .gte('shared_at', `${today}T00:00:00Z`)
-            .lt('shared_at', `${today}T23:59:59Z`)
-        ]);
+      // Mock values for now since we don't have these specific tables
+      setMetrics({
+        totalClients: clientsCount || 0,
+        pendingInvitations: invitationsCount || 0,
+        recentMessages: 0, // Mock value
+        sharedDocuments: 0  // Mock value
+      });
 
-        const metricsData = {
-          attorney_id: user.id,
-          metric_date: today,
-          active_clients: clientsResult.count || 0,
-          pending_invitations: invitationsResult.count || 0,
-          unread_messages: messagesResult.count || 0,
-          documents_shared_today: documentsResult.count || 0,
-          client_uploads_today: 0 // TODO: Implement client uploads tracking
-        };
-
-        // Insert new metrics
-        const { data: newMetrics, error: insertError } = await supabase
-          .from('attorney_dashboard_metrics')
-          .insert(metricsData)
-          .select()
-          .single();
-
-        if (insertError) throw insertError;
-        setMetrics(newMetrics);
-      } else {
-        setMetrics(existingMetrics);
-      }
     } catch (error) {
-      console.error('Error fetching dashboard metrics:', error);
+      console.error('Error fetching client portal metrics:', error);
       toast({
-        title: "Error loading dashboard",
-        description: "Could not load dashboard metrics. Please try again.",
-        variant: "destructive",
+        title: "Error",
+        description: "Failed to load dashboard metrics",
+        variant: "destructive"
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const refetch = () => {
-    fetchMetrics();
-  };
-
   useEffect(() => {
     fetchMetrics();
-<<<<<<< HEAD
-=======
 
     // Set up real-time subscription for profile changes
     const profilesSubscription = supabase
@@ -142,12 +94,11 @@ export function useClientPortalDashboard() {
       sb.removeChannel(profilesSubscription);
       sb.removeChannel(invitationsSubscription);
     };
->>>>>>> demo/offerlock-202509261311
   }, []);
 
   return {
     metrics,
     loading,
-    refetch
+    refresh: fetchMetrics
   };
 }
