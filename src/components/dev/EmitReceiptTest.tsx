@@ -6,7 +6,7 @@ import { collectApprovals } from "@/lib/policy/hitlGate";
 
 export default function EmitReceiptTest({ tenantId, userId }: { tenantId: string; userId?: string }) {
   const onRun = async () => {
-    const emitter = initReceiptsEmitterAuto(supabase);
+    const emitter = initReceiptsEmitterAuto(sb);
     const action = { type: "TEST_TRANSFER", amount: 5000, currency: "USD" };
     const request_hash = await hashActionRequest(action);
     const evalRes = await evaluateAction(action, { domain: "general" });

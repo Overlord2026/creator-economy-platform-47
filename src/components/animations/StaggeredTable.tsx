@@ -60,7 +60,7 @@ export const StaggeredTable: React.FC<StaggeredTableProps> = ({
   <Table className={className}>
     {headers && (
       <motion.thead
-        variants={headerVariants}
+        variants={headerVariants as any}
         initial="hidden"
         animate="visible"
       >
@@ -68,7 +68,7 @@ export const StaggeredTable: React.FC<StaggeredTableProps> = ({
       </motion.thead>
     )}
     <motion.tbody
-      variants={tableContainerVariants}
+      variants={tableContainerVariants as any}
       initial="hidden"
       animate="visible"
     >
@@ -81,7 +81,7 @@ export const StaggeredTableRow: React.FC<{ children: React.ReactNode; className?
   children, 
   className = "" 
 }) => (
-  <motion.tr variants={tableRowVariants} className={className}>
+  <motion.tr variants={tableRowVariants as any} className={className}>
     {children}
   </motion.tr>
 );

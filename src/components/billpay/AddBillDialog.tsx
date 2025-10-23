@@ -38,7 +38,7 @@ const billFormSchema = z.object({
   amount: zNumeric("Amount must be a positive number."),
   due_date: z.date(),
   category: zEnum(BILL_CATEGORIES),
-  frequency: zEnum(BILL_FREQUENCIES).default('monthly'),
+  frequency: zEnum(BILL_FREQUENCIES).optional().default('monthly'),
 });
 
 type BillFormValues = z.infer<typeof billFormSchema>;
@@ -60,12 +60,12 @@ export function AddBillDialog({ isOpen, onClose, onAddBill }: AddBillDialogProps
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const form = useForm<BillFormValues>({
-    resolver: zodResolver(billFormSchema),
+  const form = useForm({
+    resolver: zodResolver(billFormSchema) as any,
     defaultValues,
   });
 
-  async function onSubmit(data: BillFormValues) {
+  async function onSubmit(data: any) {
     setIsSubmitting(true);
     
     try {

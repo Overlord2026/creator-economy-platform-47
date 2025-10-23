@@ -42,8 +42,8 @@ export function EducationResourceForm({ resource, onClose }: EducationResourceFo
 
   const isEditing = !!resource;
 
-  const form = useForm<ResourceFormValues>({
-    resolver: zodResolver(resourceFormSchema),
+  const form = useForm({
+    resolver: zodResolver(resourceFormSchema) as any,
     defaultValues: {
       title: resource?.title || '',
       description: resource?.description || '',

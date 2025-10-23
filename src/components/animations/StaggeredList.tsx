@@ -71,7 +71,7 @@ export const StaggeredItem: React.FC<{ children: React.ReactNode; className?: st
   children, 
   className = "" 
 }) => (
-  <motion.div variants={itemVariants} className={className}>
+  <motion.div variants={itemVariants as any} className={className}>
     {children}
   </motion.div>
 );

@@ -78,7 +78,7 @@ export function RouteTransition({ children }: RouteTransitionProps) {
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={location.pathname}
-        variants={variants}
+        variants={variants as any}
         initial="initial"
         animate="animate"
         exit="exit"

@@ -29,14 +29,14 @@ export function PageTransition({ children, delay = 0, className = '' }: PageTran
       transition: {
         duration: isMobile ? 0.3 : 0.4,
         delay,
-        ease: 'easeOut',
+        ease: [0.4, 0, 0.2, 1],
       },
     },
   };
 
   return (
     <motion.div
-      variants={variants}
+      variants={variants as any}
       initial="hidden"
       animate="visible"
       className={className}

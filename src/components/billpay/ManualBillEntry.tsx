@@ -232,7 +232,7 @@ export const ManualBillEntry: React.FC = () => {
             setSelectedBillId(null);
           }}
           billId={selectedBillId}
-          onPayBill={payBill}
+          onPayBill={payBill as any}
         />
       )}
     </div>
