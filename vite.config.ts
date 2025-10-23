@@ -5,24 +5,31 @@ import path from 'path';
 export default defineConfig({
   plugins: [
     react({
-      include: [/\.[jt]sx?$/, /packages\/creator\/src\/.*\.js$/],
+      // process JSX in plain .js files too (monorepo packages/creator/**)
+      include: [
+        /\.[jt]sx?$/,                      // normal app files
+        /packages\/creator\/src\/.*\.js$/, // workspace JS with JSX
+      ],
       jsxRuntime: 'automatic',
     }),
   ],
   resolve: {
+    // enforce ONE React at runtime/build
     alias: {
       react: path.resolve(__dirname, 'node_modules/react'),
       'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
       '@': path.resolve(__dirname, 'src'),
     },
+    dedupe: ['react', 'react-dom'],
   },
-  // IMPORTANT: do NOT set a global esbuild.loader here (it breaks .ts/.tsx parsing)
+  // dev transform loader: allow JSX in .js
+  esbuild: { loader: 'jsx' },
   optimizeDeps: {
-    // only treat plain .js as JSX for deps pre-bundle
-    esbuildOptions: { loader: { '.js': 'jsx' } },
     dedupe: ['react', 'react-dom'],
     include: ['react', 'react-dom'],
+    esbuildOptions: { loader: { '.js': 'jsx' } }, // prebundle map form is allowed
   },
+  // do NOT scan docs/** html; this prevents email templates from being treated as entries
   build: { rollupOptions: { input: 'index.html' } },
   server: { port: 8080, strictPort: false },
 });
