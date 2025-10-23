@@ -1,20 +1,20 @@
-import React from "react";
-import { BOOTSTRAP_MODE } from "@/config/bootstrap";
-// Your existing providers (import paths may differ — if a path 404s, tell me and I'll swap it)
-import AuthProvider from "@/context/AuthContext";
-import EntitlementsProvider from "@/context/EntitlementsContext";
+import React from 'react';
+import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
-export default function SafeProviders({ children }: { children: React.ReactNode }) {
+// Import your real providers here (start small)
+import AuthProvider from '@/context/AuthContext';
+
+type Props = { children: React.ReactNode };
+
+export default function SafeProviders({ children }: Props) {
   if (BOOTSTRAP_MODE) {
-    // In bootstrap, render nothing heavy. This avoids the "useState null" crash in host envs.
+    // Lovable host: render children bare — no heavy providers, no hooks on mount
     return <>{children}</>;
   }
-  // Full provider chain when we’re ready
+  // Normal env: wrap with providers
   return (
     <AuthProvider>
-      <EntitlementsProvider>
-        {children}
-      </EntitlementsProvider>
+      {children}
     </AuthProvider>
   );
 }
