@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { MessageEncryption, KeyManager } from '@/utils/messageEncryption';
 import { 
   MessageThread, 
@@ -17,7 +17,7 @@ export class SecureMessagingService {
       .insert({
         thread_name: request.thread_name,
         thread_type: request.thread_type,
-        created_by: (await supabase.auth.getUser()).data.user?.id
+        created_by: (await sb.auth.getUser()).data.user?.id
       })
       .select()
       .single();
@@ -88,7 +88,7 @@ export class SecureMessagingService {
         .from('secure_messages')
         .insert({
           thread_id: request.thread_id,
-          sender_id: (await supabase.auth.getUser()).data.user?.id,
+          sender_id: (await sb.auth.getUser()).data.user?.id,
           message_content: encryptedData,
           message_hash: hash,
           encryption_key_id: keyId,
@@ -185,7 +185,7 @@ export class SecureMessagingService {
       .from('message_thread_participants')
       .update({ last_read_at: new Date().toISOString() })
       .eq('thread_id', threadId)
-      .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
+      .eq('user_id', (await sb.auth.getUser()).data.user?.id);
 
     if (error) throw error;
   }
@@ -230,7 +230,7 @@ export class SecureMessagingService {
     metadata: any
   ): Promise<void> {
     try {
-      const user = (await supabase.auth.getUser()).data.user;
+      const user = (await sb.auth.getUser()).data.user;
       if (!user) return;
 
       await supabase

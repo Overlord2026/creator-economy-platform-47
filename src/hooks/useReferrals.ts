@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 export interface Referral {
@@ -82,7 +82,7 @@ export const useReferrals = () => {
   ) => {
     try {
       // Get current user and tenant ID
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       const { data: profile } = await supabase

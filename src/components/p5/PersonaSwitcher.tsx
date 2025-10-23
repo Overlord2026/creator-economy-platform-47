@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { Persona } from '@/types/p5';
 import { Button } from '@/components/ui/button';
 import { tableExists, safeQueryOptionalTable, safeInsertOptionalTable, safeUpdate } from '@/lib/db/safeSupabase';
@@ -51,7 +51,7 @@ export default function PersonaSwitcher() {
         await safeInsertOptionalTable('persona_sessions', { 
           persona_id: id,
           active: true,
-          user_id: (await supabase.auth.getUser()).data.user?.id
+          user_id: (await sb.auth.getUser()).data.user?.id
         });
       }
       

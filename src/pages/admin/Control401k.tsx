@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { initReceiptsEmitterAuto, hashActionRequest } from "@/lib/receiptsEmitter";
 import { runPlanBenchmark } from "@/lib/401k/planBenchmark";
 import { evalAdvGate } from "@/lib/401k/pteGate";
@@ -67,7 +67,7 @@ export default function Control401k() {
         request_hash,
         decision: "ALLOW_WITH_CONDITIONS",
         policies: [{ bundle_id: "rs://401k@current" }],
-        approvals: [{ signer: (await supabase.auth.getUser()).data?.user?.id || "me", role: "advisor", ts: new Date().toISOString() }],
+        approvals: [{ signer: (await sb.auth.getUser()).data?.user?.id || "me", role: "advisor", ts: new Date().toISOString() }],
       });
 
       // Post: include FeeCompare_RDS + Plan_Benchmark_Receipt as content-free effects
@@ -75,7 +75,7 @@ export default function Control401k() {
         request_hash,
         decision: "ALLOW_WITH_CONDITIONS",
         policies: [{ bundle_id: "rs://401k@current" }],
-        approvals: [{ signer: (await supabase.auth.getUser()).data?.user?.id || "me", role: "advisor", ts: new Date().toISOString() }],
+        approvals: [{ signer: (await sb.auth.getUser()).data?.user?.id || "me", role: "advisor", ts: new Date().toISOString() }],
         effects: [
           { type: "FeeCompare_RDS", value: bench.FeeCompare_RDS },
           { type: "Plan_Benchmark_Receipt", value: bench.Plan_Benchmark_Receipt }
@@ -100,14 +100,14 @@ export default function Control401k() {
         request_hash,
         decision: "ALLOW_WITH_CONDITIONS",
         policies: [{ bundle_id: "rs://401k@pte2020-02" }],
-        approvals: [{ signer: (await supabase.auth.getUser()).data?.user?.id || "me", role: "advisor", ts: new Date().toISOString() }],
+        approvals: [{ signer: (await sb.auth.getUser()).data?.user?.id || "me", role: "advisor", ts: new Date().toISOString() }],
       });
 
       await emitter.emitPost({
         request_hash,
         decision: "ALLOW_WITH_CONDITIONS",
         policies: [{ bundle_id: "rs://401k@pte2020-02" }],
-        approvals: [{ signer: (await supabase.auth.getUser()).data?.user?.id || "me", role: "advisor", ts: new Date().toISOString() }],
+        approvals: [{ signer: (await sb.auth.getUser()).data?.user?.id || "me", role: "advisor", ts: new Date().toISOString() }],
         effects: [
           { type: "AdviceSummary_RDS", value: { pte: "2020-02", advice_only: true, rule_version: "2025-09-01" } },
           { type: "Delivery_RDS", value: { instructions: ["reduce share class fees","rebid recordkeeper"], advice_only: true } },
@@ -134,14 +134,14 @@ export default function Control401k() {
         request_hash,
         decision: gate.decision as any,
         policies: [{ bundle_id: "rs://401k@adv_cap" }],
-        approvals: [{ signer: (await supabase.auth.getUser()).data?.user?.id || "me", role: "supervisor", ts: new Date().toISOString() }],
+        approvals: [{ signer: (await sb.auth.getUser()).data?.user?.id || "me", role: "supervisor", ts: new Date().toISOString() }],
       });
 
       await emitter.emitPost({
         request_hash,
         decision: gate.decision as any,
         policies: [{ bundle_id: "rs://401k@adv_cap" }],
-        approvals: [{ signer: (await supabase.auth.getUser()).data?.user?.id || "me", role: "supervisor", ts: new Date().toISOString() }],
+        approvals: [{ signer: (await sb.auth.getUser()).data?.user?.id || "me", role: "supervisor", ts: new Date().toISOString() }],
         effects: [{ type: "ADV_Gate", value: gate.ADV_Gate }, { type: "GateReasons", value: gate.reasons }],
         linked_receipt_id: pre.id,
       });

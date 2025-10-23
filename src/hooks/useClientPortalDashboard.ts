@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -13,7 +13,7 @@ export function useClientPortalDashboard() {
   const fetchMetrics = async () => {
     try {
       setLoading(true);
-      const user = (await supabase.auth.getUser()).data.user;
+      const user = (await sb.auth.getUser()).data.user;
       if (!user) throw new Error('Not authenticated');
 
       // Get today's metrics
@@ -104,6 +104,45 @@ export function useClientPortalDashboard() {
 
   useEffect(() => {
     fetchMetrics();
+<<<<<<< HEAD
+=======
+
+    // Set up real-time subscription for profile changes
+    const profilesSubscription = supabase
+      .channel('profiles-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles'
+        },
+        () => {
+          fetchMetrics();
+        }
+      )
+      .subscribe();
+
+    const invitationsSubscription = supabase
+      .channel('invitations-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'prospect_invitations'
+        },
+        () => {
+          fetchMetrics();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      sb.removeChannel(profilesSubscription);
+      sb.removeChannel(invitationsSubscription);
+    };
+>>>>>>> demo/offerlock-202509261311
   }, []);
 
   return {

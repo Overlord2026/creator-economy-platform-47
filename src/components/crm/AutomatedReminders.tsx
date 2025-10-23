@@ -26,7 +26,7 @@ import {
   Zap
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { format, addDays, addHours } from 'date-fns';
 
 interface ReminderRule {
@@ -292,7 +292,7 @@ export function AutomatedReminders() {
 
   const testRule = async (ruleId: string) => {
     try {
-      const { error } = await supabase.functions.invoke('test-reminder-rule', {
+      const { error } = await sb.functions.invoke('test-reminder-rule', {
         body: { rule_id: ruleId }
       });
 

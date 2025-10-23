@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useAuth } from '@/hooks/useAuth';
 
 export interface ProjectAnalytics {
@@ -108,7 +108,7 @@ export function useProjectAnalytics() {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      sb.removeChannel(channel);
     };
   }, [user]);
 
@@ -165,7 +165,7 @@ export function useTeamProductivityAnalytics(startDate?: string, endDate?: strin
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      sb.removeChannel(channel);
     };
   }, [user, startDate, endDate]);
 
@@ -219,7 +219,7 @@ export function useResourceUtilizationAnalytics(startDate?: string, endDate?: st
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      sb.removeChannel(channel);
     };
   }, [user, startDate, endDate]);
 
@@ -285,7 +285,7 @@ export function useAnalyticsEvents() {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      sb.removeChannel(channel);
     };
   }, [user]);
 
@@ -293,7 +293,7 @@ export function useAnalyticsEvents() {
 }
 
 export async function calculateProjectAnalytics(projectId: string) {
-  const { error } = await supabase.rpc('calculate_project_analytics', {
+  const { error } = await sb.rpc('calculate_project_analytics', {
     p_project_id: projectId
   });
 

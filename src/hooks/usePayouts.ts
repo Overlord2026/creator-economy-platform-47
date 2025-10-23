@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 export interface ReferralPayout {
@@ -97,7 +97,7 @@ export const usePayouts = () => {
       };
 
       if (status === 'approved') {
-        updateData.approved_by = (await supabase.auth.getUser()).data.user?.id;
+        updateData.approved_by = (await sb.auth.getUser()).data.user?.id;
         updateData.approved_at = new Date().toISOString();
       } else if (status === 'paid') {
         updateData.paid_at = new Date().toISOString();
@@ -170,7 +170,7 @@ export const usePayouts = () => {
 
   const createPayoutFromReferral = async (referralId: string) => {
     try {
-      const { data, error } = await supabase.rpc('create_referral_payout', {
+      const { data, error } = await sb.rpc('create_referral_payout', {
         p_referral_id: referralId
       });
 
@@ -195,7 +195,7 @@ export const usePayouts = () => {
 
   const createPayoutFromOverride = async (overrideId: string) => {
     try {
-      const { data, error } = await supabase.rpc('create_override_payout', {
+      const { data, error } = await sb.rpc('create_override_payout', {
         p_override_id: overrideId
       });
 

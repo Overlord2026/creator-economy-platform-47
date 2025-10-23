@@ -20,7 +20,7 @@ import {
   DollarSign,
   Bot
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface APIIntegration {
   id: string;
@@ -197,7 +197,7 @@ export function APIIntegrationAudit() {
         const checkedSecrets = await Promise.all(
           integration.secrets.map(async (secret) => {
             try {
-              const { data, error } = await supabase.functions.invoke('check-api-keys', {
+              const { data, error } = await sb.functions.invoke('check-api-keys', {
                 body: { secretName: secret.name }
               });
               
@@ -416,7 +416,7 @@ export function APIIntegrationAudit() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => window.open('https://supabase.com/dashboard/project/xcmqjkvyvuhoslbzmlgi/settings/functions', '_blank')}
+                          onClick={() => window.open('https://sb.com/dashboard/project/xcmqjkvyvuhoslbzmlgi/settings/functions', '_blank')}
                         >
                           <ExternalLink className="h-3 w-3 mr-1" />
                           Add Keys
@@ -445,7 +445,7 @@ export function APIIntegrationAudit() {
               variant="outline"
               size="sm"
               className="mt-3 text-blue-700 border-blue-300"
-              onClick={() => window.open('https://supabase.com/dashboard/project/xcmqjkvyvuhoslbzmlgi/settings/functions', '_blank')}
+              onClick={() => window.open('https://sb.com/dashboard/project/xcmqjkvyvuhoslbzmlgi/settings/functions', '_blank')}
             >
               <ExternalLink className="h-3 w-3 mr-1" />
               Open Supabase Secrets

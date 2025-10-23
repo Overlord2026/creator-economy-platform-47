@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ClientPersona, PERSONA_CONFIGS, PersonaConfig } from '@/types/personas';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export const usePersona = () => {
   const { user } = useAuth();
@@ -42,7 +42,7 @@ export const usePersona = () => {
 
     try {
       // Update user metadata
-      const { error } = await supabase.auth.updateUser({
+      const { error } = await sb.auth.updateUser({
         data: { persona: newPersona }
       });
 

@@ -1,7 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+<<<<<<< HEAD
 import { edgeFunctionClient } from '@/services/edgeFunction/EdgeFunctionClient';
 import { supabase } from '@/lib/supabase';
+=======
+import { EdgeFunctionClient } from '@/services/edgeFunction/EdgeFunctionClient';
+import { sb } from '@/lib/supabase-relaxed';
+import { safeQueryOptionalTable } from '@/lib/db/safeSupabase';
+>>>>>>> demo/offerlock-202509261311
 
 export interface Transfer {
   id: string;
@@ -60,7 +66,7 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
       console.log('TransfersContext: Starting fetchTransfers');
       setLoading(true);
       
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await sb.auth.getUser();
       
       if (userError) {
         console.error('TransfersContext: Authentication error:', userError);
@@ -189,7 +195,7 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       console.log('TransfersContext: Cleaning up real-time subscription');
-      supabase.removeChannel(channel);
+      sb.removeChannel(channel);
     };
   }, []);
 

@@ -37,7 +37,7 @@ import {
   BarChart3
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { analytics } from '@/lib/analytics';
 import { Celebration } from '@/components/ConfettiAnimation';

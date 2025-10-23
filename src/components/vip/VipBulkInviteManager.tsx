@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { VipBulkInviteUpload } from './VipBulkInviteUpload';
 import { VipDirectory } from './VipDirectory';
 
@@ -94,7 +94,7 @@ export const VipBulkInviteManager: React.FC = () => {
     try {
       setLoading(true);
       // TODO: Enable after migration
-      // const { data, error } = await supabase.from('vip_invites').select('*');
+      // const { data, error } = await sb.from('vip_invites').select('*');
       setInvites([]);
       
     } catch (error) {
@@ -108,7 +108,7 @@ export const VipBulkInviteManager: React.FC = () => {
   const loadActivityLog = async () => {
     try {
       // TODO: Enable after migration
-      // const { data, error } = await supabase.from('vip_admin_activity_log').select('*');
+      // const { data, error } = await sb.from('vip_admin_activity_log').select('*');
       setActivityLog([]);
       
     } catch (error) {
@@ -120,7 +120,7 @@ export const VipBulkInviteManager: React.FC = () => {
     setSendingInvites(true);
     
     try {
-      const { data, error } = await supabase.functions.invoke('send-vip-invites', {
+      const { data, error } = await sb.functions.invoke('send-vip-invites', {
         body: { inviteIds }
       });
 
@@ -140,7 +140,7 @@ export const VipBulkInviteManager: React.FC = () => {
 
   const resendInvite = async (inviteId: string) => {
     try {
-      const { error } = await supabase.functions.invoke('resend-vip-invite', {
+      const { error } = await sb.functions.invoke('resend-vip-invite', {
         body: { inviteId }
       });
 

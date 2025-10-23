@@ -22,7 +22,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { Celebration } from '@/components/ConfettiAnimation';
 
 export default function ClientManagementPage() {

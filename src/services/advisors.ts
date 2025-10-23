@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export type Pro = {
   id: string;
@@ -34,7 +34,7 @@ export async function getAdvisor(id: string): Promise<Pro | null> {
 export async function submitInquiry(payload: {
   pro_id: string; name: string; email: string; phone?: string; message?: string;
 }) {
-  const { data, error } = await supabase.functions.invoke('pro-inquiry-email', { body: payload });
+  const { data, error } = await sb.functions.invoke('pro-inquiry-email', { body: payload });
   if (error) throw error;
   return data;
 }

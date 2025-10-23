@@ -1,6 +1,6 @@
 import { useMemo, useCallback, useEffect, useState } from "react";
 import { useSubscriptionAccess } from "@/hooks/useSubscriptionAccess";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from "@/hooks/use-toast";
 
 export interface Bill {
@@ -193,8 +193,13 @@ export const useBillPayData = () => {
     reminder_days?: number;
   }) => {
     try {
+<<<<<<< HEAD
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
+=======
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user) throw new Error("User not found");
+>>>>>>> demo/offerlock-202509261311
 
       const { data, error } = await supabase
         .from('bills')
@@ -286,8 +291,13 @@ export const useBillPayData = () => {
 
   const payBill = useCallback(async (billId: string, paymentMethod: string) => {
     try {
+<<<<<<< HEAD
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
+=======
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user) throw new Error("User not found");
+>>>>>>> demo/offerlock-202509261311
 
       const bill = bills.find(b => b.id === billId);
       if (!bill) throw new Error('Bill not found');

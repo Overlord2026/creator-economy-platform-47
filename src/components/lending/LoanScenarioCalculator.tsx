@@ -10,7 +10,7 @@ import { Calculator, DollarSign, Calendar, TrendingDown, Save, BarChart3 } from 
 import { tableExists, safeInsert, withFallback, safeSelect } from '@/lib/db/safeSupabase';
 import { mockLoanScenarios, type LoanScenario } from '@/lib/mocks/loanScenarios.mock';
 import FallbackBanner from '@/components/common/FallbackBanner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface ScenarioResults {
   base_monthly_payment?: number;
@@ -53,7 +53,7 @@ export function LoanScenarioCalculator() {
         const scenariosData = await withFallback(
           'loan_scenarios',
           async () => {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await sb.auth.getUser();
             if (!user) return { ok: true, data: [] };
             
             return safeSelect<LoanScenario>('loan_scenarios', '*', {
@@ -140,7 +140,7 @@ export function LoanScenarioCalculator() {
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         toast({
           title: "Error",

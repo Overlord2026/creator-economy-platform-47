@@ -11,7 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { Upload, CheckCircle, AlertCircle, DollarSign, Calendar, FileText } from 'lucide-react';
 import { LendingFileUploadService } from '@/services/lending/lendingFileUpload';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface LoanApplication {
   loanType: string;
@@ -129,7 +129,7 @@ export const LoanApplicationPage: React.FC = () => {
   const submitApplication = async () => {
     setIsSubmitting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       // Create loan application record

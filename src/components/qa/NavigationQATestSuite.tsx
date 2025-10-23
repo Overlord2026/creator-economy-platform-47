@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -103,10 +103,10 @@ export function NavigationQATestSuite() {
       console.log(`Testing authentication for ${persona.name} (${persona.email})`);
       
       // First, ensure we're logged out
-      await supabase.auth.signOut();
+      await sb.auth.signOut();
       
       // Attempt to sign in
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await sb.auth.signInWithPassword({
         email: persona.email,
         password: persona.password,
       });
@@ -243,7 +243,7 @@ export function NavigationQATestSuite() {
         }
         
         // Logout before testing next persona
-        await supabase.auth.signOut();
+        await sb.auth.signOut();
         await new Promise(resolve => setTimeout(resolve, 500));
       }
     } catch (error) {

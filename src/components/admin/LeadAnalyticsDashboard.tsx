@@ -41,7 +41,7 @@ import {
   Funnel as FunnelIcon,
   ExternalLink
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
 import { format } from 'date-fns';
@@ -126,7 +126,7 @@ export function LeadAnalyticsDashboard() {
       setLoading(true);
       
       // Build query filters
-      let query = supabase.from('leads' as any).select(`
+      let query = sb.from('leads' as any).select(`
         id,
         source,
         campaign_source,

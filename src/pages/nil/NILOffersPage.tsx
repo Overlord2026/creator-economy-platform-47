@@ -18,7 +18,7 @@ import {
   Lock,
   Users
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface NILOffer {
@@ -71,8 +71,8 @@ export default function NILOffersPage() {
   const loadData = async () => {
     try {
       const [offersResponse, personasResponse] = await Promise.all([
-        supabase.from('nil_offers').select('*').order('created_at', { ascending: false }),
-        supabase.from('nil_personas').select('*').order('name')
+        sb.from('nil_offers').select('*').order('created_at', { ascending: false }),
+        sb.from('nil_personas').select('*').order('name')
       ]);
 
       if (offersResponse.error) throw offersResponse.error;
@@ -101,7 +101,7 @@ export default function NILOffersPage() {
     
     try {
       // First evaluate policy gates
-      const policyEvaluation = await supabase.functions.invoke('nil-policy-evaluate', {
+      const policyEvaluation = await sb.functions.invoke('nil-policy-evaluate', {
         body: {
           gateType: 'exclusivity_lock',
           entityType: 'persona',
@@ -161,7 +161,7 @@ export default function NILOffersPage() {
         privacy_level: 'medium'
       };
 
-      await supabase.from('nil_receipts').insert(receiptData);
+      await sb.from('nil_receipts').insert(receiptData);
 
       toast({
         title: "Offer Created Successfully",
@@ -221,7 +221,7 @@ export default function NILOffersPage() {
         privacy_level: 'medium'
       };
 
-      await supabase.from('nil_receipts').insert(receiptData);
+      await sb.from('nil_receipts').insert(receiptData);
 
       toast({
         title: `Offer ${response.charAt(0).toUpperCase() + response.slice(1)}`,

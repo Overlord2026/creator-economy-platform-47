@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { buildDDPackage, getDDPackages, type DDPackageResult } from '@/engines/private/ddPack';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { Loader2, Download, FileText, Archive, CheckCircle } from 'lucide-react';
 
 interface DDPackageBuilderProps {
@@ -23,7 +23,7 @@ export function DDPackageBuilder({ fundId }: DDPackageBuilderProps) {
 
   const loadExistingPackages = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) return;
 
       const existingPackages = await getDDPackages(user.id, fundId);
@@ -36,7 +36,7 @@ export function DDPackageBuilder({ fundId }: DDPackageBuilderProps) {
   const handleGeneratePackage = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }

@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { mockInvestmentCategories, type InvestmentCategory } from '@/lib/mocks/investmentCategories.mock';
 import FallbackBanner from '@/components/common/FallbackBanner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useNavigate } from 'react-router-dom';
 
 interface Product {
@@ -85,7 +85,7 @@ export function RIAAdminPanel() {
 
   const fetchProducts = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('products', {
+      const { data, error } = await sb.functions.invoke('products', {
         method: 'GET'
       });
 
@@ -126,7 +126,7 @@ export function RIAAdminPanel() {
 
   const fetchDocuments = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('product-documents', {
+      const { data, error } = await sb.functions.invoke('product-documents', {
         method: 'GET'
       });
 
@@ -147,7 +147,7 @@ export function RIAAdminPanel() {
         asset_allocation: formData.asset_allocation ? JSON.parse(formData.asset_allocation) : null,
       };
 
-      const { error } = await supabase.functions.invoke('products', {
+      const { error } = await sb.functions.invoke('products', {
         method: 'POST',
         body: JSON.stringify(productData)
       });
@@ -185,7 +185,7 @@ export function RIAAdminPanel() {
         asset_allocation: formData.asset_allocation ? JSON.parse(formData.asset_allocation) : null,
       };
 
-      const { error } = await supabase.functions.invoke('products', {
+      const { error } = await sb.functions.invoke('products', {
         method: 'POST',
         body: JSON.stringify(productData)
       });
@@ -213,7 +213,7 @@ export function RIAAdminPanel() {
 
   const submitForCompliance = async (productId: string) => {
     try {
-      const { error } = await supabase.functions.invoke('products', {
+      const { error } = await sb.functions.invoke('products', {
         method: 'POST',
         body: JSON.stringify({
           id: productId,

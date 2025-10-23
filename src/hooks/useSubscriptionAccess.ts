@@ -1,9 +1,54 @@
+<<<<<<< HEAD
 import * as React from 'react';
 import { useEntitlements } from '@/context/EntitlementsContext';
 
 export type AccessFlag = string;
 export type SubscriptionTier = 'free' | 'basic' | 'premium' | 'pro' | 'elite' | 'enterprise';
+=======
+import { useState, useEffect } from 'react';
+import { sb } from '@/lib/supabase-relaxed';  // ← Fixed import
+import { useToast } from '@/hooks/use-toast';
+import { SubscriptionTierType, AddOnAccess, UsageCounters, UsageLimits } from '@/types/subscription';
 
+interface UserProfile {
+  subscription_tier: SubscriptionTierType;
+  subscription_status: string;
+  subscription_end_date: string | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  tier: SubscriptionTierType;
+  add_ons?: AddOnAccess;
+  usage_counters?: UsageCounters;
+  usage_limits?: UsageLimits;
+  is_active?: boolean;
+}
+>>>>>>> demo/offerlock-202509261311
+
+export function useSubscriptionAccess() {
+  const ctx = useEntitlements();
+
+<<<<<<< HEAD
+  const [tier, setTier] = React.useState<SubscriptionTier>(ctx.tier ?? 'free');
+  const [flags, setFlags] = React.useState<Record<string, boolean>>(ctx.flags ?? {});
+
+  React.useEffect(() => {
+    if (ctx.tier && ctx.tier !== tier) setTier(ctx.tier);
+    if (ctx.flags && ctx.flags !== flags) setFlags(ctx.flags);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ctx.tier, ctx.flags]);
+=======
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await sb.auth.getUser();
+      if (user) {
+        await fetchSubscriptionData();
+      } else {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchUser();
+  }, []);
 export function useSubscriptionAccess() {
   const ctx = useEntitlements();
 
@@ -13,14 +58,153 @@ export function useSubscriptionAccess() {
   React.useEffect(() => {
     if (ctx.tier && ctx.tier !== tier) setTier(ctx.tier);
     if (ctx.flags && ctx.flags !== flags) setFlags(ctx.flags);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ctx.tier, ctx.flags]);
 
   const can = React.useCallback((flag: AccessFlag) => Boolean(flags?.[flag]), [flags]);
 
+  // Add syncWithStripe method
+  const syncWithStripe = async () => {
+    console.log('[BOOTSTRAP] syncWithStripe called - no-op in bootstrap mode');
+    // In production, this would sync subscription state with Stripe
+  };
+
+  return {
+    tier,
+    flags,
+    can,
+    syncWithStripe,  // Added
+    subscriptionPlan: { name: tier, tier, subscription_tier: tier, quotas: {}, features: {}, usage_counters: {}, usage_limits: {} },
+    checkFeatureAccess,
+    checkUsageLimit,
+    incrementUsage,
+    isLoading: false,
+  };
+}
+
+
+  const fetchSubscriptionData = async () => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select(`
+          subscription_tier,
+          subscription_status,
+          subscription_end_date,
+          stripe_customer_id,
+          stripe_subscription_id
+        `)
+        .eq('id', (await sb.auth.getUser()).data.user?.id)
+        .single();
+>>>>>>> demo/offerlock-202509261311
+
+  const can = React.useCallback((flag: AccessFlag) => Boolean(flags?.[flag]), [flags]);
+
+<<<<<<< HEAD
   const checkFeatureAccess = React.useCallback((_feature: string) => true, []);
   const checkUsageLimit = React.useCallback((_feature: string) => ({ hasAccess: true, remaining: 999, isAtLimit: false }), []);
   const incrementUsage = React.useCallback(async (_feature: string) => {}, []);
+=======
+      if (profile) {
+        const tier = (profile as any).subscription_tier || 'free';
+        setSubscriptionPlan({
+          subscription_tier: tier,
+          subscription_status: (profile as any).subscription_status || 'inactive',
+          subscription_end_date: (profile as any).subscription_end_date,
+          stripe_customer_id: (profile as any).stripe_customer_id,
+          stripe_subscription_id: (profile as any).stripe_subscription_id,
+          tier: tier,
+          add_ons: {
+            lending_access: tier === 'premium' || tier === 'elite',
+            tax_access: tier === 'premium' || tier === 'elite',
+            ai_features_access: tier === 'premium' || tier === 'elite',
+            premium_analytics_access: tier === 'premium' || tier === 'elite',
+            residency_optimization: tier === 'premium' || tier === 'elite',
+            advisor_marketplace: tier === 'elite',
+            audit_risk_analyzer: tier === 'elite',
+            relocation_concierge: tier === 'elite',
+            bill_pay_premium: tier === 'premium' || tier === 'elite',
+            premium_property_features: tier === 'premium' || tier === 'elite',
+          },
+          usage_counters: {
+            lending_applications: 0,
+            tax_analyses: 0,
+            ai_queries: 0,
+            document_uploads: 0,
+          },
+          usage_limits: {
+            lending_applications_limit: tier === 'free' ? 1 : tier === 'basic' ? 5 : 999,
+            tax_analyses_limit: tier === 'free' ? 1 : tier === 'basic' ? 3 : 999,
+            ai_queries_limit: tier === 'free' ? 10 : tier === 'basic' ? 100 : 999,
+            document_uploads_limit: tier === 'free' ? 5 : tier === 'basic' ? 25 : 999,
+          },
+          is_active: (profile as any).subscription_status === 'active',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching subscription data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const checkFeatureAccess = (tier: SubscriptionTierType): boolean => {
+    if (!subscriptionPlan) return false;
+    
+    const tierHierarchy = {
+      'free': 0,
+      'basic': 1,
+      'premium': 2,
+      'elite': 3
+    };
+    
+    const currentTierLevel = tierHierarchy[subscriptionPlan.subscription_tier] || 0;
+    const requiredTierLevel = tierHierarchy[tier] || 0;
+    
+    return currentTierLevel >= requiredTierLevel && subscriptionPlan.subscription_status === 'active';
+  };
+
+  const checkAddOnAccess = (addOnKey: keyof AddOnAccess): boolean => {
+    if (!subscriptionPlan?.add_ons) return false;
+    return subscriptionPlan.add_ons[addOnKey] || false;
+  };
+
+  const checkUsageLimit = (usageType: keyof UsageCounters): boolean => {
+    if (!subscriptionPlan?.usage_counters || !subscriptionPlan?.usage_limits) return true;
+    const current = subscriptionPlan.usage_counters[usageType] || 0;
+    const limit = subscriptionPlan.usage_limits[usageType] || 0;
+    return current < limit;
+  };
+
+  const incrementUsage = async (usageType: keyof UsageCounters): Promise<void> => {
+    console.log(`Incrementing usage for ${usageType}`);
+  };
+
+  const isSubscriptionActive = (): boolean => {
+    return subscriptionPlan?.subscription_status === 'active';
+  };
+
+  const syncWithStripe = async () => {
+    try {
+      const { data, error } = await sb.functions.invoke('check-subscription');
+      
+      if (error) throw error;
+      
+      await fetchSubscriptionData();
+      
+      toast({
+        title: "Success",
+        description: "Subscription status synchronized with Stripe",
+      });
+    } catch (error) {
+      console.error('Error syncing with Stripe:', error);
+      toast({
+        title: "Error",
+        description: "Failed to sync subscription status",
+        variant: "destructive",
+      });
+    }
+  };
+>>>>>>> demo/offerlock-202509261311
 
   return {
     tier,

@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useNavigate } from 'react-router-dom';
 import { PortfolioErrorBoundary } from '@/components/portfolio/PortfolioErrorBoundary';
 import { PortfolioPageSkeleton, PortfolioCardSkeleton, SummaryCardSkeleton, InfoRequestDialogSkeleton } from '@/components/ui/skeletons/PortfolioSkeletons';
@@ -83,7 +83,7 @@ export function UserPortfolioWatchlist() {
 
   const fetchUserInterests = useCallback(async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('user-interests', {
+      const { data, error } = await sb.functions.invoke('user-interests', {
         method: 'GET'
       });
 
@@ -105,7 +105,7 @@ export function UserPortfolioWatchlist() {
 
   const removeFromWatchlist = useCallback(async (interestId: string) => {
     try {
-      const { error } = await supabase.functions.invoke('user-interests', {
+      const { error } = await sb.functions.invoke('user-interests', {
         method: 'DELETE',
         body: new URLSearchParams({
           id: interestId
@@ -136,7 +136,7 @@ export function UserPortfolioWatchlist() {
     if (!selectedProduct) return;
 
     try {
-      const { error } = await supabase.functions.invoke('user-interests', {
+      const { error } = await sb.functions.invoke('user-interests', {
         method: 'POST',
         body: JSON.stringify({
           product_id: selectedProduct.id,

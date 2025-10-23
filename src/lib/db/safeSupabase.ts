@@ -1,17 +1,21 @@
-import { supabase } from '@/integrations/supabase/client';
+/* lightweight fetch helpers + withFallback that supports array or factory */
+export type Ok<T>    = { ok: true;  data: T };
+export type Err<E=any> = { ok: false; error: E };
+export type Res<T>   = Ok<T> | Err;
 
-export type Result<T> = {
-  ok: boolean;
-  data?: T;
-  error?: any;
-  warning?: string;
-};
+export function isOk<T>(r: Res<T>): r is Ok<T> { return (r as any).ok === true; }
 
-export async function tableExists(name: string): Promise<boolean> {
+export async function withFallback<T>(
+  valueOrFactory: T | (() => T | Promise<T>),
+  fallback: T
+): Promise<T> {
   try {
-    const { error } = await supabase.from(name).select('id', { head: true }).limit(1);
-    return !error;
+    const v = typeof valueOrFactory === 'function'
+      ? await (valueOrFactory as any)()
+      : valueOrFactory;
+    return (v ?? fallback) as T;
   } catch {
+<<<<<<< HEAD
     return false;
   }
 }
@@ -134,3 +138,8 @@ export async function safeQueryOptionalTable<T>(tableName: string, columns: stri
 }
 
 export default { tableExists, safeSelect, safeInsert, safeUpdate, safeDelete, withFallback, safeInsertOptionalTable, safeQueryOptionalTable };
+=======
+    return fallback;
+  }
+}
+>>>>>>> demo/offerlock-202509261311

@@ -11,7 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { Calculator, TrendingUp, Shield, Users, BookOpen, ArrowRight } from 'lucide-react';
 import { usePersona } from '@/context/PersonaContext';
 import { analytics } from '@/lib/analytics';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 import { ScorecardParams, ScorecardResults, Account, HealthInputs } from '@/lib/scorecard/types';
@@ -143,7 +143,7 @@ export const ScorecardPage: React.FC = () => {
   const handleRequestReview = async () => {
     try {
       // Create SWAG intake record
-      const { error } = await supabase.from('swag_intakes').insert({
+      const { error } = await sb.from('swag_intakes').insert({
         persona_group: personaGroup,
         status: 'created',
         meeting_type: 'right_fit'
@@ -178,7 +178,7 @@ export const ScorecardPage: React.FC = () => {
 
   const handleSaveToClient = async () => {
     try {
-      const { error } = await supabase.from('swag_intakes').insert({
+      const { error } = await sb.from('swag_intakes').insert({
         persona_group: personaGroup,
         status: 'saved'
       });

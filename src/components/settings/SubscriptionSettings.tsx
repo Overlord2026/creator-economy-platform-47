@@ -22,7 +22,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useSubscriptionAccess } from '@/hooks/useSubscriptionAccess';
 import { useEventTracking } from '@/hooks/useEventTracking';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export const SubscriptionSettings: React.FC = () => {
   const { user } = useAuth();
@@ -45,7 +45,7 @@ export const SubscriptionSettings: React.FC = () => {
 
     try {
       // Load billing history and next payment date
-      const { data, error } = await supabase.functions.invoke('get-billing-info', {
+      const { data, error } = await sb.functions.invoke('get-billing-info', {
         body: { user_id: user.id }
       });
 
@@ -63,7 +63,7 @@ export const SubscriptionSettings: React.FC = () => {
 
     setIsManaging(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
+      const { data, error } = await sb.functions.invoke('create-checkout', {
         body: { 
           user_id: user.id,
           tier: tier,
@@ -97,7 +97,7 @@ export const SubscriptionSettings: React.FC = () => {
 
     setIsManaging(true);
     try {
-      const { data, error } = await supabase.functions.invoke('customer-portal', {
+      const { data, error } = await sb.functions.invoke('customer-portal', {
         body: { user_id: user.id }
       });
 

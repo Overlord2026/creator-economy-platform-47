@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRoleAccess } from '@/hooks/useRoleAccess';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { tableExists, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -48,7 +48,7 @@ export const AdminAccessGuard: React.FC<AdminAccessGuardProps> = ({
       }
 
       // Verify session is still valid with server
-      const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
+      const { data: { session: currentSession }, error: sessionError } = await sb.auth.getSession();
       
       if (sessionError || !currentSession) {
         return {
@@ -129,7 +129,7 @@ export const AdminAccessGuard: React.FC<AdminAccessGuardProps> = ({
     requiredRoles: string[]
   ) => {
     try {
-      await supabase.functions.invoke('log-security-event', {
+      await sb.functions.invoke('log-security-event', {
         body: {
           event_type: 'admin_access_attempt',
           severity: accessGranted ? 'info' : 'warning',
@@ -152,7 +152,7 @@ export const AdminAccessGuard: React.FC<AdminAccessGuardProps> = ({
 
   const logSecurityIncident = async (error: string) => {
     try {
-      await supabase.functions.invoke('log-security-event', {
+      await sb.functions.invoke('log-security-event', {
         body: {
           event_type: 'security_incident',
           severity: 'high',

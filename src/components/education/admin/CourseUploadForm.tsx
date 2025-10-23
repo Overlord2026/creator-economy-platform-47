@@ -2,7 +2,7 @@
 // src/components/education/admin/CourseUploadForm.tsx
 import * as React from 'react';
 import { insertReceipt } from '@/lib/receipts';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 type Props = { orgId?: string };
 
@@ -14,7 +14,7 @@ export default function CourseUploadForm({ orgId: orgIdProp }: Props) {
   const [msg, setMsg] = React.useState<string | null>(null);
 
   async function resolveOrgId(userId: string): Promise<string> {
-    const { data: ures, error: uerr } = await supabase.auth.getUser();
+    const { data: ures, error: uerr } = await sb.auth.getUser();
     if (uerr) throw uerr;
     const metaOrgId = (ures?.user?.app_metadata as any)?.org_id as string | undefined;
 
@@ -39,7 +39,7 @@ export default function CourseUploadForm({ orgId: orgIdProp }: Props) {
     setBusy(true);
     setMsg(null);
     try {
-      const { data: ures, error: uerr } = await supabase.auth.getUser();
+      const { data: ures, error: uerr } = await sb.auth.getUser();
       if (uerr) throw uerr;
       const userId = ures?.user?.id;
       if (!userId) throw new Error('No authenticated user.');

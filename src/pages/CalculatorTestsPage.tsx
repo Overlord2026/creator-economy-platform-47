@@ -16,7 +16,7 @@ import {
   RefreshCw,
   Database
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface TestResult {
   testName: string;
@@ -75,7 +75,7 @@ export default function CalculatorTestsPage() {
       setLoading(true);
       setError(null);
       
-      const { data, error: functionError } = await supabase.functions.invoke('calc-tests');
+      const { data, error: functionError } = await sb.functions.invoke('calc-tests');
       
       if (functionError) {
         throw new Error(functionError.message || 'Failed to fetch test data');

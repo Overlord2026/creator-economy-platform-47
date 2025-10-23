@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 // Version-proof way to get one row from a Supabase query
 export async function firstRow<T = any>(q: any): Promise<T | null> {
@@ -22,7 +22,7 @@ export async function queryTable<T = any>(tableName: string, columns = '*', filt
       whereClause = ` WHERE ${conditions.join(' AND ')}`;
     }
     
-    const { data, error } = await supabase.rpc('custom_query', {
+    const { data, error } = await sb.rpc('custom_query', {
       query: `SELECT ${columns} FROM ${tableName}${whereClause}`,
       params: values
     });

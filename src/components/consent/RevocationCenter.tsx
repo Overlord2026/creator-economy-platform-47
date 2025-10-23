@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { RefreshCw, AlertTriangle, Clock, CheckCircle, XCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 export default function RevocationCenter() {
@@ -58,7 +58,7 @@ export default function RevocationCenter() {
   const handleRevoke = async (consentId: string, reason: string) => {
     setRevoking(consentId);
     try {
-      const { data, error } = await supabase.functions.invoke('propagate-revocation', {
+      const { data, error } = await sb.functions.invoke('propagate-revocation', {
         body: { consent_id: consentId, reason }
       });
 

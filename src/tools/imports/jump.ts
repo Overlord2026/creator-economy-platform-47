@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 export type JumpSummaryJSON = {
   callId?: string;
   startedAt?: string;
@@ -208,7 +209,7 @@ async function hashContent(content: any): Promise<string> {
   const textContent = typeof content === 'string' ? content : JSON.stringify(content);
   const encoder = new TextEncoder();
   const data = encoder.encode(textContent);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }

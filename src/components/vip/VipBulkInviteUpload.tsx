@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface VipContact {
   id?: string;
@@ -257,7 +257,7 @@ export const VipBulkInviteUpload: React.FC<VipBulkInviteUploadProps> = ({
     setUploading(true);
     
     try {
-      const { data, error } = await supabase.functions.invoke('bulk-create-vip-invites', {
+      const { data, error } = await sb.functions.invoke('bulk-create-vip-invites', {
         body: { contacts: validContacts }
       });
 

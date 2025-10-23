@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { MeetingProvider, SchedulingConfig } from '@/types/integrations';
 import { googleIntegrationService, GoogleCalendarEvent } from '@/services/integrations/GoogleIntegrationService';
 
@@ -146,7 +146,7 @@ class BFOSchedulingService {
 
   async cancelMeeting(meetingId: string): Promise<void> {
     try {
-      const { error } = await supabase.functions.invoke('bfo-scheduling', {
+      const { error } = await sb.functions.invoke('bfo-scheduling', {
         body: {
           action: 'cancel_meeting',
           meetingId
@@ -162,7 +162,7 @@ class BFOSchedulingService {
 
   async rescheduleMeeting(meetingId: string, newSlot: SchedulingSlot): Promise<ScheduledMeeting> {
     try {
-      const { data, error } = await supabase.functions.invoke('bfo-scheduling', {
+      const { data, error } = await sb.functions.invoke('bfo-scheduling', {
         body: {
           action: 'reschedule_meeting',
           meetingId,

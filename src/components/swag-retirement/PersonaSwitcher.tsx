@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 
 interface Persona {
   id: string;
@@ -31,7 +31,7 @@ export default function PersonaSwitcher() {
   const loadPersonas = async () => {
     setLoading(true);
     try {
-      const { data: auth } = await supabase.auth.getUser();
+      const { data: auth } = await sb.auth.getUser();
       const userId = auth.user?.id;
       if (!userId) return;
 
@@ -63,7 +63,7 @@ export default function PersonaSwitcher() {
   const activate = async (id: string) => {
     setLoading(true);
     try {
-      const { data: auth } = await supabase.auth.getUser();
+      const { data: auth } = await sb.auth.getUser();
       const userId = auth.user?.id;
       if (!userId) throw new Error("Not authenticated");
 

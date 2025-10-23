@@ -1,12 +1,12 @@
 // src/services/voice.ts
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 // --- Transcription (Edge function: speech-to-text) ---------------------------
 export async function transcribeAudio(audio: Blob): Promise<{ text: string }> {
   const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/speech-to-text`;
 
   // Use logged-in JWT if present (fine if missing and your function is public)
-  const jwt = await supabase.auth
+  const jwt = await sb.auth
     .getSession()
     .then(r => r.data.session?.access_token)
     .catch(() => undefined);
@@ -52,7 +52,7 @@ export async function saveMeetingNote(params: SaveMeetingNoteParams): Promise<vo
   const { persona, context_ref, transcript, summary, saveToVault } = params;
   
   // Get current user
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const { data: { user }, error: userError } = await sb.auth.getUser();
   if (userError || !user) {
     throw new Error('User not authenticated');
   }

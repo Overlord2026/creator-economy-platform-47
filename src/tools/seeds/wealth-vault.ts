@@ -15,7 +15,7 @@ export async function seedWealthVault() {
 }
 
 // Wealth Vault seeder (legacy fallback)
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export default async function seedWealthVaultLegacy() {
   try {

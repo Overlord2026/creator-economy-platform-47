@@ -3,7 +3,7 @@
  * Handles advisor background checks and compliance scoring
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { recordReceipt } from './receipts';
 import { inputs_hash } from '@/lib/canonical';
 

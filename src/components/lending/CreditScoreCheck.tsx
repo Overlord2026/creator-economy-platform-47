@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Shield, 
@@ -67,7 +67,7 @@ export const CreditScoreCheck: React.FC = () => {
     setLoading(true);
     try {
       // Call credit bureau API through edge function
-      const { data, error } = await supabase.functions.invoke('credit-score-check', {
+      const { data, error } = await sb.functions.invoke('credit-score-check', {
         body: {
           ssn: ssn,
           check_type: 'soft_pull',

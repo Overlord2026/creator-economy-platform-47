@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Upload, Download, AlertCircle, CheckCircle, Users } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface ClientImportData {
   client_name: string;
@@ -128,7 +128,7 @@ export function CSVClientImport() {
         const { error } = await supabase
           .from('accountant_clients')
           .insert({
-            accountant_id: (await supabase.auth.getUser()).data.user?.id,
+            accountant_id: (await sb.auth.getUser()).data.user?.id,
             client_name: updatedData[i].client_name,
             client_email: updatedData[i].client_email,
             client_phone: updatedData[i].client_phone,

@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { safeQueryOptionalTable, safeInsertOptionalTable, tableExists, withFallback } from '@/lib/db/safeSupabase';
 import { useToast } from '@/hooks/use-toast';
 import { ClipboardCheck, AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react';
@@ -177,7 +177,7 @@ export const SecurityReviewChecklist: React.FC<SecurityReviewChecklistProps> = (
 
     setSubmitting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       const reviewData = {

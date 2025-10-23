@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useOrganization } from '@/hooks/useOrganization';
 import { Employee } from '@/types/operations';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export default function EmployeeDirectory() {
   const { canManageEmployees } = useOrganization();

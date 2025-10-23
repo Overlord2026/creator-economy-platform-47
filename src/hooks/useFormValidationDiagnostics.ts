@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { FormValidationTestResult } from '@/types/diagnostics';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useDatabaseDiagnostics } from './useDatabaseDiagnostics';
 
 interface UseFormValidationDiagnosticsProps {

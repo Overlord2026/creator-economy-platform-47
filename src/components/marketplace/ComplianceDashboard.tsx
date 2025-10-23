@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useNavigate } from 'react-router-dom';
 
 interface Product {
@@ -74,7 +74,7 @@ export function ComplianceDashboard() {
 
   const fetchPendingProducts = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('products', {
+      const { data, error } = await sb.functions.invoke('products', {
         method: 'GET',
         body: new URLSearchParams({
           ...(statusFilter !== 'all' && { status: statusFilter }),
@@ -106,7 +106,7 @@ export function ComplianceDashboard() {
 
   const fetchComplianceHistory = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('audit-log', {
+      const { data, error } = await sb.functions.invoke('audit-log', {
         method: 'GET',
         body: new URLSearchParams({
           limit: '50'
@@ -124,7 +124,7 @@ export function ComplianceDashboard() {
     if (!selectedProduct || !reviewData.action) return;
 
     try {
-      const { error } = await supabase.functions.invoke('compliance-action', {
+      const { error } = await sb.functions.invoke('compliance-action', {
         method: 'POST',
         body: JSON.stringify({
           product_id: selectedProduct.id,

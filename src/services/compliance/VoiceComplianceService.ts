@@ -1,7 +1,7 @@
 import { ProPersona } from '@/features/pro/types';
 import { ComplianceHandler } from './ComplianceHandler';
 import { recordDecisionRDS } from '@/features/pro/compliance/DecisionTracker';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface VoiceCESession {
   id: string;

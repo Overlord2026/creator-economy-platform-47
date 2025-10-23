@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { MessageSquare, Phone, Check, AlertCircle } from 'lucide-react';
 
 interface SMSAlert {
@@ -99,7 +99,7 @@ export function LendingSMSAlerts() {
         phone_number: phoneNumber,
         alert_type: 'status_update',
         message: 'Test alert: Your lending application is being reviewed.',
-        user_id: (await supabase.auth.getUser()).data.user?.id
+        user_id: (await sb.auth.getUser()).data.user?.id
       });
 
       if (!result.ok) throw new Error(result.error);

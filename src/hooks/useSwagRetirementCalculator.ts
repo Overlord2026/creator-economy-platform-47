@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { SwagRetirementAnalysisInput, SwagRetirementAnalysisResults } from '@/types/swag-retirement';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 export const useSwagRetirementCalculator = () => {
@@ -15,7 +15,7 @@ export const useSwagRetirementCalculator = () => {
 
     try {
       // Call the enhanced retirement analyzer edge function
-      const { data, error: functionError } = await supabase.functions.invoke('retirement-analyzer', {
+      const { data, error: functionError } = await sb.functions.invoke('retirement-analyzer', {
         body: {
           inputs,
           analysisType: 'swag_comprehensive',

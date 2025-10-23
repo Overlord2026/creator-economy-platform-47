@@ -3,7 +3,7 @@
  * Integrates with existing leads-invite system and adds payment responsibility logic
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface AdvisorInviteRequest {
   email: string;
@@ -26,7 +26,7 @@ export async function sendAdvisorInvite(inviteData: AdvisorInviteRequest): Promi
   try {
     console.log('🚀 Sending advisor invite:', inviteData);
     
-    const { data, error } = await supabase.functions.invoke('leads-invite', {
+    const { data, error } = await sb.functions.invoke('leads-invite', {
       body: {
         firstName: inviteData.firstName || 'Valued',
         lastName: inviteData.lastName || 'Client', 

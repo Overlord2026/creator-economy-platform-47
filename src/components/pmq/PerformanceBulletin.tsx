@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -26,7 +26,7 @@ export default function PerformanceBulletin({ fundId, windowStart, windowEnd }: 
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from("fund_returns_unsmoothed")
+      const { data } = await sb.from("fund_returns_unsmoothed")
         .select("period_date, return_unsmoothed")
         .eq("fund_id", fundId).gte("period_date", windowStart).lte("period_date", windowEnd)
         .order("period_date", { ascending: true });
@@ -39,7 +39,7 @@ export default function PerformanceBulletin({ fundId, windowStart, windowEnd }: 
       });
       setSeries(cum);
 
-      const { data: rm } = await supabase.from("risk_metrics").select("*")
+      const { data: rm } = await sb.from("risk_metrics").select("*")
         .eq("fund_id", fundId).eq("window_start", windowStart).eq("window_end", windowEnd).maybeSingle();
       setRisk(rm as any);
     })();

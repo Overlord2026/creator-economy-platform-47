@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface AdvyzonClient {
   id: string;
@@ -37,7 +37,7 @@ export class AdvyzonIntegration {
 
   async syncClients(): Promise<AdvyzonClient[]> {
     try {
-      const { data, error } = await supabase.functions.invoke('advyzon-integration', {
+      const { data, error } = await sb.functions.invoke('advyzon-integration', {
         body: {
           action: 'sync_clients'
         }
@@ -60,7 +60,7 @@ export class AdvyzonIntegration {
 
   async getClient(clientId: string): Promise<AdvyzonClient> {
     try {
-      const { data, error } = await supabase.functions.invoke('advyzon-integration', {
+      const { data, error } = await sb.functions.invoke('advyzon-integration', {
         body: {
           action: 'get_client',
           client_id: clientId
@@ -77,7 +77,7 @@ export class AdvyzonIntegration {
 
   async getPortfolios(clientId: string): Promise<AdvyzonPortfolio[]> {
     try {
-      const { data, error } = await supabase.functions.invoke('advyzon-integration', {
+      const { data, error } = await sb.functions.invoke('advyzon-integration', {
         body: {
           action: 'get_portfolios',
           client_id: clientId
@@ -94,7 +94,7 @@ export class AdvyzonIntegration {
 
   async updateClient(clientId: string, updates: Partial<AdvyzonClient>): Promise<AdvyzonClient> {
     try {
-      const { data, error } = await supabase.functions.invoke('advyzon-integration', {
+      const { data, error } = await sb.functions.invoke('advyzon-integration', {
         body: {
           action: 'update_client',
           client_id: clientId,
@@ -121,7 +121,7 @@ export class AdvyzonIntegration {
     priority?: 'low' | 'medium' | 'high';
   }): Promise<void> {
     try {
-      const { error } = await supabase.functions.invoke('advyzon-integration', {
+      const { error } = await sb.functions.invoke('advyzon-integration', {
         body: {
           action: 'create_task',
           client_id: clientId,
@@ -165,7 +165,7 @@ export class AdvyzonIntegration {
 
   async getConnectionStatus(): Promise<{ connected: boolean; lastSync?: string; error?: string }> {
     try {
-      const { data, error } = await supabase.functions.invoke('advyzon-integration', {
+      const { data, error } = await sb.functions.invoke('advyzon-integration', {
         body: {
           action: 'test_connection'
         }

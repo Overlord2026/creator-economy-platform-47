@@ -1,4 +1,3 @@
-'use client';
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +24,7 @@ import {
   X
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface MessageData {
@@ -141,19 +140,19 @@ export function LeaveMessageWizard({ vaultId, members, onClose, onSuccess }: Lea
   };
 
   const uploadRecording = async (blob: Blob): Promise<string> => {
-    const user = (await supabase.auth.getUser()).data.user;
+    const user = (await sb.auth.getUser()).data.user;
     if (!user) throw new Error('Not authenticated');
 
     const fileExt = messageData.message_type === 'video' ? 'webm' : 'webm';
     const fileName = `${user.id}/messages/${Date.now()}.${fileExt}`;
 
-    const { error: uploadError } = await supabase.storage
+    const { error: uploadError } = await sb.storage
       .from('legacy-vault')
       .upload(fileName, blob);
 
     if (uploadError) throw uploadError;
 
-    const { data: { publicUrl } } = supabase.storage
+    const { data: { publicUrl } } = sb.storage
       .from('legacy-vault')
       .getPublicUrl(fileName);
 
@@ -163,7 +162,7 @@ export function LeaveMessageWizard({ vaultId, members, onClose, onSuccess }: Lea
   const saveMessage = async () => {
     try {
       setLoading(true);
-      const user = (await supabase.auth.getUser()).data.user;
+      const user = (await sb.auth.getUser()).data.user;
       if (!user) throw new Error('Not authenticated');
 
       let contentUrl = '';

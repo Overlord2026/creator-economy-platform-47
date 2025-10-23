@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 import type { BinderManifest } from './types';
 
 export async function buildBinderPack(args: {
@@ -26,7 +27,7 @@ export async function buildBinderPack(args: {
   const manifestContent = JSON.stringify({ receipts, files });
   const encoder = new TextEncoder();
   const data = encoder.encode(manifestContent);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hash = 'sha256:' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 

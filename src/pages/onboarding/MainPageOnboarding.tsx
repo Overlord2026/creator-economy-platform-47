@@ -1,4 +1,3 @@
-'use client';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Apple, Mail, Chrome, VolumeX, ToggleLeft, ToggleRight } from 'lucide-react';

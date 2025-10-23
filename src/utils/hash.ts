@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 /**
  * SHA-256 hashing utilities for AIES receipts
  * Provides consistent hashing for canonicalized data
@@ -22,7 +23,7 @@ export async function sha256Hex(data: string | Uint8Array | any): Promise<string
     bytes = canonicalizeToBytes(data);
   }
   
-  const hashBuffer = await crypto.subtle.digest('SHA-256', bytes);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(bytes));
   const hashArray = new Uint8Array(hashBuffer);
   
   return Array.from(hashArray)

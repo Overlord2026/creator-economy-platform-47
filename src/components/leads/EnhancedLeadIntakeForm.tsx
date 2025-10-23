@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Shield, TrendingUp, DollarSign, User, Mail, Phone, Building } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { PlaidLink } from 'react-plaid-link';
 
@@ -68,7 +68,7 @@ export function EnhancedLeadIntakeForm({ onSubmit, className }: EnhancedLeadInta
         company: formData.company,
         lead_value: formData.lead_value,
         notes: formData.notes,
-        advisor_id: (await supabase.auth.getUser()).data.user?.id,
+        advisor_id: (await sb.auth.getUser()).data.user?.id,
         lead_status: 'new',
         lead_source: 'manual_entry',
         enrichment_status: enrichmentConsent ? 'pending' : 'skipped',
@@ -120,7 +120,7 @@ export function EnhancedLeadIntakeForm({ onSubmit, className }: EnhancedLeadInta
 
   const triggerEnrichment = async (leadId: string) => {
     try {
-      const { data, error } = await supabase.functions.invoke('lead-enrichment', {
+      const { data, error } = await sb.functions.invoke('lead-enrichment', {
         body: {
           lead_id: leadId,
           email: formData.email,
@@ -150,7 +150,7 @@ export function EnhancedLeadIntakeForm({ onSubmit, className }: EnhancedLeadInta
 
   const preparePlaidLink = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('plaid-create-link-token');
+      const { data, error } = await sb.functions.invoke('plaid-create-link-token');
       
       if (error) throw error;
       
@@ -169,7 +169,7 @@ export function EnhancedLeadIntakeForm({ onSubmit, className }: EnhancedLeadInta
     if (!leadId) return;
 
     try {
-      const { data, error } = await supabase.functions.invoke('plaid-net-worth-verification', {
+      const { data, error } = await sb.functions.invoke('plaid-net-worth-verification', {
         body: {
           lead_id: leadId,
           public_token: public_token

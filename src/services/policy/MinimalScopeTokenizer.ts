@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { HashingService } from '../crypto/HashingService';
 
 interface TokenRequest {

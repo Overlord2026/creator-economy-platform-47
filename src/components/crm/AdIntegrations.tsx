@@ -19,7 +19,7 @@ import {
   BarChart3
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface AdAccount {
   id: string;
@@ -182,7 +182,7 @@ export function AdIntegrations() {
       setLoading(true);
       
       // Initiate OAuth flow for the selected platform
-      const { data } = await supabase.functions.invoke('connect-ad-platform', {
+      const { data } = await sb.functions.invoke('connect-ad-platform', {
         body: { 
           platform: selectedPlatform,
           return_url: window.location.origin + '/crm'
@@ -226,7 +226,7 @@ export function AdIntegrations() {
     try {
       setLoading(true);
       
-      await supabase.functions.invoke('sync-ad-data', {
+      await sb.functions.invoke('sync-ad-data', {
         body: { account_id: accountId }
       });
       
@@ -251,7 +251,7 @@ export function AdIntegrations() {
 
   const trackLeadAttribution = async (leadId: string, clickId: string, platform: 'facebook' | 'google') => {
     try {
-      await supabase.functions.invoke('track-lead-attribution', {
+      await sb.functions.invoke('track-lead-attribution', {
         body: {
           lead_id: leadId,
           click_id: clickId,

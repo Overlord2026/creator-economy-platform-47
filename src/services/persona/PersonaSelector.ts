@@ -1,7 +1,7 @@
 // Persona Selector with Hysteresis Guard
 // Prevents rapid persona switching with confidence thresholds and time delays
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { ClassificationResult } from './HybridClassifier';
 
 export interface PersonaState {
@@ -299,7 +299,7 @@ export class PersonaSelector {
       const now = new Date();
       
       // Insert new persona record
-      await supabase.from('personas').insert({
+      await sb.from('personas').insert({
         user_id: userId,
         tenant_id: userProfile.tenant_id,
         persona_kind: persona as any, // cast for union type
@@ -397,7 +397,7 @@ export class PersonaSelector {
       const timestamp = new Date();
       
       // Calculate current hash using SHA3-256
-      const { data: hashResult } = await supabase.rpc('calculate_audit_hash_sha3', {
+      const { data: hashResult } = await sb.rpc('calculate_audit_hash_sha3', {
         p_tenant_id: userProfile.tenant_id,
         p_persona_id: userId,
         p_event_type: 'persona_switch',
@@ -406,7 +406,7 @@ export class PersonaSelector {
       });
       
       // Insert audit record
-      await supabase.from('persona_audit').insert({
+      await sb.from('persona_audit').insert({
         tenant_id: userProfile.tenant_id,
         user_id: userId,
         operation_type: 'persona_switch',
@@ -427,7 +427,7 @@ export class PersonaSelector {
 
   private async getNextBlockNumber(tenantId: string): Promise<number> {
     try {
-      const { data: result } = await supabase.rpc('get_next_audit_block_number', {
+      const { data: result } = await sb.rpc('get_next_audit_block_number', {
         p_tenant_id: tenantId
       });
       return result || 1;

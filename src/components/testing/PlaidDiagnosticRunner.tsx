@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, AlertTriangle, Play, Copy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface DiagnosticReport {
   step1_secrets_check: {
@@ -53,7 +53,7 @@ export const PlaidDiagnosticRunner: React.FC = () => {
     setSummary(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke('diagnose-plaid-integration', {});
+      const { data, error } = await sb.functions.invoke('diagnose-plaid-integration', {});
       
       if (error) {
         throw error;

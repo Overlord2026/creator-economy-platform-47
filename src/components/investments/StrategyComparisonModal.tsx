@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { X, Download, ArrowUpDown, Check, AlertCircle } from "lucide-react";
 import { useUser } from "@/context/UserContext";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { StrategyDetails } from "./StrategyDetailModal";
 
 interface StrategyComparisonModalProps {

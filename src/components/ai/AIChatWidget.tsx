@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface ChatMessage {
@@ -94,7 +94,7 @@ export function AIChatWidget({ userPersona = 'investor', currentPage = 'tax-hub'
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('ai-chat-assistant', {
+      const { data, error } = await sb.functions.invoke('ai-chat-assistant', {
         body: {
           message: inputValue,
           conversation_id: conversationId,

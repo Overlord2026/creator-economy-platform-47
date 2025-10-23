@@ -3,7 +3,7 @@
  * Handles 30-day negative consent campaigns
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { recordReceipt } from './receipts';
 import { withAttestation } from './attestation';
 import { inputs_hash } from '@/lib/canonical';
@@ -221,7 +221,7 @@ export async function sendEmail(
   const { subject, body } = renderEmail(templateKey, tokens);
 
   // Send via edge function (placeholder - would call actual email service)
-  const emailResult = await supabase.functions.invoke('send-transition-email', {
+  const emailResult = await sb.functions.invoke('send-transition-email', {
     body: {
       to_hash: contact.email_hash,
       subject,

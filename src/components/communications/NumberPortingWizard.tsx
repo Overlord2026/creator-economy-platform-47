@@ -18,7 +18,7 @@ import {
   MapPin,
   Clock
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface NumberPortingWizardProps {
@@ -54,7 +54,7 @@ export function NumberPortingWizard({ onComplete, onCancel }: NumberPortingWizar
     
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('twilio-search-numbers', {
+      const { data, error } = await sb.functions.invoke('twilio-search-numbers', {
         body: { areaCode: newNumberData.areaCode }
       });
 
@@ -74,10 +74,10 @@ export function NumberPortingWizard({ onComplete, onCancel }: NumberPortingWizar
   const reserveNumber = async (phoneNumber: string) => {
     setLoading(true);
     try {
-      const { data: user } = await supabase.auth.getUser();
+      const { data: user } = await sb.auth.getUser();
       if (!user.user) throw new Error('Not authenticated');
 
-      const { error } = await supabase.functions.invoke('twilio-phone-manager', {
+      const { error } = await sb.functions.invoke('twilio-phone-manager', {
         body: {
           advisorId: user.user.id,
           areaCode: newNumberData.areaCode,
@@ -107,10 +107,10 @@ export function NumberPortingWizard({ onComplete, onCancel }: NumberPortingWizar
   const submitPortRequest = async () => {
     setLoading(true);
     try {
-      const { data: user } = await supabase.auth.getUser();
+      const { data: user } = await sb.auth.getUser();
       if (!user.user) throw new Error('Not authenticated');
 
-      const { error } = await supabase.functions.invoke('twilio-port-number', {
+      const { error } = await sb.functions.invoke('twilio-port-number', {
         body: {
           ...portingData,
           advisorId: user.user.id

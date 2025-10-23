@@ -6,7 +6,7 @@
  * ===================================================
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { sha256Hex } from '@/lib/canonical';
 
 export interface EvidenceBundle {
@@ -167,8 +167,8 @@ export class BlockchainAnchoringService {
       await supabase
         .from('digital_assets')
         .update({
-          metadata: supabase.rpc('jsonb_set', {
-            target: supabase.from('digital_assets').select('metadata'),
+          metadata: sb.rpc('jsonb_set', {
+            target: sb.from('digital_assets').select('metadata'),
             path: ['{batch_id}'],
             new_value: `"${batch.id}"`
           })

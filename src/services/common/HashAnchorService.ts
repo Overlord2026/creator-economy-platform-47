@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 /**
  * Hash and Anchor Service for RDS integrity
  * Provides SHA-256 computation and Merkle tree batching
@@ -43,7 +44,7 @@ export class HashAnchorService {
       data = input;
     }
     
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }

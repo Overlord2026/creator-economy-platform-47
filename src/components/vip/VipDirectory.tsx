@@ -21,7 +21,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 interface VipProfile {
@@ -95,7 +95,7 @@ export const VipDirectory: React.FC<VipDirectoryProps> = ({
     // try {
     //   setLoading(true);
     //   
-    //   let query = supabase.from('vip_invites').select('*');
+    //   let query = sb.from('vip_invites').select('*');
     //   
     //   if (showPublicOnly) {
     //     query = query.eq('invite_status', 'activated');

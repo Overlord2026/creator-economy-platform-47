@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ArrowRight, Heart, Camera, Users, CheckCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { FileUpload } from '@/components/ui/file-upload';
 
@@ -72,19 +72,19 @@ export function VaultCreationWizard() {
   const handlePhotoUpload = async (file: File) => {
     try {
       setLoading(true);
-      const user = (await supabase.auth.getUser()).data.user;
+      const user = (await sb.auth.getUser()).data.user;
       if (!user) throw new Error('Not authenticated');
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}/vault-photos/${Date.now()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await sb.storage
         .from('legacy-vault')
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = sb.storage
         .from('legacy-vault')
         .getPublicUrl(fileName);
 
@@ -108,7 +108,7 @@ export function VaultCreationWizard() {
   const createVault = async () => {
     try {
       setLoading(true);
-      const user = (await supabase.auth.getUser()).data.user;
+      const user = (await sb.auth.getUser()).data.user;
       if (!user) throw new Error('Not authenticated');
 
       // Skip creating vault - family_vaults table doesn't exist in schema

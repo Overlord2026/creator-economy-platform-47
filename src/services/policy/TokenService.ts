@@ -1,7 +1,8 @@
+import { toBufferSource } from '@/utils/buffers';
 // Policy Token Service - Mints ephemeral JWT tokens with scopes
 // Signs tokens with server key and manages token lifecycle
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface PolicyTokenPayload {
   tenant_id: string;
@@ -62,7 +63,7 @@ export class TokenService {
     const dataBuffer = encoder.encode(data);
     
     try {
-      const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(dataBuffer));
       const hashArray = new Uint8Array(hashBuffer);
       const hashHex = Array.from(hashArray)
         .map(b => b.toString(16).padStart(2, '0'))
@@ -266,7 +267,7 @@ export class TokenService {
     const canonicalBody = this.canonicalizeTokenBody(payload);
     const bodyHash = await this.computeHash('sha256', canonicalBody);
     
-    await supabase.from('policy_tokens').insert({
+    await sb.from('policy_tokens').insert({
       user_id: payload.user_id,
       tenant_id: payload.tenant_id,
       persona_id: payload.persona_id,
@@ -303,7 +304,7 @@ export class TokenService {
   private static async computeHash(algorithm: string, data: string): Promise<string> {
     if (typeof crypto !== 'undefined' && crypto.subtle) {
       const encoder = new TextEncoder();
-      const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(data));
+      const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(encoder.encode(data)));
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }

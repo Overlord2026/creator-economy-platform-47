@@ -3,7 +3,7 @@
  * Handles rebalance, TLH, drift, cash sweep with attestation
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { recordReceipt } from './receipts';
 import { withAttestation } from './attestation';
 import * as Canonical from '@/lib/canonical';

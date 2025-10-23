@@ -26,7 +26,7 @@ import {
   Eye
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import confetti from 'canvas-confetti';
 
 interface AgentSummary {
@@ -295,7 +295,7 @@ export function IMOAdminDashboard() {
       }
 
       // Call edge function to send batch emails
-      const { data, error } = await supabase.functions.invoke('batch-communicate', {
+      const { data, error } = await sb.functions.invoke('batch-communicate', {
         body: {
           type: 'reminder',
           agents: agentsDue.map(agent => ({

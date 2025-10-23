@@ -1,9 +1,10 @@
+import { toBufferSource } from '@/utils/buffers';
 /**
  * AI Executive Suite - Executive Plan Service
  * Manages execution plans, steps, approvals, and workflow
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { AgentCapabilityService } from './AgentCapabilityService';
 
 export interface ExecutionPlan {
@@ -341,7 +342,7 @@ export class ExecutivePlanService {
   private async calculateArtifactHash(content: any): Promise<string> {
     const encoder = new TextEncoder();
     const data = encoder.encode(JSON.stringify(content));
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
@@ -360,7 +361,7 @@ export class ExecutivePlanService {
     if (!plan) return;
 
     // CLO approval is always required
-    await supabase.from('approvals').insert({
+    await sb.from('approvals').insert({
       plan_id: planId,
       approver_id: 'system', // Will be assigned to CLO role holder
       approver_role: 'clo',
@@ -373,7 +374,7 @@ export class ExecutivePlanService {
 
     // Budget approval if over threshold
     if (plan.estimated_budget && plan.estimated_budget > 50000) {
-      await supabase.from('approvals').insert({
+      await sb.from('approvals').insert({
         plan_id: planId,
         approver_id: 'system',
         approver_role: 'cfo',

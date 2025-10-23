@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 import { recordReceipt } from '@/features/receipts/store';
 
 export type SendArgs = { 
@@ -61,7 +62,7 @@ export async function sendEmail(args: SendArgs) {
 async function hashString(str: string): Promise<string> {
   if (typeof window !== "undefined" && window.crypto?.subtle) {
     const enc = new TextEncoder().encode(str);
-    const dig = await window.crypto.subtle.digest("SHA-256", enc);
+    const dig = await window.crypto.subtle.digest("SHA-256", toBufferSource(enc));
     return [...new Uint8Array(dig)].map(b => b.toString(16).padStart(2, "0")).join("");
   }
   // Fallback for non-browser environments

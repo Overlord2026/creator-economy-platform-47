@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AudienceGuard from '@/components/AudienceGuard';
 import { runTarget, downloadCSV } from '@/lib/target/engine';
 import { TargetParams, TargetResult } from '@/lib/target/types';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { Download, Save, FileText, TrendingUp, AlertTriangle } from 'lucide-react';
 
@@ -41,7 +41,7 @@ export default function TargetAnalyzerPage() {
   const handleSaveToClient = async () => {
     setIsSaving(true);
     try {
-      const { error } = await supabase.from('target_runs').insert({
+      const { error } = await sb.from('target_runs').insert({
         tenant_id: 'default-tenant', // TODO: Get from user context
         household_id: 'default-household', // TODO: Get from user context  
         label: scenarioLabel,

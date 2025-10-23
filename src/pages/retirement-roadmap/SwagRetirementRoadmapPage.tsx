@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export default function SwagRetirementRoadmapPage() {
   const [uploading, setUploading] = useState(false);
@@ -25,7 +25,7 @@ export default function SwagRetirementRoadmapPage() {
       });
 
       // Call the ra-to-swag edge function
-      const { data, error } = await supabase.functions.invoke('ra-to-swag', {
+      const { data, error } = await sb.functions.invoke('ra-to-swag', {
         body: { pdfBase64: `data:application/pdf;base64,${base64}` }
       });
 

@@ -15,7 +15,7 @@ import {
   Zap
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 
 interface TestResult {
   service: string;
@@ -45,7 +45,7 @@ export function APIIntegrationTester() {
     console.log('🧪 [API Integration Tester] Starting comprehensive API tests...');
     
     try {
-      const { data, error } = await supabase.functions.invoke('test-api-integrations');
+      const { data, error } = await sb.functions.invoke('test-api-integrations');
       
       if (error) {
         console.error('❌ [API Integration Tester] Test suite failed:', error);
@@ -299,7 +299,7 @@ export function APIIntegrationTester() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Button
               variant="outline"
-              onClick={() => window.open('https://supabase.com/dashboard/project/xcmqjkvyvuhoslbzmlgi/settings/functions', '_blank')}
+              onClick={() => window.open('https://sb.com/dashboard/project/xcmqjkvyvuhoslbzmlgi/settings/functions', '_blank')}
               className="justify-start"
             >
               <ExternalLink className="h-4 w-4 mr-2" />

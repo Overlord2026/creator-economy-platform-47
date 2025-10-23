@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 type PersonaGroup = "family" | "pro";
 
@@ -15,7 +15,7 @@ export default function InvitePage() {
         console.log('Processing invitation token:', token);
         
         // Call the secure RPC function to validate and accept the invitation
-        const { data, error } = await supabase.rpc('accept_invite', { 
+        const { data, error } = await sb.rpc('accept_invite', { 
           raw_token: token 
         });
 

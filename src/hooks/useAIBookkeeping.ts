@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 interface Transaction {
@@ -30,12 +30,12 @@ export const useAIBookkeeping = () => {
       setIsClassifying(true);
       setError(null);
 
-      const { data: user } = await supabase.auth.getUser();
+      const { data: user } = await sb.auth.getUser();
       if (!user.user) {
         throw new Error('User not authenticated');
       }
 
-      const { data, error } = await supabase.functions.invoke('ai-bookkeeping', {
+      const { data, error } = await sb.functions.invoke('ai-bookkeeping', {
         body: {
           transaction,
           user_id: user.user.id
@@ -90,7 +90,7 @@ export const useAIBookkeeping = () => {
       const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
       const endDate = new Date(year, month, 0).toISOString().split('T')[0];
 
-      const { data: user } = await supabase.auth.getUser();
+      const { data: user } = await sb.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
 
       // Get classifications for the period

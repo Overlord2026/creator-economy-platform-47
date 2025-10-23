@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { analytics } from "@/lib/analytics";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { goToPricingForFeature } from "@/lib/upgrade";
 import { getPersonaCopy } from "@/config/personaCopy";
 import { OnboardingProgress } from "@/components/OnboardingProgress";
@@ -39,7 +39,7 @@ export default function OnboardingPage() {
 
   async function markComplete(step: StepKey, data: Record<string, any> = {}) {
     setSaving(true);
-    const { data: user } = await supabase.auth.getUser();
+    const { data: user } = await sb.auth.getUser();
     const user_id = user?.user?.id;
     if (!user_id) { setSaving(false); return; }
 

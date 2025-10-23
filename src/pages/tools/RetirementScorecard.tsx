@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { analytics } from '@/lib/analytics';
 
@@ -129,7 +129,7 @@ export default function RetirementScorecard() {
       setResult(result);
       
       // Save to database
-      const user = await supabase.auth.getUser();
+      const user = await sb.auth.getUser();
       let saveError = null;
       
       if (user.data.user) {

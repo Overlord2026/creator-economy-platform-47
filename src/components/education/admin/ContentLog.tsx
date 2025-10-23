@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 import { Search, Calendar, User, FileText, PlayCircle, BookOpen, Eye, Download, AlertTriangle, Copy, Archive } from 'lucide-react';
 import { format } from 'date-fns';
@@ -43,7 +43,7 @@ export function ContentLog() {
       setLoading(true);
       
       // Get current user's org_id
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         setLogs([]);
         return;

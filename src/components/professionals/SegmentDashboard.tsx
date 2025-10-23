@@ -23,7 +23,7 @@ import {
 import { getProfessionalSegmentConfig, getDefaultSegmentForRole } from '@/utils/professionalSegments';
 import { ProfessionalSegment } from '@/types/professional';
 import { UserRole } from '@/utils/roleHierarchy';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { tableExists, safeSelect, withFallback } from '@/lib/db/safeSupabase';
 
 interface SegmentDashboardProps {
@@ -49,7 +49,7 @@ export function SegmentDashboard({ userRole, segment }: SegmentDashboardProps) {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         console.error('User not authenticated');
         setLoading(false);

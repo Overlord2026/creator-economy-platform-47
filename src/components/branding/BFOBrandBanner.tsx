@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { Megaphone, NotebookPen, Calculator, LayoutDashboard, BookOpenCheck, Bolt } from "lucide-react";

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from "sonner";
 import { Eye, EyeOff, UserPlus, Shield, CheckCircle } from "lucide-react";
 
@@ -131,7 +131,7 @@ export default function InviteRedeem() {
 
     try {
       // Create auth user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const { data: authData, error: authError } = await sb.auth.signUp({
         email: invitation!.email,
         password: formData.password,
         options: {

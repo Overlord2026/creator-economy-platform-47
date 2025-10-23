@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 import { recordReceipt } from '@/features/receipts/record';
 import { anchorNow } from "@/features/anchor/anchorNow";
 
@@ -104,7 +105,7 @@ export async function emitDeltaFromValidation(policyVersion: string, missing: st
 async function sha256HexBrowser(text: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(text);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }

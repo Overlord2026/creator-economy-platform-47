@@ -32,7 +32,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useSubscriptionAccess } from '@/hooks/useSubscriptionAccess';
 import { useEventTracking } from '@/hooks/useEventTracking';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface SupportTicket {
   id: string;

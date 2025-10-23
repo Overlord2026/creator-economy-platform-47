@@ -26,7 +26,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useEventTracking } from '@/hooks/useEventTracking';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 
 interface LoginSession {
@@ -152,7 +152,7 @@ export const SecuritySettings: React.FC = () => {
     }
 
     try {
-      const { error } = await supabase.auth.updateUser({
+      const { error } = await sb.auth.updateUser({
         password: passwordForm.newPassword
       });
 
@@ -184,7 +184,7 @@ export const SecuritySettings: React.FC = () => {
     if (!user || !emailForm.newEmail) return;
 
     try {
-      const { error } = await supabase.auth.updateUser({
+      const { error } = await sb.auth.updateUser({
         email: emailForm.newEmail
       });
 
@@ -272,7 +272,7 @@ export const SecuritySettings: React.FC = () => {
   const handleLogoutAllDevices = async () => {
     try {
       // Sign out from all sessions except current
-      await supabase.auth.signOut({ scope: 'others' });
+      await sb.auth.signOut({ scope: 'others' });
       
       trackFeatureUsed('logout_all_devices');
       

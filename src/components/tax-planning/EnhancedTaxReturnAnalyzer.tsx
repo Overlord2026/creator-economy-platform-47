@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useSubscriptionAccess } from '@/hooks/useSubscriptionAccess';
 import { UpgradePaywall } from '@/components/subscription/UpgradePaywall';
 import { InAppNotificationBanner } from '@/components/ui/InAppNotificationBanner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface ExtractedTaxData {
   agi: number;
@@ -232,7 +232,7 @@ Long-term Gains: $5,500`;
       const analysisType = hasAIAccess ? 'ai_powered' : 'basic';
 
       // Call the AI analysis edge function with extracted data
-      const { data, error } = await supabase.functions.invoke('ai-tax-analysis', {
+      const { data, error } = await sb.functions.invoke('ai-tax-analysis', {
         body: {
           document_text: extractedText,
           extracted_data: extractedData,

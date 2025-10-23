@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 // src/lib/canonical.ts
 // Browser-safe canonicalization + hashing (no node:crypto)
 
@@ -54,7 +55,7 @@ export function canonicalize(obj: any, arraySortKeys: string[] = []): string {
 export async function sha256Hex(input: string): Promise<string> {
   const enc = new TextEncoder();
   const data = enc.encode(input);
-  const dig = await crypto.subtle.digest("SHA-256", data);
+  const dig = await crypto.subtle.digest("SHA-256", toBufferSource(data));
   return Array.from(new Uint8Array(dig))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");

@@ -1,4 +1,5 @@
 'use client';
+<<<<<<< HEAD
 import * as React from 'react';
 import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
@@ -77,4 +78,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 // Provide both named & default to satisfy any import style used elsewhere.
+=======
+import React,{createContext,useContext,useMemo} from 'react';
+import { BOOTSTRAP_MODE } from '@/config/bootstrap';
+
+type AuthValue = { user: any; loading: boolean; error?: any; session?: any };
+const Ctx = createContext<AuthValue>({ user: null, loading: false });
+export const useAuth = () => useContext(Ctx);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const value = useMemo<AuthValue>(() => ({ user: null, loading: false }), []);
+  // In bootstrap mode, we render an inert provider to avoid any host/provider runtime issues
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+}
+>>>>>>> demo/offerlock-202509261311
 export default AuthProvider;

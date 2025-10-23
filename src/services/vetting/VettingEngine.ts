@@ -6,7 +6,7 @@
  * ===================================================
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface VettingRequest {
   id: string;
@@ -86,7 +86,7 @@ export class VettingEngine {
         request_type: requestType,
         priority,
         sla_deadline: slaDeadline.toISOString(),
-        requested_by: (await supabase.auth.getUser()).data.user?.id,
+        requested_by: (await sb.auth.getUser()).data.user?.id,
         metadata: {
           initiated_at: new Date().toISOString(),
           source: 'automated_vetting_engine'

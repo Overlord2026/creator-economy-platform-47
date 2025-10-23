@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { schedulerApi } from "../schedulerApi";
 
 // NIL (Name, Image, Likeness) compliance adapter for athletes

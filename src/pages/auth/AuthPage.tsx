@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from '@/hooks/use-toast';
 import { ArrowLeft, Mail, Lock, User, Loader2 } from 'lucide-react';
 
@@ -23,7 +23,7 @@ export function AuthPage() {
   useEffect(() => {
     // Check if user is already authenticated
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await sb.auth.getSession();
       if (session) {
         navigate('/dashboard');
       }
@@ -37,7 +37,7 @@ export function AuthPage() {
 
     try {
       if (isSignUp) {
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error } = await sb.auth.signUp({
           email: formData.email,
           password: formData.password,
           options: {
@@ -66,7 +66,7 @@ export function AuthPage() {
         });
 
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await sb.auth.signInWithPassword({
           email: formData.email,
           password: formData.password
         });

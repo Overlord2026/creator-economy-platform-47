@@ -1,0 +1,9 @@
+name: Check Supabase types
+on: [push, pull_request]
+jobs:
+  types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker run --rm -v "$PWD":/w -w /w supabase/cli:latest gen types typescript --schema public > /tmp/types.ts
+      - run: diff -u /tmp/types.ts src/integrations/supabase/types.ts || (echo "::error::Regenerate Supabase types (src/integrations/supabase/types.ts)"; exit 1)

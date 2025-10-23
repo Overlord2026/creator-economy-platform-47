@@ -4,7 +4,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BarChart3, TrendingUp, Target, Users, Mail } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface ProgressData {
   segment: string;
@@ -178,7 +178,7 @@ export const LaunchProgressDashboard: React.FC = () => {
 
   const sendDigest = async () => {
     try {
-      const response = await supabase.functions.invoke('launch-digest', {
+      const response = await sb.functions.invoke('launch-digest', {
         body: { type: 'manual', force: true }
       });
 

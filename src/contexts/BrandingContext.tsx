@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface BrandingColors {
   primary: string;
@@ -85,7 +85,7 @@ export const BrandingProvider: React.FC<{ children: ReactNode }> = ({ children }
       setIsLoading(true);
       
       // Call the brand-get edge function
-      const { data, error } = await supabase.functions.invoke('brand-get', {
+      const { data, error } = await sb.functions.invoke('brand-get', {
         headers: {
           'host': window.location.host
         }

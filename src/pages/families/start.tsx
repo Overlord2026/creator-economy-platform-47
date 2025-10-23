@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export default function FamiliesStart() {
   const navigate = useNavigate();

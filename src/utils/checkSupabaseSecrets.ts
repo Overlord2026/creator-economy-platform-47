@@ -1,8 +1,8 @@
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 
 export async function checkSupabaseSecrets() {
   try {
-    const { data, error } = await supabase.functions.invoke('list-supabase-secrets');
+    const { data, error } = await sb.functions.invoke('list-supabase-secrets');
     
     if (error) {
       console.error('Error checking Supabase secrets:', error);
