@@ -1,17 +1,14 @@
-import * as React from 'react';
+'use client';
+import React,{createContext,useContext,useMemo} from 'react';
+import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
-export type AuthValue = { user: any; loading: boolean; error?: any; session?: any };
+type AuthValue = { user: any; loading: boolean; error?: any; session?: any };
+const Ctx = createContext<AuthValue>({ user: null, loading: false });
+export const useAuth = () => useContext(Ctx);
 
-// Keep module import side-effect free
-const Ctx = React.createContext<AuthValue>({ user: null, loading: false });
-export const useAuth = () => React.useContext(Ctx);
-
-export default function AuthProvider({ children }: { children: React.ReactNode }) {
-  // Inert on import — no window/network/storage here
-  const mountedRef = React.useRef(false);
-  const [, force] = React.useReducer((x) => x + 1, 0);
-  React.useEffect(() => { mountedRef.current = true; force(); }, []);
-
-  const value = React.useMemo<AuthValue>(() => ({ user: null, loading: false }), []);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const value = useMemo<AuthValue>(() => ({ user: null, loading: false }), []);
+  // In bootstrap mode, we render an inert provider to avoid any host/provider runtime issues
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
+export default AuthProvider;

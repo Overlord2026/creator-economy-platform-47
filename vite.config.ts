@@ -5,7 +5,6 @@ import path from 'path';
 export default defineConfig({
   plugins: [
     react({
-      // process JSX in plain .js files (incl. monorepo packages/creator/**)
       include: [/\.[jt]sx?$/, /packages\/creator\/src\/.*\.js$/],
       jsxRuntime: 'automatic',
     }),
@@ -17,12 +16,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  // let esbuild parse JSX in .js during dev transforms
-  esbuild: { loader: 'jsx' },
+  // IMPORTANT: do NOT set a global esbuild.loader here (it breaks .ts/.tsx parsing)
   optimizeDeps: {
+    // only treat plain .js as JSX for deps pre-bundle
+    esbuildOptions: { loader: { '.js': 'jsx' } },
     dedupe: ['react', 'react-dom'],
     include: ['react', 'react-dom'],
-    esbuildOptions: { loader: { '.js': 'jsx' } },
   },
+  build: { rollupOptions: { input: 'index.html' } },
   server: { port: 8080, strictPort: false },
 });

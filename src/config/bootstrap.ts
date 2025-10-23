@@ -1,1 +1,1 @@
-export const BOOTSTRAP_MODE = true; // flip to false when reconnecting real providers
+export const BOOTSTRAP_MODE = true; // set to false when real auth is re-enabled

@@ -33,6 +33,38 @@ export function useSubscriptionAccess() {
     
     fetchUser();
   }, []);
+export function useSubscriptionAccess() {
+  const ctx = useEntitlements();
+
+  const [tier, setTier] = React.useState<SubscriptionTier>(ctx.tier ?? 'free');
+  const [flags, setFlags] = React.useState<Record<string, boolean>>(ctx.flags ?? {});
+
+  React.useEffect(() => {
+    if (ctx.tier && ctx.tier !== tier) setTier(ctx.tier);
+    if (ctx.flags && ctx.flags !== flags) setFlags(ctx.flags);
+  }, [ctx.tier, ctx.flags]);
+
+  const can = React.useCallback((flag: AccessFlag) => Boolean(flags?.[flag]), [flags]);
+
+  // Add syncWithStripe method
+  const syncWithStripe = async () => {
+    console.log('[BOOTSTRAP] syncWithStripe called - no-op in bootstrap mode');
+    // In production, this would sync subscription state with Stripe
+  };
+
+  return {
+    tier,
+    flags,
+    can,
+    syncWithStripe,  // Added
+    subscriptionPlan: { name: tier, tier, subscription_tier: tier, quotas: {}, features: {}, usage_counters: {}, usage_limits: {} },
+    checkFeatureAccess,
+    checkUsageLimit,
+    incrementUsage,
+    isLoading: false,
+  };
+}
+
 
   const fetchSubscriptionData = async () => {
     try {
