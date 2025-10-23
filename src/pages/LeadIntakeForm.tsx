@@ -114,7 +114,7 @@ export const LeadIntakeForm: React.FC = () => {
       };
 
       const { error } = await supabase
-        .from('leads')
+        .from('prospect_invitations')
         .insert([leadData]);
 
       if (error) throw error;

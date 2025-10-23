@@ -92,7 +92,7 @@ export function LeadIntakeForm() {
     try {
       // Insert lead into database
       const { error } = await supabase
-        .from('leads')
+        .from('prospect_invitations')
         .insert({
           first_name: data.name.split(' ')[0] || data.name,
           last_name: data.name.split(' ').slice(1).join(' ') || '',

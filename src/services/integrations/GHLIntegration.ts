@@ -201,7 +201,7 @@ export class GHLIntegration {
     try {
       // Check if lead already exists
       const { data: existingLead } = await supabase
-        .from('leads')
+        .from('prospect_invitations')
         .select('id')
         .eq('email', contact.email)
         .single();
@@ -209,7 +209,7 @@ export class GHLIntegration {
       if (existingLead) {
         // Update existing lead
         await supabase
-          .from('leads')
+          .from('prospect_invitations')
           .update({
             name: `${contact.firstName} ${contact.lastName}`,
             phone: contact.phone || '',

@@ -75,7 +75,7 @@ export function useRealROIData() {
 
       // Fetch leads data from LeadIntakeForm submissions
       const { data: leadsData, error: leadsError } = await supabase
-        .from('leads')
+        .from('prospect_invitations')
         .select('*')
         .gte('created_at', startDate)
         .lte('created_at', endDate);
@@ -262,7 +262,7 @@ export function useRealROIData() {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('leads')
+        .from('prospect_invitations')
         .insert([{
           first_name: leadData.name.split(' ')[0] || '',
           last_name: leadData.name.split(' ').slice(1).join(' ') || '',
@@ -353,7 +353,7 @@ export function useRealROIData() {
       const advisorId = currentUser.data.user?.id || '';
       
       const { data, error } = await supabase
-        .from('leads')
+        .from('prospect_invitations')
         .insert(leads.map(lead => ({
           first_name: lead.name?.split(' ')[0] || lead.first_name || '',
           last_name: lead.name?.split(' ').slice(1).join(' ') || lead.last_name || '',

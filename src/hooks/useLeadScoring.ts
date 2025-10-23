@@ -61,7 +61,7 @@ export function useLeadScoring() {
   // Get all leads with scores, sorted by score
   const getLeadsWithScores = async (): Promise<LeadWithScore[]> => {
     const { data, error } = await supabase
-      .from('leads')
+      .from('prospect_invitations')
       .select('*')
       .order('lead_score', { ascending: false });
 
@@ -78,7 +78,7 @@ export function useLeadScoring() {
     setLoading(true);
     try {
       const { error } = await supabase
-        .from('leads')
+        .from('prospect_invitations')
         .update(updates)
         .eq('id', leadId);
 
@@ -257,7 +257,7 @@ export function useLeadScoring() {
   // Get top scoring leads for prioritization
   const getTopScoringLeads = async (limit: number = 10): Promise<LeadWithScore[]> => {
     const { data, error } = await supabase
-      .from('leads')
+      .from('prospect_invitations')
       .select('*')
       .order('lead_score', { ascending: false })
       .limit(limit);
@@ -271,7 +271,7 @@ export function useLeadScoring() {
     setLoading(true);
     try {
       const { error } = await supabase
-        .from('leads')
+        .from('prospect_invitations')
         .update({ 
           lead_status: newStatus,
           follow_up_count: 0 // Reset follow-up count when status changes

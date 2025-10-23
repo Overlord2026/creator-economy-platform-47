@@ -120,7 +120,7 @@ export default function PipelineBoard() {
       // Try to fetch real data with comprehensive defensive programming
       // Using very basic query first to test database connectivity
       const { data: leadsData, error: leadsError } = await supabase
-        .from('leads')
+        .from('prospect_invitations')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(100);

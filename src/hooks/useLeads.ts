@@ -38,7 +38,7 @@ export function useLeads(filters: LeadsFilters = {}) {
     queryKey: ['leads', filters],
     queryFn: async () => {
       let query = supabase
-        .from('leads')
+        .from('prospect_invitations')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -69,7 +69,7 @@ export function useUpdateLead() {
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<Lead> }) => {
       const { data, error } = await supabase
-        .from('leads')
+        .from('prospect_invitations')
         .update(updates)
         .eq('id', id)
         .select()
@@ -103,7 +103,7 @@ export function useDeleteLead() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('leads')
+        .from('prospect_invitations')
         .delete()
         .eq('id', id);
 

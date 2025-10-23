@@ -143,7 +143,7 @@ export function PipelineBoard() {
     try {
       // Example database update (commented out since table doesn't exist yet)
       // await supabase
-      //   .from('leads')
+      //   .from('prospect_invitations')
       //   .update({ status: destination.droppableId, updated_at: new Date().toISOString() })
       //   .eq('id', draggableId);
     } catch (error) {
