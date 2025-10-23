@@ -3,7 +3,7 @@
  * Content-free invite generation, sending, and tracking
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { inputs_hash } from '@/lib/canonical';
 import { recordReceipt } from '@/services/receipts';
 import type { NormalizedProfile } from './profileNormalizer';
@@ -142,7 +142,7 @@ export async function sendInvites(
   for (const invite of invites) {
     try {
       // Call edge function to send via provider
-      const { error: sendError } = await supabase.functions.invoke('leads-invite', {
+      const { error: sendError } = await sb.functions.invoke('leads-invite', {
         body: {
           invite_id: invite.id,
           email: invite.email,

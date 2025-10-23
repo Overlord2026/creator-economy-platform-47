@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Download, Palette, Sparkles } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 export const DashboardImageGenerator = () => {
@@ -25,7 +25,7 @@ export const DashboardImageGenerator = () => {
 
     setIsGenerating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-dashboard-image', {
+      const { data, error } = await sb.functions.invoke('generate-dashboard-image', {
         body: {
           prompt: prompt.trim(),
           size: imageSize,

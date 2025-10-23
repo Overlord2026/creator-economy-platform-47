@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useUser } from '@/context/UserContext';
 import { Mail, Link, Copy, User, Settings, Building } from 'lucide-react';
 import { tableExists, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
@@ -95,7 +95,7 @@ export function AdvisorInviteWorkflow() {
       }
 
       // Send email via edge function (schema-agnostic)
-      const { error } = await supabase.functions.invoke('leads-invite', {
+      const { error } = await sb.functions.invoke('leads-invite', {
         body: {
           email: formData.email,
           firstName: formData.firstName,
@@ -137,7 +137,7 @@ export function AdvisorInviteWorkflow() {
 
   const sendInviteEmail = async () => {
     try {
-      const { error } = await supabase.functions.invoke('leads-invite', {
+      const { error } = await sb.functions.invoke('leads-invite', {
         body: {
           email: formData.email,
           firstName: formData.firstName,

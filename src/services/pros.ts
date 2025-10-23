@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface Advisor {
   id: string;
@@ -98,7 +98,7 @@ export async function submitProInquiry(payload: {
     // Send notification email if configured
     if (import.meta.env.VITE_RESEND_ENABLED) {
       try {
-        await supabase.functions.invoke('pro-inquiry-email', {
+        await sb.functions.invoke('pro-inquiry-email', {
           body: {
             inquiry_id: data.id,
             persona: payload.persona,

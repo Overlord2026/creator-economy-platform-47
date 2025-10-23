@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { runtimeFlags } from '@/config/runtimeFlags';
 import { FileText, Send, AlertCircle, CheckCircle } from 'lucide-react';
 
@@ -36,7 +36,7 @@ export const NILDisclosureForm: React.FC<NILDisclosureFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       
       if (!user) {
         throw new Error('User not authenticated');
@@ -81,7 +81,7 @@ export const NILDisclosureForm: React.FC<NILDisclosureFormProps> = ({
         }
       } else {
         // Normal mode: use Edge Function
-        const { error } = await supabase.functions.invoke('nil-disclosure-processor', {
+        const { error } = await sb.functions.invoke('nil-disclosure-processor', {
           body: disclosureData
         });
 

@@ -36,7 +36,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { format, subDays } from 'date-fns';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 // Safe interface definitions with defensive types
 interface ROIMetrics {

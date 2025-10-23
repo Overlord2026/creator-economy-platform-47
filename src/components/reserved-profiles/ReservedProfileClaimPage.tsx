@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { VIPWelcomeBanner } from './VIPWelcomeBanner';
 import { useReservedProfiles } from '@/hooks/useReservedProfiles';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { ReservedProfile } from '@/types/reservedProfiles';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -67,7 +67,7 @@ export const ReservedProfileClaimPage: React.FC = () => {
   };
 
   const handleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { error } = await sb.auth.signInWithOAuth({
       provider: 'linkedin_oidc'
     });
     if (error) console.error('Auth error:', error);

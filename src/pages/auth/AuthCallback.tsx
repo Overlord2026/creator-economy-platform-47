@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
@@ -15,7 +15,7 @@ export const AuthCallback: React.FC = () => {
         console.log('Auth callback triggered with params:', Object.fromEntries(searchParams));
         
         // Handle OAuth callback
-        const { data, error } = await supabase.auth.getSession();
+        const { data, error } = await sb.auth.getSession();
         
         if (error) {
           console.error('OAuth callback error:', error);

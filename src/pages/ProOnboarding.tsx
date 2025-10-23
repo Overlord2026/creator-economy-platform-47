@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { LinkedinIcon, CheckCircle, Upload, Plus, X, User, Building, Award, MapPin, Shield, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { GDPRConsentModal } from '@/components/professionals/GDPRConsentModal';
 
 interface LinkedInProfile {
@@ -132,7 +132,7 @@ export default function ProOnboarding() {
     
     try {
       // Call our edge function to exchange code for profile data
-      const { data, error } = await supabase.functions.invoke('linkedin-import', {
+      const { data, error } = await sb.functions.invoke('linkedin-import', {
         body: { 
           code,
           redirectUri: `${window.location.origin}/pro-onboarding`
@@ -318,7 +318,7 @@ export default function ProOnboarding() {
     setLoading(true);
     try {
       // Save to advisor_profiles table
-      const { error } = await supabase.from('advisor_profiles').insert({
+      const { error } = await sb.from('advisor_profiles').insert({
         name: formData.name,
         email: formData.email,
         bio: formData.bio,

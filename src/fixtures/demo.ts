@@ -5,16 +5,20 @@ export async function loadInvestorDemoFixtures() {
   try {
     await supabase.from('meeting_notes').upsert([
       { 
-        user_id: '00000000-0000-0000-0000-000000000001', 
-        persona: 'family', 
-        text: 'Retirement income plan priorities: SS at 67, Roth conversion corridor, HSA funding.',
-        created_at: new Date().toISOString()
+        org_id: '00000000-0000-0000-0000-000000000001',
+        title: 'Family Planning Meeting',
+        content: 'Retirement income plan priorities: SS at 67, Roth conversion corridor, HSA funding.',
+        meeting_date: new Date().toISOString(),
+        attendees: ['family', 'advisor'],
+        tags: ['retirement', 'planning']
       },
       {
-        user_id: '00000000-0000-0000-0000-000000000001',
-        persona: 'advisor',
-        text: 'Client portfolio review scheduled: diversification analysis, risk tolerance adjustment.',
-        created_at: new Date().toISOString()
+        org_id: '00000000-0000-0000-0000-000000000001', 
+        title: 'Portfolio Review',
+        content: 'Client portfolio review scheduled: diversification analysis, risk tolerance adjustment.',
+        meeting_date: new Date().toISOString(),
+        attendees: ['advisor', 'client'],
+        tags: ['portfolio', 'review']
       }
     ]);
   } catch (error) {
@@ -25,7 +29,8 @@ export async function loadInvestorDemoFixtures() {
   try {
     await supabase.from('insurance_submissions').upsert([
       { 
-        id: 'demo-home', 
+        id: 'demo-home',
+        org_id: '00000000-0000-0000-0000-000000000001',
         risk_hash: 'demo-risk-hash-123',
         intake: { 
           type: 'home',
@@ -44,6 +49,7 @@ export async function loadInvestorDemoFixtures() {
     await supabase.from('investment_offerings').upsert([
       {
         id: 'demo-growth-fund',
+        org_id: '00000000-0000-0000-0000-000000000001',
         name: 'Growth Opportunities Fund',
         description: 'Diversified growth strategy focused on emerging markets and technology sectors.',
         firm: 'Demo Capital Partners',

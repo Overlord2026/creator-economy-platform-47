@@ -5,34 +5,31 @@ import path from 'path';
 export default defineConfig({
   plugins: [
     react({
-      // process JSX in plain .js files (incl. monorepo packages/creator/**)
+      // process JSX in plain .js files too (monorepo packages/creator/**)
       include: [
-        /\.[jt]sx?$/,                        // normal app files
-        /packages\/creator\/src\/.*\.js$/ // workspace JS with JSX
+        /\.[jt]sx?$/,                      // normal app files
+        /packages\/creator\/src\/.*\.js$/, // workspace JS with JSX
       ],
       jsxRuntime: 'automatic',
     }),
   ],
   resolve: {
+    // enforce ONE React at runtime/build
     alias: {
       react: path.resolve(__dirname, 'node_modules/react'),
       'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
       '@': path.resolve(__dirname, 'src'),
     },
-    preserveSymlinks: false,
+    dedupe: ['react', 'react-dom'],
   },
-  // dev transforms: treat .js files as JSX
+  // dev transform loader: allow JSX in .js
   esbuild: { loader: 'jsx' },
   optimizeDeps: {
     dedupe: ['react', 'react-dom'],
     include: ['react', 'react-dom'],
-    esbuildOptions: {
-      // dep-scan: also parse .js as JSX
-      loader: { '.js': 'jsx' },
-    },
+    esbuildOptions: { loader: { '.js': 'jsx' } }, // prebundle map form is allowed
   },
-  // single entry; don't scan docs/** html
+  // do NOT scan docs/** html as entries
   build: { rollupOptions: { input: 'index.html' } },
-  // allow reading files from ./packages during dev
-  server: {   host: true,  port: 8080, strictPort: true, fs: { allow: ['.', 'packages'] , hmr: { clientPort: 443   } } },
+  server: { port: 8080, strictPort: false },
 });

@@ -3,7 +3,7 @@
  * Handles policy binding with e-sign stub and Vault integration
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { recordReceipt, anchorSingle } from './receipts';
 import * as Canonical from '@/lib/canonical';
 

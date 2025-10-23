@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 export interface SystemNotification {
@@ -27,7 +27,7 @@ export const useSystemNotifications = () => {
       setLoading(true);
       
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) return;
 
       // For now, use mock data until the migration is complete
@@ -150,7 +150,7 @@ export const useSystemNotifications = () => {
     //   .subscribe();
 
     // return () => {
-    //   supabase.removeChannel(channel);
+    //   sb.removeChannel(channel);
     // };
   }, []);
 

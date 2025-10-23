@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import type { Database } from "@/integrations/supabase/types";
 
 type MeetOffering = Database['public']['Tables']['meet_offerings']['Row'];

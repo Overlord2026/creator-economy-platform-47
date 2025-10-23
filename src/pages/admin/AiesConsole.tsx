@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useAiesSSE } from '@/hooks/useAiesSSE';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 const AGENTS = ['HQ','CMO','CFO','COO','CLO','CTO'];
 
@@ -13,11 +13,11 @@ export default function AiesConsole() {
   const [token, setToken] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setToken(data.session?.access_token ?? null));
+    sb.auth.getSession().then(({ data }) => setToken(data.session?.access_token ?? null));
   }, []);
 
-  const streamUrl = `https://xcmqjkvyvuhoslbzmlgi.functions.supabase.co/aies-msg-stream`;
-  const sendUrl   = `https://xcmqjkvyvuhoslbzmlgi.functions.supabase.co/aies-msg-send`;
+  const streamUrl = `https://xcmqjkvyvuhoslbzmlgi.functions.sb.co/aies-msg-stream`;
+  const sendUrl   = `https://xcmqjkvyvuhoslbzmlgi.functions.sb.co/aies-msg-send`;
   const events = useAiesSSE(streamUrl, agent, token);
 
   async function send() {

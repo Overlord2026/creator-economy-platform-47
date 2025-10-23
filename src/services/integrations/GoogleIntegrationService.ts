@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface GoogleOAuthConfig {
   clientId: string;
@@ -71,7 +71,7 @@ class GoogleIntegrationService {
 
   async handleOAuthCallback(code: string, state: string): Promise<void> {
     try {
-      const { data, error } = await supabase.functions.invoke('google-oauth-handler', {
+      const { data, error } = await sb.functions.invoke('google-oauth-handler', {
         body: { code, state }
       });
 
@@ -87,7 +87,7 @@ class GoogleIntegrationService {
 
   async createCalendarEvent(event: Partial<GoogleCalendarEvent>): Promise<GoogleCalendarEvent> {
     try {
-      const { data, error } = await supabase.functions.invoke('google-calendar-integration', {
+      const { data, error } = await sb.functions.invoke('google-calendar-integration', {
         body: {
           action: 'create_event',
           event: {
@@ -118,7 +118,7 @@ class GoogleIntegrationService {
     calendars: string[] = ['primary']
   ): Promise<{ busy: Array<{ start: string; end: string }> }> {
     try {
-      const { data, error } = await supabase.functions.invoke('google-calendar-integration', {
+      const { data, error } = await sb.functions.invoke('google-calendar-integration', {
         body: {
           action: 'get_availability',
           timeMin: startDate,
@@ -137,7 +137,7 @@ class GoogleIntegrationService {
 
   async syncCalendarEvents(syncDirection: 'import' | 'export' | 'bidirectional' = 'bidirectional'): Promise<void> {
     try {
-      const { error } = await supabase.functions.invoke('google-calendar-sync', {
+      const { error } = await sb.functions.invoke('google-calendar-sync', {
         body: { syncDirection }
       });
 
@@ -159,7 +159,7 @@ class GoogleIntegrationService {
       if (folderId) formData.append('folderId', folderId);
       if (metadata) formData.append('metadata', JSON.stringify(metadata));
 
-      const { data, error } = await supabase.functions.invoke('google-drive-integration', {
+      const { data, error } = await sb.functions.invoke('google-drive-integration', {
         body: formData
       });
 
@@ -178,7 +178,7 @@ class GoogleIntegrationService {
     templateData?: Record<string, any>
   ): Promise<void> {
     try {
-      const { error } = await supabase.functions.invoke('gmail-integration', {
+      const { error } = await sb.functions.invoke('gmail-integration', {
         body: {
           action: 'send_email',
           to,
@@ -197,7 +197,7 @@ class GoogleIntegrationService {
 
   async getGoogleMeetJoinUrl(eventId: string): Promise<string | null> {
     try {
-      const { data, error } = await supabase.functions.invoke('google-calendar-integration', {
+      const { data, error } = await sb.functions.invoke('google-calendar-integration', {
         body: {
           action: 'get_meet_link',
           eventId
@@ -230,7 +230,7 @@ class GoogleIntegrationService {
       const { error } = await supabase
         .from('user_integrations')
         .upsert({
-          user_id: (await supabase.auth.getUser()).data.user?.id,
+          user_id: (await sb.auth.getUser()).data.user?.id,
           integration_type: 'google_workspace',
           status: 'connected',
           connected_at: new Date().toISOString(),
@@ -250,7 +250,7 @@ class GoogleIntegrationService {
         .from('user_integrations')
         .select('status')
         .eq('integration_type', 'google_workspace')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', (await sb.auth.getUser()).data.user?.id)
         .single();
 
       return data?.status === 'connected';

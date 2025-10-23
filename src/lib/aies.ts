@@ -1,10 +1,10 @@
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 
 export async function routeConnector(params: {
   user_id: string; dataset: string; scope: string;
   jurisdiction?: string; required_scopes?: string[]; policy_id: string;
 }) {
-  const { data, error } = await supabase.functions.invoke('aies-route', {
+  const { data, error } = await sb.functions.invoke('aies-route', {
     body: params
   });
   
@@ -17,7 +17,7 @@ export async function emitReceipt(payload: {
   inputs: unknown; outcomes?: unknown; reason_codes?: unknown; policy_id: string;
   trust_grade?: string;
 }) {
-  const { data, error } = await supabase.functions.invoke('aies-receipts', {
+  const { data, error } = await sb.functions.invoke('aies-receipts', {
     body: payload
   });
   

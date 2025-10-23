@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -171,7 +171,7 @@ export default function ReceiptDetailPage() {
     if (!receipt) return;
     
     try {
-      const { data, error } = await supabase.functions.invoke('aies-export', {
+      const { data, error } = await sb.functions.invoke('aies-export', {
         body: { receipt_id: receipt.id }
       });
 

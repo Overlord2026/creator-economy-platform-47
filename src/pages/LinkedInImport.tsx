@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LinkedinIcon, CheckCircle, Edit, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface LinkedInProfile {
   id: string;
@@ -74,7 +74,7 @@ export default function LinkedInImport() {
     setLoading(true);
     try {
       // Call our edge function to exchange code for profile data
-      const { data, error } = await supabase.functions.invoke('linkedin-import', {
+      const { data, error } = await sb.functions.invoke('linkedin-import', {
         body: { code }
       });
 
@@ -130,7 +130,7 @@ export default function LinkedInImport() {
     setLoading(true);
     try {
       // Save professional profile to database
-      const { error } = await supabase.from('linkedin_professionals').insert({
+      const { error } = await sb.from('linkedin_professionals').insert({
         name: formData.name,
         title: formData.title,
         company: formData.company,

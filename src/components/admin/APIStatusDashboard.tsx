@@ -16,7 +16,7 @@ import {
   Mail,
   Database
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface APIKeyStatus {
@@ -79,7 +79,7 @@ export function APIStatusDashboard() {
     const updatedKeys = await Promise.all(
       REQUIRED_APIS.map(async (api) => {
         try {
-          const { data, error } = await supabase.functions.invoke('check-api-keys', {
+          const { data, error } = await sb.functions.invoke('check-api-keys', {
             body: { secretName: api.name }
           });
           
@@ -123,7 +123,7 @@ export function APIStatusDashboard() {
     console.log('🧪 [API Status Dashboard] Running live API tests...');
 
     try {
-      const { data, error } = await supabase.functions.invoke('test-api-integrations');
+      const { data, error } = await sb.functions.invoke('test-api-integrations');
       
       if (error) {
         console.error('❌ [API Status] Test suite failed:', error);
@@ -329,7 +329,7 @@ export function APIStatusDashboard() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => window.open('https://supabase.com/dashboard/project/xcmqjkvyvuhoslbzmlgi/settings/functions', '_blank')}
+                        onClick={() => window.open('https://sb.com/dashboard/project/xcmqjkvyvuhoslbzmlgi/settings/functions', '_blank')}
                       >
                         <ExternalLink className="h-3 w-3 mr-1" />
                         Add Key

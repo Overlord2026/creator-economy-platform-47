@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plus, QrCode, CheckCircle, AlertTriangle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 interface ConsentIssuerModalProps {
@@ -72,7 +72,7 @@ export default function ConsentIssuerModal({ children }: ConsentIssuerModalProps
         conflicts: []
       };
 
-      const { data, error } = await supabase.functions.invoke('issue-consent', {
+      const { data, error } = await sb.functions.invoke('issue-consent', {
         body: {
           subject_user: profiles.id,
           scopes,

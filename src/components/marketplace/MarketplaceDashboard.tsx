@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { mockInvestmentCategories, type InvestmentCategory } from '@/lib/mocks/investmentCategories.mock';
 import FallbackBanner from '@/components/common/FallbackBanner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface Product {
   id: string;
@@ -55,7 +55,7 @@ export function MarketplaceDashboard({ userRole }: MarketplaceDashboardProps) {
 
   const fetchProducts = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('products', {
+      const { data, error } = await sb.functions.invoke('products', {
         method: 'GET',
         body: new URLSearchParams({
           ...(selectedCategory !== 'all' && { category: selectedCategory }),

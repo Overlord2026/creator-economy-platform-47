@@ -14,7 +14,7 @@ import {
   Palette
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { LOGOS, getLogoConfig } from '@/assets/logos';
 
 interface StoryboardScene {
@@ -119,7 +119,7 @@ export function ComplianceVideoStoryboard() {
     ));
 
     try {
-      const { data, error } = await supabase.functions.invoke('generate-storyboard-image', {
+      const { data, error } = await sb.functions.invoke('generate-storyboard-image', {
         body: {
           prompt: scene.prompt,
           size: "1024x1024",

@@ -10,7 +10,19 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "echo \"No tests configured for this repo (placeholder)\" && exit 0",
+<<<<<<< HEAD
     "types:gen": "node tools/gen-supabase-types.mjs"
+=======
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typegen:supabase": "supabase gen types typescript --project-id \"$SUPABASE_PROJECT_ID\" --schema public > src/types/supabase.ts",
+    "check:schema": "node -e \"console.log(require('fs').existsSync('src/types/supabase.ts') ? 'ok: types present' : 'missing supabase types')\"",
+    "typegen:ci": "scripts/ops/typegen.sh",
+    "supa:login": "npx supabase@latest login",
+    "supa:whoami": "npx supabase@latest projects list -o json | head -n 20",
+    "typegen:openapi": "scripts/ops/openapi-typegen.sh",
+    "build:web": "vite build",
+    "build:functions": "echo 'skip functions'"
+>>>>>>> demo/offerlock-202509261311
   },
   "dependencies": {
     "@axe-core/react": "^4.10.2",
@@ -76,7 +88,7 @@
     "cors": "^2.8.5",
     "cypress": "^14.5.2",
     "cypress-real-events": "^1.14.0",
-    "date-fns": "^4.1.0",
+    "date-fns": "^3.6.0",
     "dompurify": "^3.2.6",
     "embla-carousel-react": "^8.3.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -119,7 +131,6 @@
     "react-router-dom": "^6.26.2",
     "recharts": "^2.15.4",
     "sonner": "^1.5.0",
-    "supabase": "^1.226.4",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.20.4",
@@ -144,12 +155,30 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
-    "lovable-tagger": "^1.1.9",
+    "lovable-tagger": "^1.1.10",
     "postcss": "^8.4.47",
     "rollup": "^4.24.0",
+<<<<<<< HEAD
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.10"
+=======
+    "supabase": "^2.51.0",
+    "tailwindcss": "^3.4.11",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.0.1",
+    "vite": "^5.4.20"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "18.3.1",
+      "react-dom": "18.3.1"
+    }
+  },
+  "resolutions": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+>>>>>>> demo/offerlock-202509261311
   }
 }

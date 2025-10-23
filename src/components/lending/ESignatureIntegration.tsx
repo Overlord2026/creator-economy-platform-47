@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { 
   FileText, 
@@ -112,7 +112,7 @@ export const ESignatureIntegration: React.FC = () => {
     setLoading(true);
     try {
       // Call DocuSign edge function
-      const { data, error } = await supabase.functions.invoke('docusign-integration', {
+      const { data, error } = await sb.functions.invoke('docusign-integration', {
         body: {
           action: 'create_envelope',
           document: {
@@ -170,7 +170,7 @@ export const ESignatureIntegration: React.FC = () => {
     if (!document.envelope_id) return;
 
     try {
-      const { data, error } = await supabase.functions.invoke('docusign-integration', {
+      const { data, error } = await sb.functions.invoke('docusign-integration', {
         body: {
           action: 'check_status',
           envelope_id: document.envelope_id
@@ -199,7 +199,7 @@ export const ESignatureIntegration: React.FC = () => {
     if (!document.envelope_id) return;
 
     try {
-      const { data, error } = await supabase.functions.invoke('docusign-integration', {
+      const { data, error } = await sb.functions.invoke('docusign-integration', {
         body: {
           action: 'download_document',
           envelope_id: document.envelope_id

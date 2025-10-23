@@ -15,7 +15,7 @@ import {
   Download,
   Eye
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface EducationRecord {
@@ -134,7 +134,7 @@ export default function NILEducationPage() {
       privacy_level: 'medium'
     };
 
-    await supabase.from('nil_receipts').insert(receiptData);
+    await sb.from('nil_receipts').insert(receiptData);
   };
 
   const acknowledgeDisclosure = async (packId: string, channel: string) => {
@@ -154,7 +154,7 @@ export default function NILEducationPage() {
         privacy_level: 'high'
       };
 
-      const { error } = await supabase.from('nil_receipts').insert(receiptData);
+      const { error } = await sb.from('nil_receipts').insert(receiptData);
       if (error) throw error;
 
       toast({

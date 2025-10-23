@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Network monitoring bootstrap (demo-safe).
  * Exported symbol required by src/main.tsx.
@@ -20,4 +21,8 @@ export function setupNetworkErrorHandling(): void {
   //     throw err;
   //   }
   // };
+=======
+export function setupNetworkErrorHandling(): void {
+  if (typeof window === 'undefined') return;
+>>>>>>> demo/offerlock-202509261311
 }

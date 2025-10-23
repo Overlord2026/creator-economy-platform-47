@@ -3,7 +3,7 @@
  * Produces banded premium worksheets without real carrier integration
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { recordReceipt } from './receipts';
 import { inputs_hash } from '@/lib/canonical';
 import { InsuranceRisk } from './insuranceIntake';

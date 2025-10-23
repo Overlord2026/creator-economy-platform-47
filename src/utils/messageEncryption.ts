@@ -1,3 +1,4 @@
+import { toBufferSource } from '@/utils/buffers';
 // Message encryption utilities using Web Crypto API
 export class MessageEncryption {
   private static algorithm = 'AES-GCM';
@@ -53,7 +54,7 @@ export class MessageEncryption {
     );
 
     // Create hash for integrity verification
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
     
     return {
       encryptedData: this.arrayBufferToBase64(encryptedBuffer),
@@ -91,7 +92,7 @@ export class MessageEncryption {
   ): Promise<boolean> {
     const encoder = new TextEncoder();
     const data = encoder.encode(decryptedMessage);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
     const actualHash = this.arrayBufferToBase64(hashBuffer);
     
     return actualHash === expectedHash;

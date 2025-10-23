@@ -14,7 +14,7 @@ import {
   Check,
   X
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 import { useEdgeFunction } from '@/hooks/useEdgeFunction';
 
@@ -54,7 +54,7 @@ export function VideoMeetingManager() {
 
   const fetchIntegrations = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
@@ -76,7 +76,7 @@ export function VideoMeetingManager() {
   const fetchUpcomingMeetings = async () => {
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase

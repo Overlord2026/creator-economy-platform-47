@@ -18,7 +18,7 @@ import {
   PlayCircle,
   RefreshCw
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface Calculator {
   id: string;
@@ -65,7 +65,7 @@ export default function CalculatorInventoryPage() {
       setLoading(true);
       setError(null);
       
-      const { data, error: functionError } = await supabase.functions.invoke('calc-inventory');
+      const { data, error: functionError } = await sb.functions.invoke('calc-inventory');
       
       if (functionError) {
         throw new Error(functionError.message || 'Failed to fetch calculator inventory');

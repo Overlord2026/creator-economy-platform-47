@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { TaxBracket, TaxDeduction, TaxRule, FilingStatus } from '@/types/tax-rules';
 
 interface UseTaxRulesReturn {

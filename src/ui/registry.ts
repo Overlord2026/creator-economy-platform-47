@@ -2,7 +2,7 @@
 // Manages component visibility and composition based on persona and scopes
 
 import React from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface ComponentDefinition {
   id: string;
@@ -90,7 +90,7 @@ export class UIComponentRegistry {
       .single();
     
     if (userProfile) {
-      await supabase.from('ui_components').upsert({
+      await sb.from('ui_components').upsert({
         id: definition.id,
         tenant_id: userProfile.tenant_id,
         component_name: definition.name,
@@ -111,7 +111,7 @@ export class UIComponentRegistry {
     this.layouts.set(layout.id, layout);
     
     // Persist to database
-    const { data: userProfile } = await supabase.auth.getUser();
+    const { data: userProfile } = await sb.auth.getUser();
     if (userProfile.user) {
       const { data: profile } = await supabase
         .from('profiles')
@@ -120,7 +120,7 @@ export class UIComponentRegistry {
         .single();
       
       if (profile) {
-        await supabase.from('ui_layouts').upsert({
+        await sb.from('ui_layouts').upsert({
           id: layout.id,
           tenant_id: profile.tenant_id,
           layout_name: layout.name,

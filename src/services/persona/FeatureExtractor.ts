@@ -1,7 +1,7 @@
 // Feature Extractor for Multi-Persona OS
 // Vectorizes user events and joins compliance status for ML classification
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface UserEvent {
   page: string;
@@ -382,7 +382,7 @@ export class FeatureExtractor {
         }
       ];
       
-      await supabase.from('persona_signals').insert(signals);
+      await sb.from('persona_signals').insert(signals);
     } catch (error) {
       console.error('Error storing persona signals:', error);
     }

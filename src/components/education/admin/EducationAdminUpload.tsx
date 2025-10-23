@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { GuideUploadForm } from './GuideUploadForm';
-import { CourseUploadForm } from './CourseUploadForm';
-import { BookUploadForm } from './BookUploadForm';
+import BookUploadForm from './BookUploadForm';
+import CourseUploadForm from './CourseUploadForm';
+import GuideUploadForm from './GuideUploadForm';
 import { ContentLog } from './ContentLog';
 import { Upload, BookOpen, PlayCircle, FileText, History } from 'lucide-react';
 

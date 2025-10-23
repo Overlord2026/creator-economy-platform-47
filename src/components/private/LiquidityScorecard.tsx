@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { scoreLiquidity, persistLiquidityScore, type LiquidityScoreResult } from '@/engines/private/liquidityIQ';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { Loader2, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
 import { tableExists, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 
@@ -26,7 +26,7 @@ export function LiquidityScorecard({ fundId }: LiquidityScorecardProps) {
 
   const loadExistingScore = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) return;
 
       const hasTable = await tableExists('liquidity_scores');
@@ -80,7 +80,7 @@ export function LiquidityScorecard({ fundId }: LiquidityScorecardProps) {
       setResult(scoreResult);
 
       // Persist score
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (user) {
         await persistLiquidityScore(
           user.id,

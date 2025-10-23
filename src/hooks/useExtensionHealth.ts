@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface ExtensionHealth {
   graphqlOk: boolean;
@@ -15,8 +15,8 @@ interface UseExtensionHealthResult {
 
 async function checkExtensions() {
   const [{ data: gql }, { data: vault }] = await Promise.all([
-    supabase.rpc('graphql_is_configured'),
-    supabase.rpc('vault_is_configured')
+    sb.rpc('graphql_is_configured'),
+    sb.rpc('vault_is_configured')
   ]);
   return { graphqlOk: !!gql, vaultOk: !!vault };
 }

@@ -3,7 +3,7 @@
  * Handles HNW asset reminder scheduling and processing
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { recordReceipt } from './receipts';
 import { withAttestation } from './attestation';
 import { inputs_hash } from '@/lib/canonical';

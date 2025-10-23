@@ -6,7 +6,7 @@ import { Zap, Loader2, TrendingUp, Crown, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSubscriptionAccess } from '@/hooks/useSubscriptionAccess';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { TaxAnalysisProgress } from './TaxAnalysisProgress';
 import { TaxOpportunityMap } from './TaxOpportunityMap';
 import { TaxAnalysisCTAs } from './TaxAnalysisCTAs';
@@ -88,7 +88,7 @@ export function UnifiedTaxAnalyzer({ subscriptionTier }: UnifiedTaxAnalyzerProps
       }
 
       // Call unified analysis edge function
-      const { data, error } = await supabase.functions.invoke('unified-tax-analysis', {
+      const { data, error } = await sb.functions.invoke('unified-tax-analysis', {
         body: {
           analysis_type: hasAdvancedAccess ? 'comprehensive' : 'standard',
           include_ai_recommendations: hasAdvancedAccess,

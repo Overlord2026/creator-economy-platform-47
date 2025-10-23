@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface UploadProgress {
@@ -32,7 +32,7 @@ export function useVaultUpload(): UseVaultUploadReturn {
       const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 
       // Step 1: Initiate upload
-      const { data: initData, error: initError } = await supabase.functions.invoke('vault-upload', {
+      const { data: initData, error: initError } = await sb.functions.invoke('vault-upload', {
         body: {
           action: 'initiate_upload',
           vaultId,
@@ -67,7 +67,7 @@ export function useVaultUpload(): UseVaultUploadReturn {
         });
 
         // Upload chunk
-        const { error: chunkError } = await supabase.functions.invoke('vault-upload', {
+        const { error: chunkError } = await sb.functions.invoke('vault-upload', {
           body: {
             action: 'upload_chunk',
             fileId,
@@ -85,7 +85,7 @@ export function useVaultUpload(): UseVaultUploadReturn {
       }
 
       // Step 3: Complete upload
-      const { error: completeError } = await supabase.functions.invoke('vault-upload', {
+      const { error: completeError } = await sb.functions.invoke('vault-upload', {
         body: {
           action: 'complete_upload',
           fileId

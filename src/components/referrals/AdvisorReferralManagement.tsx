@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { UserPlus, DollarSign, Users, TrendingUp, Copy, CheckCircle } from "lucide-react";
 import { useReferrals } from "@/hooks/useReferrals";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 
 interface AdvisorReferralManagementProps {
   userRole: string;
@@ -42,7 +42,7 @@ export const AdvisorReferralManagement = ({ userRole }: AdvisorReferralManagemen
 
     setProcessingCode(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       // Note: process_advisor_referral function not available in current schema

@@ -21,7 +21,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useEventTracking } from '@/hooks/useEventTracking';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 
 export const AccountSettings: React.FC = () => {
@@ -143,13 +143,13 @@ export const AccountSettings: React.FC = () => {
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await sb.storage
         .from('avatars')
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = sb.storage
         .from('avatars')
         .getPublicUrl(fileName);
 

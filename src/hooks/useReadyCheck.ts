@@ -1,5 +1,5 @@
 import React from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface ReadinessStatus {
   ready: boolean;
@@ -18,14 +18,14 @@ export const useReadyCheck = () => {
 
   const fetchReadiness = React.useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         setReadiness(null);
         setLoading(false);
         return;
       }
 
-      const { data, error } = await supabase.rpc('get_user_readiness', {
+      const { data, error } = await sb.rpc('get_user_readiness', {
         user_uuid: user.id
       });
 
@@ -45,7 +45,7 @@ export const useReadyCheck = () => {
 
   const updateOnboardingStep = React.useCallback(async (step: string, completed: boolean = true) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) return false;
 
       const updateData: Record<string, boolean> = {};

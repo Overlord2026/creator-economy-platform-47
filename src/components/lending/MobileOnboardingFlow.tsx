@@ -8,7 +8,7 @@ import { Camera, FileText, Shield, CheckCircle, Phone, Mail } from 'lucide-react
 import { useToast } from '@/hooks/use-toast';
 import { tableExists, safeInsert } from '@/lib/db/safeSupabase';
 import FallbackBanner from '@/components/common/FallbackBanner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface MobileOnboardingFlowProps {
   userType: 'client' | 'partner';
@@ -133,7 +133,7 @@ const MobileOnboardingFlow: React.FC<MobileOnboardingFlowProps> = ({ userType, o
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         toast({
           title: "Error",

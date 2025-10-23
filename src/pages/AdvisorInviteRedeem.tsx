@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 
@@ -120,7 +120,7 @@ export function AdvisorInviteRedeem() {
     setIsSubmitting(true);
     try {
       // Create the user account
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const { data: authData, error: authError } = await sb.auth.signUp({
         email: invitation.email,
         password: formData.password,
         options: {

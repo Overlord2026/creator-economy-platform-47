@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useUser } from "@/context/UserContext";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface InvestmentStrategy {
   id: string;
@@ -256,7 +256,7 @@ export const useInvestmentStrategies = (defaultSegment?: string) => {
     if (!userProfile?.id) return;
     
     try {
-      await supabase.from('strategy_engagement_tracking').insert({
+      await sb.from('strategy_engagement_tracking').insert({
         user_id: userProfile.id,
         strategy_id: strategyId,
         event_type: eventType,

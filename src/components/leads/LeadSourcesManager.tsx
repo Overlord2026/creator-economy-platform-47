@@ -25,7 +25,7 @@ import {
   Download
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface LeadSource {
   id: string;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { sb } from '@/lib/supabase-relaxed';  // ← Fixed import
 import { useToast } from '@/hooks/use-toast';
 import { SubscriptionTierType, AddOnAccess, UsageCounters, UsageLimits } from '@/types/subscription';
 
@@ -9,7 +9,7 @@ interface UserProfile {
   subscription_end_date: string | null;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
-  tier: SubscriptionTierType; // Alias for backward compatibility
+  tier: SubscriptionTierType;
   add_ons?: AddOnAccess;
   usage_counters?: UsageCounters;
   usage_limits?: UsageLimits;
@@ -23,7 +23,7 @@ export function useSubscriptionAccess() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (user) {
         await fetchSubscriptionData();
       } else {
@@ -33,6 +33,38 @@ export function useSubscriptionAccess() {
     
     fetchUser();
   }, []);
+export function useSubscriptionAccess() {
+  const ctx = useEntitlements();
+
+  const [tier, setTier] = React.useState<SubscriptionTier>(ctx.tier ?? 'free');
+  const [flags, setFlags] = React.useState<Record<string, boolean>>(ctx.flags ?? {});
+
+  React.useEffect(() => {
+    if (ctx.tier && ctx.tier !== tier) setTier(ctx.tier);
+    if (ctx.flags && ctx.flags !== flags) setFlags(ctx.flags);
+  }, [ctx.tier, ctx.flags]);
+
+  const can = React.useCallback((flag: AccessFlag) => Boolean(flags?.[flag]), [flags]);
+
+  // Add syncWithStripe method
+  const syncWithStripe = async () => {
+    console.log('[BOOTSTRAP] syncWithStripe called - no-op in bootstrap mode');
+    // In production, this would sync subscription state with Stripe
+  };
+
+  return {
+    tier,
+    flags,
+    can,
+    syncWithStripe,  // Added
+    subscriptionPlan: { name: tier, tier, subscription_tier: tier, quotas: {}, features: {}, usage_counters: {}, usage_limits: {} },
+    checkFeatureAccess,
+    checkUsageLimit,
+    incrementUsage,
+    isLoading: false,
+  };
+}
+
 
   const fetchSubscriptionData = async () => {
     try {
@@ -45,7 +77,7 @@ export function useSubscriptionAccess() {
           stripe_customer_id,
           stripe_subscription_id
         `)
-        .eq('id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('id', (await sb.auth.getUser()).data.user?.id)
         .single();
 
       if (error) {
@@ -61,7 +93,7 @@ export function useSubscriptionAccess() {
           subscription_end_date: (profile as any).subscription_end_date,
           stripe_customer_id: (profile as any).stripe_customer_id,
           stripe_subscription_id: (profile as any).stripe_subscription_id,
-          tier: tier, // Alias for backward compatibility
+          tier: tier,
           add_ons: {
             lending_access: tier === 'premium' || tier === 'elite',
             tax_access: tier === 'premium' || tier === 'elite',
@@ -125,7 +157,6 @@ export function useSubscriptionAccess() {
   };
 
   const incrementUsage = async (usageType: keyof UsageCounters): Promise<void> => {
-    // This would typically update the database
     console.log(`Incrementing usage for ${usageType}`);
   };
 
@@ -135,11 +166,10 @@ export function useSubscriptionAccess() {
 
   const syncWithStripe = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('check-subscription');
+      const { data, error } = await sb.functions.invoke('check-subscription');
       
       if (error) throw error;
       
-      // Refresh subscription data after sync
       await fetchSubscriptionData();
       
       toast({

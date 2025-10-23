@@ -3,7 +3,7 @@
  * Manages capability tokens controlling functions per executive role
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface AgentCapability {
   id: string;
@@ -128,7 +128,7 @@ export class AgentCapabilityService {
     const defaultCapabilities = this.getDefaultCapabilitiesForRole(role);
     
     for (const capability of defaultCapabilities) {
-      await supabase.from('agent_capabilities').insert({
+      await sb.from('agent_capabilities').insert({
         tenant_id: tenantId,
         executive_role: role as any,
         capability_name: capability.name,

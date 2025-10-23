@@ -1,283 +1,91 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/AuthContext';
-import { toast } from 'sonner';
-import { Video, X, AlertTriangle } from 'lucide-react';
 
-const categories = ['Tax', 'Retirement', 'Estate', 'Investment', 'Insurance', 'Planning', 'Business'];
-const difficulties = ['Beginner', 'Intermediate', 'Advanced'];
-const availableBadges = ['popular', 'editor-choice', 'new', 'premium', 'free'];
+// src/components/education/admin/CourseUploadForm.tsx
+import * as React from 'react';
+import { insertReceipt } from '@/lib/receipts';
+import { sb } from '@/lib/supabase-relaxed';
 
-export function CourseUploadForm() {
-  const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
-  const [tags, setTags] = useState<string[]>([]);
-  const [selectedBadges, setSelectedBadges] = useState<string[]>([]);
-  const [newTag, setNewTag] = useState('');
-  
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    author: '',
-    category: '',
-    difficulty: 'Beginner',
-    duration: '',
-    external_url: '',
-    is_featured: false
-  });
+type Props = { orgId?: string };
 
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+export default function CourseUploadForm({ orgId: orgIdProp }: Props) {
+  const [courseId, setCourseId] = React.useState<string>('');
+  const [title, setTitle] = React.useState<string>('');
+  const [note, setNote] = React.useState<string>('');
+  const [busy, setBusy] = React.useState(false);
+  const [msg, setMsg] = React.useState<string | null>(null);
 
-  const addTag = () => {
-    if (newTag.trim() && !tags.includes(newTag.trim())) {
-      setTags([...tags, newTag.trim()]);
-      setNewTag('');
-    }
-  };
+  async function resolveOrgId(userId: string): Promise<string> {
+    const { data: ures, error: uerr } = await sb.auth.getUser();
+    if (uerr) throw uerr;
+    const metaOrgId = (ures?.user?.app_metadata as any)?.org_id as string | undefined;
 
-  const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
-  };
+    let orgId = orgIdProp ?? metaOrgId;
+    if (orgId) return orgId;
 
-  const toggleBadge = (badge: string) => {
-    setSelectedBadges(prev => 
-      prev.includes(badge) 
-        ? prev.filter(b => b !== badge)
-        : [...prev, badge]
-    );
-  };
+    const { data: memberData, error: mErr } = await (supabase as any)
+      .from('org_members')
+      .select('org_id')
+      .eq('user_id', userId)
+      .order('inserted_at', { ascending: false })
+      .limit(1);
+    const m = memberData?.[0];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+    if (mErr) throw mErr;
+    if (!m?.org_id) throw new Error('Missing org_id — user must belong to an organization.');
+    return m.org_id as string;
+  }
+
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!user || !formData.title || !formData.category) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    setLoading(true);
+    setBusy(true);
+    setMsg(null);
     try {
-      // Log to audit_receipts since education schema not available
-      const { error: auditError } = await supabase
-        .from('audit_receipts')
-        .insert({
-          action: 'education_course_upload_attempted',
-          entity: 'education_content',
-          entity_id: crypto.randomUUID(),
-          sha256: formData.title,
-          actor_id: user.id,
-          canonical: {
-            title: formData.title,
-            description: formData.description,
-            content_type: 'course',
-            category: formData.category,
-            difficulty: formData.difficulty,
-            author: formData.author || user.email?.split('@')[0],
-            duration: formData.duration,
-            tags,
-            badges: selectedBadges,
-            external_url: formData.external_url,
-            is_featured: formData.is_featured,
-            note: 'Course upload attempted but education_content table not available'
-          }
-        });
+      const { data: ures, error: uerr } = await sb.auth.getUser();
+      if (uerr) throw uerr;
+      const userId = ures?.user?.id;
+      if (!userId) throw new Error('No authenticated user.');
+      const orgId = await resolveOrgId(userId);
 
-      if (auditError) throw auditError;
-      toast.success('Course logged to audit system (education tables not available)');
-      
-      // Reset form
-      setFormData({
-        title: '',
-        description: '',
-        author: '',
-        category: '',
-        difficulty: 'Beginner',
-        duration: '',
-        external_url: '',
-        is_featured: false
+      const payload = {
+        entity: 'course',
+        entity_id: String(courseId),
+        title: title || undefined,
+        note: note || undefined,
+      };
+
+      await insertReceipt({
+        org_id: orgId,
+        user_id: userId,
+        type: 'COURSE_UPLOAD',
+        payload,
       });
-      setThumbnailImage(null);
-      setTags([]);
-      setSelectedBadges([]);
-      
-    } catch (error: any) {
-      console.error('Upload error:', error);
-      toast.error(error.message || 'Failed to process course');
+
+      setMsg('Course receipt logged ✔');
+      setCourseId(''); setTitle(''); setNote('');
+    } catch (err: any) {
+      setMsg(err?.message ?? String(err));
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
-  };
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg flex items-center gap-2">
-        <AlertTriangle className="h-4 w-4 text-yellow-600" />
-        <p className="text-sm text-yellow-600 dark:text-yellow-400">
-          Education upload is disabled in this environment (table <code>education_content</code> not found). 
-          Displaying activity from <code>audit_receipts</code> instead.
-        </p>
+    <form onSubmit={onSubmit} className="space-y-3 p-4">
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium">Course ID</label>
+        <input className="border rounded px-3 py-2" required value={courseId} onChange={e=>setCourseId(e.target.value)} />
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Course Title *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-              placeholder="Advanced Tax Planning Strategies"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="author">Instructor</Label>
-            <Input
-              id="author"
-              value={formData.author}
-              onChange={(e) => handleInputChange('author', e.target.value)}
-              placeholder="Instructor name"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="description">Course Description</Label>
-          <Textarea
-            id="description"
-            value={formData.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
-            placeholder="Brief description of the course content and learning objectives..."
-            rows={3}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="category">Category *</Label>
-            <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map(category => (
-                  <SelectItem key={category} value={category}>{category}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="difficulty">Difficulty Level</Label>
-            <Select value={formData.difficulty} onValueChange={(value) => handleInputChange('difficulty', value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {difficulties.map(difficulty => (
-                  <SelectItem key={difficulty} value={difficulty}>{difficulty}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="duration">Duration</Label>
-            <Input
-              id="duration"
-              value={formData.duration}
-              onChange={(e) => handleInputChange('duration', e.target.value)}
-              placeholder="e.g., 2 hours"
-            />
-          </div>
-        </div>
-
-        {/* Tags */}
-        <div className="space-y-2">
-          <Label>Tags</Label>
-          <div className="flex gap-2 mb-2">
-            <Input
-              value={newTag}
-              onChange={(e) => setNewTag(e.target.value)}
-              placeholder="Add a tag"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-            />
-            <Button type="button" onClick={addTag} variant="outline">Add</Button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {tags.map(tag => (
-              <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                {tag}
-                <X className="h-3 w-3 cursor-pointer" onClick={() => removeTag(tag)} />
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        {/* Badges */}
-        <div className="space-y-2">
-          <Label>Badges</Label>
-          <div className="flex flex-wrap gap-2">
-            {availableBadges.map(badge => (
-              <Badge
-                key={badge}
-                variant={selectedBadges.includes(badge) ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => toggleBadge(badge)}
-              >
-                {badge}
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="external_url">Course URL (optional)</Label>
-          <Input
-            id="external_url"
-            type="url"
-            value={formData.external_url}
-            onChange={(e) => handleInputChange('external_url', e.target.value)}
-            placeholder="https://example.com/course"
-          />
-          <p className="text-sm text-muted-foreground">
-            Link to external course platform or video
-          </p>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="featured"
-            checked={formData.is_featured}
-            onChange={(e) => handleInputChange('is_featured', e.target.checked)}
-          />
-          <Label htmlFor="featured">Mark as featured course</Label>
-        </div>
-
-        <Button type="submit" disabled={loading} className="w-full">
-          {loading ? (
-            <>
-              <Video className="mr-2 h-4 w-4 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            <>
-              <Video className="mr-2 h-4 w-4" />
-              Log Course Request
-            </>
-          )}
-        </Button>
-      </form>
-    </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium">Title (optional)</label>
+        <input className="border rounded px-3 py-2" value={title} onChange={e=>setTitle(e.target.value)} />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium">Note (optional)</label>
+        <input className="border rounded px-3 py-2" value={note} onChange={e=>setNote(e.target.value)} />
+      </div>
+      <button type="submit" disabled={busy || !courseId} className="rounded bg-black text-white px-4 py-2 disabled:opacity-50">
+        {busy ? 'Saving…' : 'Log Course Upload'}
+      </button>
+      {msg && <p className="text-sm mt-2">{msg}</p>}
+    </form>
   );
 }

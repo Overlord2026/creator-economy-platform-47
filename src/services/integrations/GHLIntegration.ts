@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface GHLContact {
   id: string;
@@ -60,7 +60,7 @@ interface GHLOpportunity {
 export class GHLIntegration {
   async syncContacts(): Promise<GHLContact[]> {
     try {
-      const { data, error } = await supabase.functions.invoke('ghl-integration', {
+      const { data, error } = await sb.functions.invoke('ghl-integration', {
         body: {
           action: 'sync_contacts'
         }
@@ -91,7 +91,7 @@ export class GHLIntegration {
     customFields?: Record<string, any>;
   }): Promise<GHLContact> {
     try {
-      const { data, error } = await supabase.functions.invoke('ghl-integration', {
+      const { data, error } = await sb.functions.invoke('ghl-integration', {
         body: {
           action: 'create_contact',
           contact_data: leadData
@@ -108,7 +108,7 @@ export class GHLIntegration {
 
   async updateContact(contactId: string, updates: Partial<GHLContact>): Promise<GHLContact> {
     try {
-      const { data, error } = await supabase.functions.invoke('ghl-integration', {
+      const { data, error } = await sb.functions.invoke('ghl-integration', {
         body: {
           action: 'update_contact',
           contact_id: contactId,
@@ -126,7 +126,7 @@ export class GHLIntegration {
 
   async getPipelines(): Promise<GHLPipeline[]> {
     try {
-      const { data, error } = await supabase.functions.invoke('ghl-integration', {
+      const { data, error } = await sb.functions.invoke('ghl-integration', {
         body: {
           action: 'get_pipelines'
         }
@@ -149,7 +149,7 @@ export class GHLIntegration {
     source?: string;
   }): Promise<GHLOpportunity> {
     try {
-      const { data, error } = await supabase.functions.invoke('ghl-integration', {
+      const { data, error } = await sb.functions.invoke('ghl-integration', {
         body: {
           action: 'create_opportunity',
           opportunity_data: opportunityData
@@ -166,7 +166,7 @@ export class GHLIntegration {
 
   async getCampaigns(): Promise<GHLCampaign[]> {
     try {
-      const { data, error } = await supabase.functions.invoke('ghl-integration', {
+      const { data, error } = await sb.functions.invoke('ghl-integration', {
         body: {
           action: 'get_campaigns'
         }
@@ -182,7 +182,7 @@ export class GHLIntegration {
 
   async triggerCampaign(campaignId: string, contactId: string): Promise<void> {
     try {
-      const { error } = await supabase.functions.invoke('ghl-integration', {
+      const { error } = await sb.functions.invoke('ghl-integration', {
         body: {
           action: 'trigger_campaign',
           campaign_id: campaignId,
@@ -261,7 +261,7 @@ export class GHLIntegration {
 
   async getConnectionStatus(): Promise<{ connected: boolean; lastSync?: string; error?: string }> {
     try {
-      const { data, error } = await supabase.functions.invoke('ghl-integration', {
+      const { data, error } = await sb.functions.invoke('ghl-integration', {
         body: {
           action: 'test_connection'
         }

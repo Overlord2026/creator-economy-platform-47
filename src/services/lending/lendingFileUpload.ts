@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface LendingFileUploadOptions {
   documentType: string;
@@ -39,7 +39,7 @@ export class LendingFileUploadService {
       }
 
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         return { success: false, error: 'User not authenticated' };
       }
@@ -50,7 +50,7 @@ export class LendingFileUploadService {
       const filePath = `${user.id}/${options.loanId || 'general'}/${fileName}`;
 
       // Upload file to storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await sb.storage
         .from('lending-documents')
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -63,7 +63,7 @@ export class LendingFileUploadService {
       }
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = sb.storage
         .from('lending-documents')
         .getPublicUrl(filePath);
 
@@ -85,7 +85,7 @@ export class LendingFileUploadService {
       if (dbError) {
         console.error('Database error:', dbError);
         // Try to clean up uploaded file
-        await supabase.storage
+        await sb.storage
           .from('lending-documents')
           .remove([filePath]);
         return { success: false, error: 'Failed to save document record' };
@@ -126,7 +126,7 @@ export class LendingFileUploadService {
       const filePath = `partners/${applicationId}/${fileName}`;
 
       // Upload file to storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await sb.storage
         .from('lending-documents')
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -139,7 +139,7 @@ export class LendingFileUploadService {
       }
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = sb.storage
         .from('lending-documents')
         .getPublicUrl(filePath);
 
@@ -164,7 +164,7 @@ export class LendingFileUploadService {
       if (updateError) {
         console.error('Database update error:', updateError);
         // Try to clean up uploaded file
-        await supabase.storage
+        await sb.storage
           .from('lending-documents')
           .remove([filePath]);
         return { success: false, error: 'Failed to update application record' };
@@ -188,7 +188,7 @@ export class LendingFileUploadService {
 
   static async getLoanDocuments(loanId?: string): Promise<any[]> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         throw new Error('User not authenticated');
       }
@@ -219,7 +219,7 @@ export class LendingFileUploadService {
 
   static async deleteDocument(documentId: string): Promise<boolean> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) {
         return false;
       }
@@ -241,7 +241,7 @@ export class LendingFileUploadService {
       const filePath = url.pathname.split('/lending-documents/')[1];
 
       // Delete from storage
-      await supabase.storage
+      await sb.storage
         .from('lending-documents')
         .remove([filePath]);
 

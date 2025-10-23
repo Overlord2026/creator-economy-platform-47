@@ -1,4 +1,3 @@
-'use client';
 import { useEffect } from 'react';
 import { loadInvestorDemoFixtures } from '@/fixtures/demo';
 import { demoService } from '@/services/demoService';

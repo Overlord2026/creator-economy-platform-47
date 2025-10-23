@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useMarketData } from '@/hooks/useMarketData';
 
 interface PortfolioPerformanceData {
@@ -64,7 +64,7 @@ export const usePortfolioAnalytics = () => {
       setLoading(true);
       setError(null);
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       // Fetch portfolio performance data
@@ -285,9 +285,9 @@ export const usePortfolioAnalytics = () => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(portfolioSubscription);
-      supabase.removeChannel(investmentSubscription);
-      supabase.removeChannel(stocksSubscription);
+      sb.removeChannel(portfolioSubscription);
+      sb.removeChannel(investmentSubscription);
+      sb.removeChannel(stocksSubscription);
     };
   }, [fetchPortfolioData]);
 

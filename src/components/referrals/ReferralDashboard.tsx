@@ -19,7 +19,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface ReferralStats {
   totalReferrals: number;
@@ -63,7 +63,7 @@ export const ReferralDashboard: React.FC = () => {
 
   const fetchReferralData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) return;
 
       // For now, create a simple referral code and mock data

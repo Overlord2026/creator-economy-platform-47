@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, FileText, Download, Eye, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { tableExists, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 
 interface ImportProgress {
@@ -59,7 +59,7 @@ export function PlanImportWizard() {
 
       // Upload file to Supabase Storage
       const fileName = `${Date.now()}-${file.name}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await sb.storage
         .from('plan-imports')
         .upload(fileName, file);
 
@@ -76,7 +76,7 @@ export function PlanImportWizard() {
           import_type: 'pdf_upload',
           original_filename: file.name,
           file_path: uploadData.path,
-          advisor_id: (await supabase.auth.getUser()).data.user?.id || '',
+          advisor_id: (await sb.auth.getUser()).data.user?.id || '',
           import_status: 'uploaded'
         });
 
@@ -89,17 +89,17 @@ export function PlanImportWizard() {
       }
 
       // Get public URL for the uploaded file
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = sb.storage
         .from('plan-imports')
         .getPublicUrl(uploadData.path);
 
       // Call PDF parsing edge function
-      const { data: parseData, error: parseError } = await supabase.functions
+      const { data: parseData, error: parseError } = await sb.functions
         .invoke('parse-retirement-pdf', {
           body: {
             importId: importRecordId,
             fileUrl: publicUrl,
-            userId: (await supabase.auth.getUser()).data.user?.id
+            userId: (await sb.auth.getUser()).data.user?.id
           }
         });
 

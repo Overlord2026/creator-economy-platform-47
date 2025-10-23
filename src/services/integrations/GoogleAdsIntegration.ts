@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface AdCampaign {
   id: string;
@@ -27,7 +27,7 @@ interface FacebookAdAccount {
 export class GoogleAdsIntegration {
   async getCampaigns(dateRange?: { start_date: string; end_date: string }): Promise<AdCampaign[]> {
     try {
-      const { data, error } = await supabase.functions.invoke('google-ads-integration', {
+      const { data, error } = await sb.functions.invoke('google-ads-integration', {
         body: {
           action: 'get_campaigns',
           date_range: dateRange
@@ -44,7 +44,7 @@ export class GoogleAdsIntegration {
 
   async getCampaignMetrics(campaignId: string, dateRange: { start_date: string; end_date: string }): Promise<AdCampaign> {
     try {
-      const { data, error } = await supabase.functions.invoke('google-ads-integration', {
+      const { data, error } = await sb.functions.invoke('google-ads-integration', {
         body: {
           action: 'get_campaign_metrics',
           campaign_id: campaignId,
@@ -93,7 +93,7 @@ export class GoogleAdsIntegration {
 export class FacebookAdsIntegration {
   async getAdAccounts(): Promise<FacebookAdAccount[]> {
     try {
-      const { data, error } = await supabase.functions.invoke('facebook-ads-integration', {
+      const { data, error } = await sb.functions.invoke('facebook-ads-integration', {
         body: {
           action: 'get_ad_accounts'
         }
@@ -109,7 +109,7 @@ export class FacebookAdsIntegration {
 
   async getCampaigns(adAccountId: string, dateRange?: { start_date: string; end_date: string }): Promise<AdCampaign[]> {
     try {
-      const { data, error } = await supabase.functions.invoke('facebook-ads-integration', {
+      const { data, error } = await sb.functions.invoke('facebook-ads-integration', {
         body: {
           action: 'get_campaigns',
           ad_account_id: adAccountId,

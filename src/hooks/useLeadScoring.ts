@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 export interface LeadWithScore {
@@ -85,7 +85,7 @@ export function useLeadScoring() {
       if (error) throw error;
 
       // Recalculate score
-      const { error: scoreError } = await supabase.rpc('calculate_lead_score', { 
+      const { error: scoreError } = await sb.rpc('calculate_lead_score', { 
         p_lead_id: leadId 
       });
 
@@ -194,7 +194,7 @@ export function useLeadScoring() {
   const createPipelineConfig = async (config: Omit<PipelineStageConfig, 'id'>) => {
     setLoading(true);
     try {
-      const currentUser = await supabase.auth.getUser();
+      const currentUser = await sb.auth.getUser();
       const { data, error } = await supabase
         .from('pipeline_stage_config')
         .insert({

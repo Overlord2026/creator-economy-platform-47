@@ -17,7 +17,7 @@ import {
   Lock,
   Unlock
 } from 'lucide-react';
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 interface TableRLSStatus {
@@ -49,7 +49,7 @@ export function SecurityPoliciesPage() {
       setLoading(true);
       
       // Load RLS status
-      const { data: rlsData, error: rlsError } = await supabase.rpc('get_table_rls_status');
+      const { data: rlsData, error: rlsError } = await sb.rpc('get_table_rls_status');
       if (rlsError) {
         console.error('Error loading RLS status:', rlsError);
         toast.error('Failed to load RLS status');
@@ -58,7 +58,7 @@ export function SecurityPoliciesPage() {
       }
 
       // Load policies
-      const { data: policiesData, error: policiesError } = await supabase.rpc('get_table_policies');
+      const { data: policiesData, error: policiesError } = await sb.rpc('get_table_policies');
       if (policiesError) {
         console.error('Error loading policies:', policiesError);
         toast.error('Failed to load policies');

@@ -15,7 +15,7 @@ import {
   Lock,
   Smartphone
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface TrustedActivationProps {
@@ -60,10 +60,10 @@ export function TrustedActivation({
 
     setLoading(true);
     try {
-      const { data: user } = await supabase.auth.getUser();
+      const { data: user } = await sb.auth.getUser();
       if (!user.user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase.functions.invoke('trusted-activation', {
+      const { data, error } = await sb.functions.invoke('trusted-activation', {
         body: {
           userId: user.user.id,
           action: 'send',
@@ -105,10 +105,10 @@ export function TrustedActivation({
 
     setLoading(true);
     try {
-      const { data: user } = await supabase.auth.getUser();
+      const { data: user } = await sb.auth.getUser();
       if (!user.user) throw new Error('Not authenticated');
 
-      const { data, error } = await supabase.functions.invoke('trusted-activation', {
+      const { data, error } = await sb.functions.invoke('trusted-activation', {
         body: {
           userId: user.user.id,
           action: 'verify',

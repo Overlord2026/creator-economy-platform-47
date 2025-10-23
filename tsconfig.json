@@ -20,10 +20,19 @@
     "skipLibCheck": true,
     "allowJs": true,
     "noUnusedLocals": false,
+<<<<<<< HEAD
     "strictNullChecks": false
   },
   "exclude": [
     "packages/**",
     "src/services/diagnostics/ci-scripts/**"
+=======
+    "strictNullChecks": false,
+    "jsx": "react-jsx",
+    "checkJs": false
+  },
+  "exclude": [
+    "supabase/functions/**"
+>>>>>>> demo/offerlock-202509261311
   ]
 }

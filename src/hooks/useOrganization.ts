@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
+
 import { Employee, Organization, OrganizationRole } from '@/types/operations';
 
 export const useOrganization = () => {
@@ -23,7 +24,7 @@ export const useOrganization = () => {
           .from('employees')
           .select('*')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (employeeError) {
           if (employeeError.code === 'PGRST116') {
@@ -43,7 +44,7 @@ export const useOrganization = () => {
           .from('organizations')
           .select('*')
           .eq('id', employeeData.organization_id)
-          .single();
+          .maybeSingle();
 
         if (orgError) {
           setError(orgError.message);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,7 +25,7 @@ export function AuthPage() {
   // Check if user is already authenticated
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (user) {
         navigate('/');
       }
@@ -46,7 +46,7 @@ export function AuthPage() {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error } = await sb.auth.signInWithPassword({
         email: email.trim(),
         password
       });
@@ -122,7 +122,7 @@ export function AuthPage() {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error } = await sb.auth.signUp({
         email: email.trim(),
         password,
         options: {
@@ -192,7 +192,7 @@ export function AuthPage() {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      const { error } = await sb.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: `${window.location.origin}/auth`,
       });
 

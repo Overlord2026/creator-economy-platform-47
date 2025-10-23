@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface DatabaseTestResult {
   test_number: number;
@@ -32,7 +32,7 @@ export const useDatabaseDiagnostics = () => {
     setState(prev => ({ ...prev, isRunning: true, error: null }));
 
     try {
-      const { data, error } = await supabase.rpc('run_database_review_tests');
+      const { data, error } = await sb.rpc('run_database_review_tests');
       
       if (error) {
         throw new Error(`Database test error: ${error.message}`);
@@ -67,7 +67,7 @@ export const useDatabaseDiagnostics = () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const { data, error } = await supabase.rpc('test_transfer_validation');
+      const { data, error } = await sb.rpc('test_transfer_validation');
       
       if (error) {
         throw new Error(`Transfer validation test error: ${error.message}`);
@@ -95,7 +95,7 @@ export const useDatabaseDiagnostics = () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const { data, error } = await supabase.rpc('test_hsa_compliance');
+      const { data, error } = await sb.rpc('test_hsa_compliance');
       
       if (error) {
         throw new Error(`HSA compliance test error: ${error.message}`);
@@ -123,7 +123,7 @@ export const useDatabaseDiagnostics = () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const { data, error } = await supabase.rpc('test_audit_logging');
+      const { data, error } = await sb.rpc('test_audit_logging');
       
       if (error) {
         throw new Error(`Audit logging test error: ${error.message}`);

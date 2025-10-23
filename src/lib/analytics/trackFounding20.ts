@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { track } from './track';
 
 interface TrackFounding20Params {
@@ -27,7 +27,7 @@ export const trackFounding20Event = async (params: TrackFounding20Params) => {
     });
 
     // Track to edge function for advanced processing
-    const response = await supabase.functions.invoke('track-founding20', {
+    const response = await sb.functions.invoke('track-founding20', {
       body: params
     });
 

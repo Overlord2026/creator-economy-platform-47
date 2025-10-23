@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -130,7 +130,7 @@ export function useFamilyVault(vaultId?: string): UseFamilyVaultReturn {
   const createVault = async (vaultData: CreateVaultData): Promise<FamilyVault | null> => {
     try {
       setLoading(true);
-      const user = (await supabase.auth.getUser()).data.user;
+      const user = (await sb.auth.getUser()).data.user;
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -187,7 +187,7 @@ export function useFamilyVault(vaultId?: string): UseFamilyVaultReturn {
 
   const inviteMember = async (targetVaultId: string, memberData: InviteMemberData): Promise<boolean> => {
     try {
-      const user = (await supabase.auth.getUser()).data.user;
+      const user = (await sb.auth.getUser()).data.user;
       if (!user) throw new Error('Not authenticated');
 
       const { error } = await supabase
@@ -228,7 +228,7 @@ export function useFamilyVault(vaultId?: string): UseFamilyVaultReturn {
 
   const uploadLegacyItem = async (targetVaultId: string, itemData: UploadItemData): Promise<boolean> => {
     try {
-      const user = (await supabase.auth.getUser()).data.user;
+      const user = (await sb.auth.getUser()).data.user;
       if (!user) throw new Error('Not authenticated');
 
       const { error } = await supabase

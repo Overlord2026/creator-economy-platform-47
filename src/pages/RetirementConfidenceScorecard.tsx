@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Trophy, Calendar, ArrowRight, ArrowLeft, Shield, CheckCircle } from 'lucide-react';
 import { withTrademarks } from '@/utils/trademark';
 import { useEventTracking } from '@/hooks/useEventTracking';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface Question {
   id: number;
@@ -194,7 +194,7 @@ export default function RetirementConfidenceScorecard() {
       
       const scoreLevel = getScoreLevel(score);
       
-      const { error } = await supabase.functions.invoke('send-scorecard-email', {
+      const { error } = await sb.functions.invoke('send-scorecard-email', {
         body: {
           email,
           firstName: '',

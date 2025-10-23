@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface SmartAlert {
   id: string;
@@ -53,7 +53,7 @@ export function AISmartAlerts({ userPersona, userAge = 45, financialData }: AISm
     setLoading(true);
     try {
       // Call AI edge function to generate personalized alerts
-      const { data, error } = await supabase.functions.invoke('ai-smart-alerts', {
+      const { data, error } = await sb.functions.invoke('ai-smart-alerts', {
         body: {
           persona: userPersona,
           age: userAge,

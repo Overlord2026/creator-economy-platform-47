@@ -19,7 +19,7 @@ import {
   FileCheck,
   AlertTriangle
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 
 interface PersonaData {
@@ -121,7 +121,7 @@ export default function NILOnboardingPage() {
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase.functions.invoke('nil-onboarding-automation', {
+      const { data, error } = await sb.functions.invoke('nil-onboarding-automation', {
         body: {
           personaType: selectedPersona,
           personaData: personaData,

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { safeQueryOptionalTable, tableExists, withFallback } from '@/lib/db/safeSupabase';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -98,7 +98,7 @@ export const SecurityTrainingDashboard: React.FC = () => {
       const userCompletions = await withFallback(
         'security_training_completions',
         async () => {
-          const user = await supabase.auth.getUser();
+          const user = await sb.auth.getUser();
           if (!user.data.user) return { ok: true, data: [] };
           
           const result = await safeQueryOptionalTable('security_training_completions', '*', {
@@ -120,7 +120,7 @@ export const SecurityTrainingDashboard: React.FC = () => {
       const phishing = await withFallback(
         'phishing_simulation_results',
         async () => {
-          const user = await supabase.auth.getUser();
+          const user = await sb.auth.getUser();
           if (!user.data.user) return { ok: true, data: [] };
           
           const result = await safeQueryOptionalTable('phishing_simulation_results', '*', {
@@ -156,7 +156,7 @@ export const SecurityTrainingDashboard: React.FC = () => {
 
   const startTraining = async (programId: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) return;
 
       const hasTable = await tableExists('security_training_completions');

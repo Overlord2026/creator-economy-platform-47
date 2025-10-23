@@ -1,4 +1,3 @@
-'use client';
 import * as React from 'react';
 
 export function LeadCaptureModal({ open = false, onClose }: { open?: boolean; onClose?: () => void }) {

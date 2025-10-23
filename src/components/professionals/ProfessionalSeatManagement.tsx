@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Users, Plus, Link, Send, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { tableExists, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { SeatPurchaseFlow } from './SeatPurchaseFlow';
 import { ProfessionalInviteFlow } from './ProfessionalInviteFlow';
@@ -46,7 +46,7 @@ export const ProfessionalSeatManagement = () => {
 
   const loadData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) return;
 
       // Check if professionals table exists

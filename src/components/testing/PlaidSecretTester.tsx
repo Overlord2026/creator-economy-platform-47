@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export const PlaidSecretTester: React.FC = () => {
   const [isTesting, setIsTesting] = useState(false);
@@ -24,7 +24,7 @@ export const PlaidSecretTester: React.FC = () => {
 
       for (const secret of secrets) {
         try {
-          const { data, error } = await supabase.functions.invoke('check-api-keys', {
+          const { data, error } = await sb.functions.invoke('check-api-keys', {
             body: { secretName: secret }
           });
           
@@ -47,7 +47,7 @@ export const PlaidSecretTester: React.FC = () => {
 
       // Also test the environment checker
       try {
-        const { data: envData, error: envError } = await supabase.functions.invoke('check-plaid-environment', {});
+        const { data: envData, error: envError } = await sb.functions.invoke('check-plaid-environment', {});
         testResults['ENVIRONMENT_CHECK'] = {
           success: !envError,
           data: envData,

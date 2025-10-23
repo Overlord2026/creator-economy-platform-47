@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
+
 import { useAuth } from '@/context/AuthContext';
 import { OnboardingStepData } from '@/types/onboarding';
 import { toast } from 'sonner';
@@ -95,7 +96,7 @@ export const useOnboardingProgress = () => {
           .from('onboarding_flow_progress')
           .insert(progressData)
           .select()
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
         

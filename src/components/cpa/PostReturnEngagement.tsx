@@ -17,7 +17,7 @@ import {
   Download
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface CompletedReturn {
   id: string;
@@ -158,7 +158,7 @@ export function PostReturnEngagement() {
       if (!returnData) return;
 
       // Trigger automated engagement sequence
-      const { error } = await supabase.functions.invoke('trigger-post-return-engagement', {
+      const { error } = await sb.functions.invoke('trigger-post-return-engagement', {
         body: {
           returnId: returnId,
           clientName: returnData.clientName,
@@ -214,7 +214,7 @@ export function PostReturnEngagement() {
     try {
       const guides = planningGuides.filter(g => guideIds.includes(g.id));
       
-      const { error } = await supabase.functions.invoke('send-planning-guides', {
+      const { error } = await sb.functions.invoke('send-planning-guides', {
         body: {
           clientId,
           guides: guides.map(g => ({

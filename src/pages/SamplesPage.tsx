@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -105,7 +105,7 @@ export default function SamplesPage() {
     setExporting(true);
     try {
       // TODO: Call batch export API
-      const { data, error } = await supabase.functions.invoke('aies-export-batch', {
+      const { data, error } = await sb.functions.invoke('aies-export-batch', {
         body: { 
           receipt_ids: selectedReceipts,
           export_name: `sample_${selectedCycle || 'all'}_${new Date().toISOString().split('T')[0]}`

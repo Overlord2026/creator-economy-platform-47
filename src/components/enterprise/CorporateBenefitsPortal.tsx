@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useUser } from '@/context/UserContext';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 
 interface EmployeeBenefit {
@@ -154,7 +154,7 @@ export function CorporateBenefitsPortal() {
       const pendingEmployees = employeeBenefits.filter(emp => emp.status === 'pending');
       
       for (const employee of pendingEmployees) {
-        const { error } = await supabase.functions.invoke('send-benefits-welcome-email', {
+        const { error } = await sb.functions.invoke('send-benefits-welcome-email', {
           body: {
             to: employee.email,
             employeeName: employee.employeeName,

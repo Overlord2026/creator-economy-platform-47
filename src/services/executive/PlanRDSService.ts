@@ -1,9 +1,10 @@
+import { toBufferSource } from '@/utils/buffers';
 /**
  * AI Executive Suite - Plan RDS (Receipt Data Structure) Service
  * Manages Plan-RDS generation with verification and anchoring
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export interface PlanRDS {
   id: string;
@@ -94,7 +95,7 @@ export class PlanRDSService {
     const approvalsHash = await this.calculateApprovalsHash(approvals);
 
     // Generate RDS using database function
-    const { data: rdsId, error } = await supabase.rpc('generate_plan_rds', {
+    const { data: rdsId, error } = await sb.rpc('generate_plan_rds', {
       p_plan_id: planId,
       p_inputs_hash: inputsHash,
       p_model_version: modelVersion,
@@ -326,7 +327,7 @@ export class PlanRDSService {
     
     const encoder = new TextEncoder();
     const data = encoder.encode(approvalsData);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
@@ -346,7 +347,7 @@ export class PlanRDSService {
 
     const encoder = new TextEncoder();
     const data = encoder.encode(hashData);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }

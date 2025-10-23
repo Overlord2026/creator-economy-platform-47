@@ -1,9 +1,10 @@
+import { toBufferSource } from '@/utils/buffers';
 /**
  * AI Executive Suite - CLO Policy Service
  * Manages CLO policy DAG evaluation and legal gates
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export type PolicyNodeType = 'condition' | 'action' | 'gate';
 
@@ -167,7 +168,7 @@ export class CLOPolicyService {
     ];
 
     for (const node of defaultNodes) {
-      await supabase.from('clo_policy_nodes').insert(node);
+      await sb.from('clo_policy_nodes').insert(node);
     }
 
     // Create edges connecting the nodes
@@ -204,7 +205,7 @@ export class CLOPolicyService {
       ];
 
       for (const edge of defaultEdges) {
-        await supabase.from('clo_policy_edges').insert(edge);
+        await sb.from('clo_policy_edges').insert(edge);
       }
     }
   }
@@ -468,7 +469,7 @@ export class CLOPolicyService {
 
     const encoder = new TextEncoder();
     const data = encoder.encode(JSON.stringify(policyData));
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }

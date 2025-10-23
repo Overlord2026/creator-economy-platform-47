@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { tableExists, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 
 interface MinimalFamilySignupProps {
@@ -40,7 +40,7 @@ export default function MinimalFamilySignup({ onComplete }: MinimalFamilySignupP
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await sb.auth.getUser();
       if (!user) throw new Error('Not signed in');
 
       if (await tableExists('profiles')) {

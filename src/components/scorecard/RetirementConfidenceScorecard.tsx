@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertTriangle, XCircle, ArrowRight, RefreshCw } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { tableExists, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 import { useToast } from '@/hooks/use-toast';
 
@@ -221,7 +221,7 @@ export const RetirementConfidenceScorecard: React.FC = () => {
       if (hasAnalytics) {
         await safeInsertOptionalTable('analytics_scorecard_events', {
           event_type: eventType,
-          user_id: (await supabase.auth.getUser()).data.user?.id || '',
+          user_id: (await sb.auth.getUser()).data.user?.id || '',
           scorecard_data: eventData,
           created_at: new Date().toISOString()
         });
@@ -287,7 +287,7 @@ export const RetirementConfidenceScorecard: React.FC = () => {
       if (hasSubmissions) {
         const result = await safeInsertOptionalTable('retirement_confidence_submissions', {
           persona,
-          user_id: (await supabase.auth.getUser()).data.user?.id || '',
+          user_id: (await sb.auth.getUser()).data.user?.id || '',
           responses: answers,
           confidence_score: finalScore,
           created_at: new Date().toISOString()

@@ -15,7 +15,7 @@ import {
   Mail,
   Database
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface APITestResult {
   name: string;
@@ -47,10 +47,10 @@ export function QuickAPITestRunner() {
       // Test 1: Check API Keys First
       console.log('🔍 [Quick API Test] Checking API key presence...');
       const keyChecks = await Promise.all([
-        supabase.functions.invoke('check-api-keys', { body: { secretName: 'PLAID_CLIENT_ID' } }),
-        supabase.functions.invoke('check-api-keys', { body: { secretName: 'PLAID_SECRET_KEY' } }),
-        supabase.functions.invoke('check-api-keys', { body: { secretName: 'STRIPE_SECRET_KEY' } }),
-        supabase.functions.invoke('check-api-keys', { body: { secretName: 'RESEND_API_KEY' } }),
+        sb.functions.invoke('check-api-keys', { body: { secretName: 'PLAID_CLIENT_ID' } }),
+        sb.functions.invoke('check-api-keys', { body: { secretName: 'PLAID_SECRET_KEY' } }),
+        sb.functions.invoke('check-api-keys', { body: { secretName: 'STRIPE_SECRET_KEY' } }),
+        sb.functions.invoke('check-api-keys', { body: { secretName: 'RESEND_API_KEY' } }),
       ]);
 
       // Check if keys exist
@@ -102,7 +102,7 @@ export function QuickAPITestRunner() {
 
       // Test 2: Run Live API Tests
       console.log('🧪 [Quick API Test] Running live API connection tests...');
-      const { data, error } = await supabase.functions.invoke('test-api-integrations');
+      const { data, error } = await sb.functions.invoke('test-api-integrations');
 
       if (error) {
         console.error('❌ [Quick API Test] Test suite failed:', error);

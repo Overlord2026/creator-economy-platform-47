@@ -1,10 +1,10 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { HealthRDSReceipt, createHealthRDSReceipt } from '@/types/health-rds';
 
 // Store Health-RDS receipt using the edge function
 export async function storeHealthRDSReceipt(receipt: HealthRDSReceipt, userId?: string): Promise<string> {
   try {
-    const { data, error } = await supabase.functions.invoke('store-receipt', {
+    const { data, error } = await sb.functions.invoke('store-receipt', {
       body: {
         receipt,
         user_id: userId
@@ -33,7 +33,7 @@ export async function getUserHealthReceipts(options: {
   endDate?: string;
 } = {}) {
   try {
-    const { data, error } = await supabase.rpc('get_health_receipts', {
+    const { data, error } = await sb.rpc('get_health_receipts', {
       p_limit: options.limit || 50,
       p_offset: options.offset || 0,
       p_action: options.action || null,

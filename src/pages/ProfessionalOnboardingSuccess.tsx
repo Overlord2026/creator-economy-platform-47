@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Users, Share2, Trophy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import ColleagueInviteModal from '@/components/professionals/ColleagueInviteModal';
 import CelebrationEffects from '@/components/effects/CelebrationEffects';
 
@@ -19,7 +19,7 @@ export default function ProfessionalOnboardingSuccess() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await sb.auth.getUser();
         if (user) {
           const { data: profile } = await supabase
             .from('profiles')

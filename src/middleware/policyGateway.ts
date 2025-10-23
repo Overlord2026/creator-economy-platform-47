@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 interface PolicyToken {
   tenant_id: string;
@@ -117,7 +117,7 @@ export class PolicyGateway {
       };
 
       // Log to new denial telemetry table
-      await supabase.from('denial_telemetry').insert(denialRecord);
+      await sb.from('denial_telemetry').insert(denialRecord);
 
       // Also log structured denial to audit table for chain integrity
       const auditEntry = {

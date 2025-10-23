@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, X, Settings } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { sb } from '@/lib/supabase-relaxed';
 
 interface MissingKey {
   name: string;
@@ -43,7 +43,7 @@ export function QAWarningBanner() {
 
     for (const key of REQUIRED_KEYS) {
       try {
-        const { data, error } = await supabase.functions.invoke('check-api-keys', {
+        const { data, error } = await sb.functions.invoke('check-api-keys', {
           body: { secretName: key.name }
         });
 
@@ -103,7 +103,7 @@ export function QAWarningBanner() {
             size="sm"
             variant="outline"
             className="text-red-700 border-red-300 hover:bg-red-100"
-            onClick={() => window.open('https://supabase.com/dashboard/project/xcmqjkvyvuhoslbzmlgi/settings/functions', '_blank')}
+            onClick={() => window.open('https://sb.com/dashboard/project/xcmqjkvyvuhoslbzmlgi/settings/functions', '_blank')}
           >
             <Settings className="h-3 w-3 mr-1" />
             Fix Now

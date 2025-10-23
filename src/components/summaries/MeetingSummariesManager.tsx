@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -102,7 +102,7 @@ export function MeetingSummariesManager() {
     try {
       setProcessingRecordings(prev => [...prev, recordingId]);
       
-      const { error } = await supabase.functions.invoke('process-meeting-summary', {
+      const { error } = await sb.functions.invoke('process-meeting-summary', {
         body: {
           recording_id: recordingId,
           user_id: user?.id

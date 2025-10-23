@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/context/UserContext';
 import { useRoleContext } from '@/context/RoleContext';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { NavItem } from '@/types/navigation';
 import { 
   Accordion,
@@ -36,7 +36,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useResponsive } from '@/hooks/use-responsive.tsx';
+import { useResponsive } from '@/hooks/use-responsive';
 
 // Role-based navigation configuration
 const getNavigationByRole = (role: string, tier?: string): NavItem[] => {
@@ -499,7 +499,7 @@ export function AccordionSidebar({ className }: AccordionSidebarProps) {
           size="sm"
           className="w-full justify-start gap-2 text-bfo-gold hover:bg-bfo-gold/10 hover:text-bfo-gold"
           onClick={async () => {
-            await supabase.auth.signOut();
+            await sb.auth.signOut();
             window.location.href = '/';
           }}
         >

@@ -41,7 +41,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from '@/hooks/use-toast';
 
 export const HealthcareDashboard = () => {

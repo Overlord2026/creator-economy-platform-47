@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Rocket, 
@@ -101,7 +101,7 @@ export const ExternalLenderIntegration: React.FC = () => {
       const responses = await Promise.all(
         externalLenders.map(async (lender) => {
           try {
-            const { data, error } = await supabase.functions.invoke('external-lender-integration', {
+            const { data, error } = await sb.functions.invoke('external-lender-integration', {
               body: {
                 lender_id: lender.id,
                 application: application,
@@ -163,7 +163,7 @@ export const ExternalLenderIntegration: React.FC = () => {
 
   const acceptLenderOffer = async (lenderId: string) => {
     try {
-      const { error } = await supabase.functions.invoke('external-lender-integration', {
+      const { error } = await sb.functions.invoke('external-lender-integration', {
         body: {
           lender_id: lenderId,
           application: application,

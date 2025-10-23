@@ -19,7 +19,7 @@ import {
   Clock,
   FileText
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -149,7 +149,7 @@ export const AdvisorLendingDashboard: React.FC = () => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      sb.removeChannel(channel);
     };
   };
 

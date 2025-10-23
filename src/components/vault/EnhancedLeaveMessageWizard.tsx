@@ -1,4 +1,3 @@
-'use client';
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,7 +27,7 @@ import {
   Shield
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { SecureFileUpload } from './SecureFileUpload';
@@ -169,7 +168,7 @@ export function EnhancedLeaveMessageWizard({ vaultId, members, onClose, onSucces
   const saveMessage = async () => {
     try {
       setLoading(true);
-      const user = (await supabase.auth.getUser()).data.user;
+      const user = (await sb.auth.getUser()).data.user;
       if (!user) throw new Error('Not authenticated');
 
       let contentUrl = '';
@@ -178,13 +177,13 @@ export function EnhancedLeaveMessageWizard({ vaultId, members, onClose, onSucces
       if (recordedBlob) {
         // Upload recording
         const fileName = `${user.id}/messages/${Date.now()}.${messageData.message_type === 'video' ? 'webm' : 'webm'}`;
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError } = await sb.storage
           .from('legacy-vault')
           .upload(fileName, recordedBlob);
 
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
+        const { data: { publicUrl } } = sb.storage
           .from('legacy-vault')
           .getPublicUrl(fileName);
 
@@ -208,7 +207,7 @@ export function EnhancedLeaveMessageWizard({ vaultId, members, onClose, onSucces
 
       // Create notifications for immediate delivery
       if (messageData.trigger_type === 'manual') {
-        await supabase.functions.invoke('vault-notifications', {
+        await sb.functions.invoke('vault-notifications', {
           body: {
             action: 'send_notification',
             vaultId,

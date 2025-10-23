@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { ArrowLeft, DollarSign, Phone, Mail, User, Target, CheckCircle, ArrowRight } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import confetti from 'canvas-confetti';
 
 const leadFormSchema = z.object({

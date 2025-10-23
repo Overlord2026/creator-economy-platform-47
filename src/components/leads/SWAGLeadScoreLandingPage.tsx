@@ -20,7 +20,7 @@ import {
   TrendingUp,
   ArrowRight
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from '@/hooks/use-toast';
 import { PlaidLink } from 'react-plaid-link';
 
@@ -87,7 +87,7 @@ export function SWAGLeadScoreLandingPage() {
 
       // Calculate SWAG Score
       if (enrichmentConsent) {
-        const { data: enrichmentData } = await supabase.functions.invoke('lead-enrichment', {
+        const { data: enrichmentData } = await sb.functions.invoke('lead-enrichment', {
           body: {
             lead_id: mockLead.id,
             email: formData.email,
@@ -123,7 +123,7 @@ export function SWAGLeadScoreLandingPage() {
       }
 
       if (plaidConsent) {
-        const { data } = await supabase.functions.invoke('plaid-create-link-token');
+        const { data } = await sb.functions.invoke('plaid-create-link-token');
         setPlaidLinkToken(data?.link_token);
       }
 

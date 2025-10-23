@@ -31,7 +31,7 @@ import { PortfolioToolsModal } from './PortfolioToolsModal';
 import { QuickActionsPanel } from './QuickActionsPanel';
 import { AdvisorAlertsPanel } from './AdvisorAlertsPanel';
 import { MyLeadsPanel } from './MyLeadsPanel';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 import { format } from 'date-fns';
 import { PlanImportWizard } from './PlanImportWizard';
 import { AdvisorOnboardingBanner } from './AdvisorOnboardingBanner';

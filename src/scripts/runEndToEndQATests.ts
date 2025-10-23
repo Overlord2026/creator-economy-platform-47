@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 // Comprehensive End-to-End QA Test Suite
 export interface TestResult {
@@ -92,7 +92,7 @@ const testAuthenticationFlow = async (): Promise<QATestSuite> => {
   try {
     // Test Supabase connection
     const startTime = Date.now();
-    const { data, error } = await supabase.auth.getSession();
+    const { data, error } = await sb.auth.getSession();
     const duration = Date.now() - startTime;
     
     tests.push({
@@ -247,7 +247,7 @@ const testPlaidIntegration = async (): Promise<QATestSuite> => {
     // Test link token creation
     const startTime = Date.now();
     try {
-      const { data, error } = await supabase.functions.invoke('plaid-create-link-token');
+      const { data, error } = await sb.functions.invoke('plaid-create-link-token');
       const duration = Date.now() - startTime;
       
       tests.push({
@@ -482,7 +482,7 @@ const testDatabaseIntegration = async (): Promise<QATestSuite> => {
     // Test query performance
     const startTime = Date.now();
     try {
-      const { data, error } = await supabase.from('profiles').select('id').limit(1);
+      const { data, error } = await sb.from('profiles').select('id').limit(1);
       const duration = Date.now() - startTime;
       
       tests.push({

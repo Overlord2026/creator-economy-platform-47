@@ -1,32 +1,20 @@
-/**
- * Minimal safe Supabase helpers (stub).
- * Replace getAnonClient/getAdminClient imports per your project.
- */
-import { getAdminClient, getAnonClient } from '@/integrations/supabase/client';
+/* lightweight fetch helpers + withFallback that supports array or factory */
+export type Ok<T>    = { ok: true;  data: T };
+export type Err<E=any> = { ok: false; error: E };
+export type Res<T>   = Ok<T> | Err;
 
-const admin = getAdminClient();
-const anon = getAnonClient();
+export function isOk<T>(r: Res<T>): r is Ok<T> { return (r as any).ok === true; }
 
-export async function tableExists(name: string): Promise<boolean> {
+export async function withFallback<T>(
+  valueOrFactory: T | (() => T | Promise<T>),
+  fallback: T
+): Promise<T> {
   try {
-    // simple probe - select 1 from table (adjust per privileges)
-    const { error } = await admin.from(name).select('id', { head: true }).limit(1);
-    return !error;
+    const v = typeof valueOrFactory === 'function'
+      ? await (valueOrFactory as any)()
+      : valueOrFactory;
+    return (v ?? fallback) as T;
   } catch {
-    return false;
+    return fallback;
   }
 }
-
-export async function safeInsertOptionalTable<T>(table:string, row:T) {
-  const exists = await tableExists(table);
-  if (!exists) return { warning: 'table_missing', data: row };
-  try {
-    const { data, error } = await admin.from(table).insert(row).select();
-    if (error) return { error };
-    return { data };
-  } catch (err) {
-    return { error: err };
-  }
-}
-
-export default { tableExists, safeInsertOptionalTable };

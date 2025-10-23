@@ -1,5 +1,6 @@
+import { toBufferSource } from '@/utils/buffers';
 import { MessageEncryption, KeyManager } from './messageEncryption';
-import { supabase } from '@/integrations/supabase/client';
+import { sb } from '@/lib/supabase-relaxed';
 
 export type VaultRole = 'owner' | 'admin' | 'member' | 'viewer' | 'executor';
 
@@ -268,7 +269,7 @@ class VaultEncryption {
   }
 
   private static async calculateChecksum(data: ArrayBuffer): Promise<string> {
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', toBufferSource(data));
     return this.arrayBufferToBase64(hashBuffer);
   }
 }
