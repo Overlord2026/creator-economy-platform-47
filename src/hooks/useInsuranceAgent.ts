@@ -1,9 +1,43 @@
 import * as React from 'react';
 import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
-type Agent = { id: string; name: string; license?: string; email?: string };
-type Course = { id: string; title: string; due_at?: string; type?: string };
-type Reminder = { id: string; text: string; due_at?: string };
+type Agent = { 
+  id: string; 
+  name: string; 
+  license?: string; 
+  email?: string;
+  status?: string;
+  state?: string;
+  license_type?: string;
+  license_number?: string;
+  nmls_id?: string;
+  license_expiry?: Date | null;
+  ce_reporting_period_start?: Date | null;
+  ce_reporting_period_end?: Date | null;
+  ce_credits_completed?: number;
+  ce_credits_required?: number;
+};
+type Course = { 
+  id: string; 
+  title: string; 
+  due_at?: string; 
+  type?: string;
+  course_name?: string;
+  course_type?: string;
+  provider_name?: string;
+  completion_date?: Date | null;
+  credits_earned?: number;
+  verified?: boolean;
+  certificate_url?: string | null;
+};
+type Reminder = { 
+  id: string; 
+  text: string; 
+  due_at?: string;
+  reminder_type?: string;
+  message?: string;
+  trigger_date?: Date;
+};
 
 // Export types for external use
 export type InsuranceAgent = Agent;
