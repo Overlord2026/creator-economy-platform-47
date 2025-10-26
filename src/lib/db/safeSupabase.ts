@@ -122,12 +122,18 @@ export async function safeUpdate<T = any>(
   }
 }
 
-// Safe query for optional table
+// Safe query for optional table - supports both 2 and 3 param signatures
 export async function safeQueryOptionalTable<T = any>(
   tableName: string,
-  columns = '*',
-  filters: Record<string, any> = {}
+  columnsOrFilters?: string | Record<string, any>,
+  maybeFilters?: Record<string, any>
 ): Promise<T[]> {
+  // Handle both 2-param and 3-param calls
+  // If 2nd param is an object, treat it as filters
+  // If 2nd param is a string, treat it as columns and use 3rd param as filters
+  const columns = typeof columnsOrFilters === 'string' ? columnsOrFilters : '*';
+  const filters = typeof columnsOrFilters === 'object' ? columnsOrFilters : (maybeFilters || {});
+  
   const result = await safeSelect<T>(tableName, columns, filters);
   return isOk(result) ? result.data : [];
 }
@@ -139,4 +145,33 @@ export async function safeInsertOptionalTable<T = any>(
 ): Promise<T | null> {
   const result = await safeInsert<T>(tableName, record);
   return isOk(result) ? result.data : null;
+}
+
+// Legacy wrapper for backward compatibility - returns array directly instead of Res<T[]>
+// This avoids having to update 100+ components that expect direct array return
+export async function legacyQueryTable<T = any>(
+  tableName: string,
+  filters: Record<string, any> = {}
+): Promise<T[]> {
+  const result = await safeSelect<T>(tableName, '*', filters);
+  return isOk(result) ? result.data : [];
+}
+
+// Legacy insert wrapper - returns data directly or null
+export async function legacyInsertTable<T = any>(
+  tableName: string,
+  record: Record<string, any>
+): Promise<T | null> {
+  const result = await safeInsert<T>(tableName, record);
+  return isOk(result) ? result.data : null;
+}
+
+// Legacy update wrapper - returns data array or empty array
+export async function legacyUpdateTable<T = any>(
+  tableName: string,
+  updates: Record<string, any>,
+  filters: Record<string, any>
+): Promise<T[]> {
+  const result = await safeUpdate<T>(tableName, updates, filters);
+  return isOk(result) ? result.data : [];
 }
