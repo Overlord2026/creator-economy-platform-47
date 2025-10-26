@@ -19,7 +19,7 @@ type Agent = {
 };
 type Course = { 
   id: string; 
-  title: string; 
+  title?: string; 
   due_at?: string; 
   type?: string;
   course_name?: string;

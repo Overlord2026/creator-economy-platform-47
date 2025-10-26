@@ -131,3 +131,12 @@ export async function safeQueryOptionalTable<T = any>(
   const result = await safeSelect<T>(tableName, columns, filters);
   return isOk(result) ? result.data : [];
 }
+
+// Safe insert for optional table
+export async function safeInsertOptionalTable<T = any>(
+  tableName: string,
+  record: Record<string, any>
+): Promise<T | null> {
+  const result = await safeInsert<T>(tableName, record);
+  return isOk(result) ? result.data : null;
+}
