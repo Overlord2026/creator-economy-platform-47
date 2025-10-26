@@ -5,6 +5,11 @@ type Agent = { id: string; name: string; license?: string; email?: string };
 type Course = { id: string; title: string; due_at?: string; type?: string };
 type Reminder = { id: string; text: string; due_at?: string };
 
+// Export types for external use
+export type InsuranceAgent = Agent;
+export type CECourse = Course;
+export type CEReminder = Reminder;
+
 export function useInsuranceAgent() {
   if (BOOTSTRAP_MODE) {
     return React.useMemo(() => ({
