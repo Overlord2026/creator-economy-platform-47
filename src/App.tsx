@@ -9,9 +9,11 @@ import MasterLanding from '@/pages/MasterLanding';
 import DemoOfferLock from '@/pages/DemoOfferLock';
 import DemoContract from '@/pages/DemoContract';
 import DemoSettlement from '@/pages/DemoSettlement';
+import { HelmetProvider } from 'react-helmet-async';
 export default function App() {
   return (
-    <SafeProviders>
+    <HelmetProvider>
+<SafeProviders>
       <HashRouter>
         <Routes>
           <Route path="/" element={<Discover />} />
@@ -26,5 +28,6 @@ export default function App() {
         </Routes>
       </HashRouter>
     </SafeProviders>
+      </HelmetProvider>
   );
 }
