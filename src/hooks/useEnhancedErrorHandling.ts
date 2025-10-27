@@ -154,11 +154,7 @@ export const useEnhancedErrorHandling = () => {
     
     try {
       // Use the centralized EdgeFunctionClient
-      const response = await edgeFunctionClient.invoke(functionName, payload, {
-        retryConfig: options?.retryConfig,
-        showSuccessMessage: options?.showSuccessMessage,
-        successMessage: options?.successMessage
-      });
+      const response = await edgeFunctionClient.invoke(functionName, payload);
 
       if (!response.success && response.error) {
         // Error already handled by EdgeFunctionClient, just log locally

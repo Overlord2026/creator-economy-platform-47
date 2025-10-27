@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { EdgeFunctionClient } from '@/services/edgeFunction/EdgeFunctionClient';
+import { edgeFunctionClient } from '@/services/edgeFunction/EdgeFunctionClient';
 import { sb } from '@/lib/supabase-relaxed';
 import { safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 
@@ -119,7 +119,7 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
   }) => {
     setProcessing(true);
     
-    const response = await EdgeFunctionClient.invoke('process-transfer', { body: transferData });
+    const response = await edgeFunctionClient.invoke('process-transfer', transferData);
     
     if (!response.error && response.data?.transfer) {
       setTransfers(prev => [response.data.transfer, ...prev]);
@@ -140,7 +140,7 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
   }) => {
     setProcessing(true);
     
-    const response = await EdgeFunctionClient.invoke('stripe-ach-transfer', { body: transferData });
+    const response = await edgeFunctionClient.invoke('stripe-ach-transfer', transferData);
     
     if (!response.error && response.data?.transfer) {
       setTransfers(prev => [response.data.transfer, ...prev]);
