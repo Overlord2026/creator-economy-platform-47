@@ -1,6 +1,6 @@
 'use client';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { getAnonClient } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 
 type AuthValue = {
   user: any;
@@ -27,7 +27,7 @@ const Ctx = createContext<AuthValue>({
 export const useAuth = () => useContext(Ctx);
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
-  const s = typeof getAnonClient === 'function' ? getAnonClient() : undefined;
+  const s = supabase;
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<any>(undefined);
@@ -59,9 +59,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       if (!s) return;
       const { data } = await s.auth.getUser();
       setUser(data?.user ?? null);
-    } catch (e) {
-      setError(e);
-    }
+    } catch (e) { setError(e); }
   };
 
   const value = useMemo<AuthValue>(() => ({
