@@ -1,3 +1,4 @@
+
 /* lightweight fetch helpers + withFallback that supports array or factory */
 import { supabase } from '@/integrations/supabase/client';
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { legacyQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';

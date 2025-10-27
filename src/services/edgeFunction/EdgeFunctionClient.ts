@@ -1,42 +1,22 @@
-import { sb } from '@/lib/supabase-relaxed';
+import { getAnonClient } from '@/integrations/supabase/client';
+
+export type EdgeFunctionResponse<T = unknown> = {
+  success: boolean;
+  data?: T;
+  error?: { userMessage?: string; correlationId?: string };
+};
 
 export class EdgeFunctionClient {
-  static async invoke<T = any>(
-    functionName: string, 
-    options?: {
-      body?: any;
-      headers?: Record<string, string>;
+  private s = getAnonClient();
+
+  async invoke<T = unknown>(name: string, payload?: any): Promise<EdgeFunctionResponse<T>> {
+    const { data, error } = await this.s.functions.invoke(name, { body: payload ?? {} });
+    if (error) {
+      // Keep this shape minimal; callers should not assume .message exists
+      return { success: false, error: { userMessage: (error as any)?.message } };
     }
-  ): Promise<{ data: T | null; error: any }> {
-    try {
-      const { data, error } = await sb.functions.invoke(functionName, {
-        body: options?.body,
-        headers: options?.headers,
-      });
-
-      if (error) {
-        console.error(`Edge function ${functionName} error:`, error);
-        return { data: null, error };
-      }
-
-      return { data: data as T, error: null };
-    } catch (err) {
-      console.error(`Edge function ${functionName} exception:`, err);
-      return { data: null, error: err };
-    }
-  }
-
-  static async invokeTransfer(transferData: any) {
-    return this.invoke('transfer-handler', { body: transferData });
-  }
-
-  static async invokePayment(paymentData: any) {
-    return this.invoke('payment-handler', { body: paymentData });
-  }
-
-  static async invokeNotification(notificationData: any) {
-    return this.invoke('notification-handler', { body: notificationData });
+    return { success: true, data: data as T };
   }
 }
 
-// default export removed
+export const edgeFunctionClient = new EdgeFunctionClient();

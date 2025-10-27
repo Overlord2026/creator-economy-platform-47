@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { legacyQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -107,11 +108,9 @@ export const VIPMagicLinkOnboarding: React.FC = () => {
         referral_code: 'DEMO-VIP-123'
       };
 
-      const data = await withFallback('vip_organizations',
-        () => safeSelect('vip_organizations', '*', { 
+      const data = await legacyQueryOptionalTable('vip_organizations', '*', { 
           limit: 1
-        }),
-        async () => [mockOrgData]
+        }) => [mockOrgData]
       );
 
       const orgData = Array.isArray(data) ? data[0] : data;

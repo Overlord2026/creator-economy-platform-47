@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { legacyQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -103,19 +104,13 @@ export const VIPPortalDashboard: React.FC = () => {
 
       if (hasVipTables) {
         // Real implementation would query the database
-        const orgData = await withFallback('vip_organizations',
-          () => safeSelect('vip_organizations', '*', { limit: 1 }),
-          async () => [mockOrgData]
+        const orgData = await legacyQueryOptionalTable('vip_organizations', '*', { limit: 1 }) => [mockOrgData]
         );
 
-        const memberData = await withFallback('vip_organization_members',
-          () => safeSelect('vip_organization_members', '*', { limit: 10 }),
-          async () => mockMembers
+        const memberData = await legacyQueryOptionalTable('vip_organization_members', '*', { limit: 10 }) => mockMembers
         );
 
-        const referralData = await withFallback('vip_referral_networks',
-          () => safeSelect('vip_referral_networks', '*', { limit: 10 }),
-          async () => mockReferrals
+        const referralData = await legacyQueryOptionalTable('vip_referral_networks', '*', { limit: 10 }) => mockReferrals
         );
 
         setOrganization(Array.isArray(orgData) ? orgData[0] : orgData);

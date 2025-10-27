@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { legacyQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -69,11 +70,9 @@ export const LeadRoutingOptimizer: React.FC = () => {
     try {
       const { withFallback, safeSelect } = await import('@/lib/db/safeSupabase');
       
-      const rulesData = await withFallback('lead_routing_rules',
-        () => safeSelect('lead_routing_rules', '*', { 
+      const rulesData = await legacyQueryOptionalTable('lead_routing_rules', '*', { 
           order: { column: 'weight_score', ascending: false } 
-        }),
-        async () => []
+        }) => []
       );
       const data = rulesData || [];
       

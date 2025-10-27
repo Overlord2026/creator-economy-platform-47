@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { legacyQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -216,12 +217,10 @@ export const VIPOnboardingEngine: React.FC = () => {
         }
       ];
 
-      const data = await withFallback('vip_organizations',
-        () => safeSelect('vip_organizations', '*', { 
+      const data = await legacyQueryOptionalTable('vip_organizations', '*', { 
           order: { column: 'created_at', ascending: false },
           limit: 50 
-        }),
-        async () => mockOrgs
+        }) => mockOrgs
       );
 
       setVipOrgs(data || []);
