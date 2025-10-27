@@ -1,50 +1,33 @@
 'use client';
 import React from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
 import SafeProviders from '@/app/SafeProviders';
-
-// UI pages
-import LandingPage from '@/pages/marketing/LandingPage';
-import PersonasPage from '@/pages/marketing/PersonasPage';
-import ProsPage from '@/pages/marketing/ProsPage';
-import ProsDetailPage from '@/pages/marketing/ProsDetailPage';
-import ConnectionsPage from '@/pages/marketing/ConnectionsPage';
-import WhyReceiptsPage from '@/pages/marketing/WhyReceiptsPage';
-
-// Demo flows
+import { HashRouter, Routes, Route } from 'react-router-dom';
+import Discover from '@/pages/Discover';
+import Discover from '@/pages/Discover';
+import CatalogPage from '@/pages/landing/CatalogPage';
+import FamilyHome from '@/pages/family/Home';
+import MasterLanding from '@/pages/MasterLanding';
 import DemoOfferLock from '@/pages/DemoOfferLock';
 import DemoContract from '@/pages/DemoContract';
 import DemoSettlement from '@/pages/DemoSettlement';
-
-// Dashboard stub
-import DashboardPage from '@/pages/app/DashboardPage';
-
-// dev styles (optional)
-try { require('./devsafe.css'); } catch {}
 
 export default function App() {
   return (
     <SafeProviders>
       <HashRouter>
         <Routes>
-          {/* Public marketing */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/personas" element={<div className="bg-[#0b1a2b] min-h-screen text-white"><PersonasPage /></div>} />
-          <Route path="/pros" element={<div className="bg-[#0b1a2b] min-h-screen text-white"><ProsPage /></div>} />
-          <Route path="/pros/:id" element={<div className="bg-[#0b1a2b] min-h-screen text-white"><ProsDetailPage /></div>} />
-          <Route path="/connections" element={<div className="bg-[#0b1a2b] min-h-screen text-white"><ConnectionsPage /></div>} />
-          <Route path="/why-receipts" element={<div className="bg-[#0b1a2b] min-h-screen text-white"><WhyReceiptsPage /></div>} />
+          <Route path="/" element={<Discover />} />
 
-          {/* Public demo */}
+          <Route path="/catalog" element={<CatalogPage />} />
+          <Route path="/family" element={<FamilyHome />} />
+          <Route path="/family/home" element={<FamilyHome />} />
+          <Route path="/start" element={<MasterLanding />} />
+
           <Route path="/demo/offerlock" element={<DemoOfferLock />} />
           <Route path="/demo/contract" element={<DemoContract />} />
           <Route path="/demo/settlement" element={<DemoSettlement />} />
 
-          {/* App area */}
-          <Route path="/dashboard" element={<DashboardPage />} />
-
-          {/* Fallback */}
-          <Route path="*" element={<LandingPage />} />
+          <Route path="*" element={<Discover />} />
         </Routes>
       </HashRouter>
     </SafeProviders>
