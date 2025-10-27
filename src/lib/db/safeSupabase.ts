@@ -22,6 +22,7 @@ export async function withFallback<T>(
   }
 }
 
+<<<<<<< HEAD
 // Check if a table exists
 export async function tableExists(tableName: string): Promise<boolean> {
   try {
@@ -179,4 +180,13 @@ export async function legacyUpdateTable<T = any>(
 ): Promise<T[]> {
   const result = await safeUpdate<T>(tableName, updates, filters);
   return isOk(result) ? result.data : [];
+=======
+/** Safe delete with Res wrapper */
+export async function safeDelete(
+  tableName: string,
+  filters: Record
+): Promise<Res> {
+  const { data, error } = await supabase.from(tableName).delete().match(filters);
+  return error ? { ok: false, error } : { ok: true, data };
+>>>>>>> 630aa160 (fix: safeDelete, recording imports, legacyQueryOptionalTable cleanup)
 }
