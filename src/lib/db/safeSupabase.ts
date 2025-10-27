@@ -1,4 +1,3 @@
-
 /* lightweight fetch helpers + withFallback that supports array or factory */
 import { supabase } from '@/integrations/supabase/client';
 
@@ -9,18 +8,7 @@ export type Res<T>   = Ok<T> | Err;
 export function isOk<T>(r: Res<T>): r is Ok<T> { return (r as any).ok === true; }
 export function isErr<T>(r: Res<T>): r is Err { return !(r as any).ok; }
 
-export async function withFallback<T>(
-  valueOrFactory: T | (() => T | Promise<T>),
-  fallback: T
-): Promise<T> {
-  try {
-    const v = typeof valueOrFactory === 'function'
-      ? await (valueOrFactory as any)()
-      : valueOrFactory;
-    return (v ?? fallback) as T;
-  } catch {
-    return fallback;
-  }
+
 }
 
 // Check if a table exists
@@ -189,4 +177,40 @@ export async function safeDelete(
 ): Promise<Res<any>> {
   const { data, error } = await supabase.from(tableName).delete().match(filters);
   return error ? { ok: false, error } : { ok: true, data };
+}
+
+/**
+ * Back-compatible withFallback:
+ *  - 2-param new style: withFallback(valueOrFactory, fallback)
+ *  - 3-param legacy style: withFallback('table', () => fetchPromise, fallbackOrFactory)
+ */
+export async function withFallback<T>(
+  valueOrFactory: T | (() => T | Promise<T>),
+  fallback: T | (() => T | Promise<T>)
+): Promise<T>;
+
+export async function withFallback<T>(
+  tableName: string,
+  fetchFactory: () => Promise<T>,
+  fallback: T | (() => T | Promise<T>)
+): Promise<T>;
+
+export async function withFallback<T>(arg1: any, arg2: any, arg3?: any): Promise<T> {
+  // Legacy 3-arg
+  if (typeof arg1 === 'string' && typeof arg2 === 'function' && typeof arg3 !== 'undefined') {
+    try {
+      const r = await arg2();
+      if (r !== undefined && r !== null) return r as T;
+      return typeof arg3 === 'function' ? await (arg3 as () => T | Promise<T>)() : (arg3 as T);
+    } catch {
+      return typeof arg3 === 'function' ? await (arg3 as () => T | Promise<T>)() : (arg3 as T);
+    }
+  }
+  // New 2-arg
+  try {
+    const v = typeof arg1 === 'function' ? await (arg1 as () => T | Promise<T>)() : (arg1 as T);
+    return (v ?? (typeof arg2 === 'function' ? await (arg2 as () => T | Promise<T>)() : (arg2 as T))) as T;
+  } catch {
+    return typeof arg2 === 'function' ? await (arg2 as () => T | Promise<T>)() : (arg2 as T);
+  }
 }

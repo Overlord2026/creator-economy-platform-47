@@ -55,7 +55,7 @@ export function SurvivingSpouseModule() {
   // Check basic access (free tier users can see educational content, basic+ can use calculator)
   const hasBasicAccess = subscriptionPlan?.tier !== 'free';
   // Check premium access (premium+ users get advanced features)
-  const hasPremiumAccess = subscriptionPlan?.tier === 'premium' || subscriptionPlan?.tier === 'elite';
+  const hasPremiumAccess = subscriptionPlan?.tier === 'premium' || subscriptionPlan?.tier === 'enterprise';
 
   const [spouse1, setSpouse1] = useState<SpouseData>({
     age: 60,

@@ -25,7 +25,7 @@ export function FeatureAccessIndicator({
   const hasTierAccess = requiredTier ? 
     (requiredTier === 'basic' && ['basic', 'premium', 'elite'].includes(subscriptionPlan.tier)) ||
     (requiredTier === 'premium' && ['premium', 'elite'].includes(subscriptionPlan.tier)) ||
-    (requiredTier === 'elite' && subscriptionPlan.tier === 'elite')
+    (requiredTier === 'elite' && subscriptionPlan.tier === 'enterprise')
     : true;
 
   // Check add-on access

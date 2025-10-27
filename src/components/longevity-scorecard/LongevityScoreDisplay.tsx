@@ -28,7 +28,7 @@ export const LongevityScoreDisplay: React.FC<LongevityScoreDisplayProps> = ({
   const { subscriptionPlan } = useSubscriptionAccess();
   const { trackFeatureUsed } = useEventTracking();
   const { toast } = useToast();
-  const isPremium = subscriptionPlan?.tier === 'premium' || subscriptionPlan?.tier === 'elite';
+  const isPremium = subscriptionPlan?.tier === 'premium' || subscriptionPlan?.tier === 'enterprise';
   
   const [emailForDownload, setEmailForDownload] = useState('');
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);

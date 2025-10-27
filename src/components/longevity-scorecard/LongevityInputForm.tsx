@@ -41,7 +41,7 @@ export const LongevityInputForm: React.FC<LongevityInputFormProps> = ({
   hasReturnedUser = false
 }) => {
   const { subscriptionPlan } = useSubscriptionAccess();
-  const isPremium = subscriptionPlan?.tier === 'premium' || subscriptionPlan?.tier === 'elite';
+  const isPremium = subscriptionPlan?.tier === 'premium' || subscriptionPlan?.tier === 'enterprise';
   const formatInputValue = (value: number, type: 'currency' | 'percentage' | 'number') => {
     switch (type) {
       case 'currency':

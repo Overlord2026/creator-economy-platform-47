@@ -11,7 +11,9 @@ type AuthValue = {
   isAuthenticated: boolean;
   isLoading: boolean;
   isQABypassActive: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string 
+  refreshProfile?: () => Promise<void>;
+}>;
   logout: () => void;
 };
 
@@ -21,7 +23,9 @@ const Ctx = createContext<AuthValue>({
   isAuthenticated: false,
   isLoading: false,
   isQABypassActive: false,
-  login: async () => ({ success: false }),
+  login: async () => ({ success: false 
+  refreshProfile: async () => {},
+}),
   logout: () => {}
 });
 

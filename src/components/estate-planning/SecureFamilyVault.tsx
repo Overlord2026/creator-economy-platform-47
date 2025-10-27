@@ -109,7 +109,7 @@ export function SecureFamilyVault() {
   const [vaultSummaryDialogOpen, setVaultSummaryDialogOpen] = useState(false);
 
   // Check premium access
-  const hasVaultAccess = checkFeatureAccess('premium') || subscriptionPlan?.tier === 'premium' || subscriptionPlan?.tier === 'elite';
+  const hasVaultAccess = checkFeatureAccess('premium') || subscriptionPlan?.tier === 'premium' || subscriptionPlan?.tier === 'enterprise';
 
   // Simulated data
   useEffect(() => {
