@@ -33,8 +33,8 @@ const cpaSignupSchema = z.object({
   website: z.string().url({ message: "Please provide a valid website URL" }).optional().or(z.literal("")),
   certifications: z.array(z.string()).optional(),
   specialties: z.array(z.string()).optional(),
-  acceptReferrals: z.boolean().default(false),
-  collaborateWithRIA: z.boolean().default(false),
+  acceptReferrals: z.boolean().optional(),
+  collaborateWithRIA: z.boolean().optional(),
   practiceSoftware: z.string().optional(),
   notes: z.string().optional(),
 });

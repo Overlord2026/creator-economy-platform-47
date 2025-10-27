@@ -19,13 +19,13 @@ import { toast } from "sonner";
 import { tableExists, safeQueryOptionalTable, safeInsertOptionalTable, safeUpdate } from '@/lib/db/safeSupabase';
 
 const affiliationsSchema = z.object({
-  stockExchangeOrFinra: z.boolean().default(false),
-  publicCompany: z.boolean().default(false),
-  usPoliticallyExposed: z.boolean().default(false),
-  awmEmployee: z.boolean().default(false),
-  custodian: z.boolean().default(false),
-  brokerDealer: z.boolean().default(false),
-  familyBrokerDealer: z.boolean().default(false),
+  stockExchangeOrFinra: z.boolean().optional(),
+  publicCompany: z.boolean().optional(),
+  usPoliticallyExposed: z.boolean().optional(),
+  awmEmployee: z.boolean().optional(),
+  custodian: z.boolean().optional(),
+  brokerDealer: z.boolean().optional(),
+  familyBrokerDealer: z.boolean().optional(),
 });
 
 export function AffiliationsFormNew({ onSave }: { onSave: () => void }) {

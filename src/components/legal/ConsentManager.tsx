@@ -104,13 +104,8 @@ export const ConsentManager: React.FC = () => {
         }
       ];
       
-      const consentsData = await withFallback('user_consent',
-        () => safeSelect('user_consent', '*', { 
-          order: { column: 'given_at', ascending: false } 
-        }),
-        async () => mockConsent
-      );
-      const consents = consentsData || [];
+      const { legacyQueryOptionalTable } = await import('@/lib/db/safeSupabase');
+      const consents = await legacyQueryOptionalTable('user_consent', '*', { });
       
       setConsents(consents as ConsentRecord[]);
     } catch (error) {

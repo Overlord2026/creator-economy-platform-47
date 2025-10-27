@@ -60,26 +60,12 @@ export const LendingAnalyticsDashboard: React.FC = () => {
       }
 
       // Fetch loan requests for analysis using safe fallback
-      const { withFallback, safeSelect } = await import('@/lib/db/safeSupabase');
+      const { legacyQueryOptionalTable } = await import('@/lib/db/safeSupabase');
       
-      const loanRequestsData = await withFallback('loan_requests',
-        () => safeSelect('loan_requests', '*', { 
-          order: { column: 'created_at', ascending: false },
-          limit: 100 
-        }),
-        async () => []
-      );
-      const loanRequests = loanRequestsData || [];
-
+      const loanRequests = await legacyQueryOptionalTable('loan_requests', '*', { });
+      
       // Fetch partner metrics using safe fallback
-      const partnerMetricsData = await withFallback('partner_metrics',
-        () => safeSelect('partner_metrics', '*', { 
-          order: { column: 'created_at', ascending: false },
-          limit: 50 
-        }),
-        async () => []
-      );
-      const partnerMetrics = partnerMetricsData || [];
+      const partnerMetrics = await legacyQueryOptionalTable('partner_metrics', '*', { });
 
       // Process analytics data
       const totalVolume = loanRequests?.length || 0;

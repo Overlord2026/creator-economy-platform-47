@@ -19,14 +19,9 @@ const SocialProofSection: React.FC = () => {
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
         
-        const { safeSelect, withFallback } = await import('@/lib/db/safeSupabase');
-        const advisors = await withFallback<Advisor>('advisor_profiles',
-          async () => {
-            const result = await safeSelect<Advisor>('advisor_profiles', '*');
-            return result;
-          },
-          []
-        );
+        const { safeSelect, isOk } = await import('@/lib/db/safeSupabase');
+        const result = await safeSelect<Advisor>('advisor_profiles', '*');
+        const advisors = isOk(result) ? result.data : [];
         
         const recentAdvisors = advisors.filter(advisor => 
           new Date(advisor.created_at || '') >= oneWeekAgo

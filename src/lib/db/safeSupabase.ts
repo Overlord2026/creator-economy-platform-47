@@ -1,11 +1,12 @@
 /* lightweight fetch helpers + withFallback that supports array or factory */
 import { supabase } from '@/integrations/supabase/client';
 
-export type Ok<T>    = { ok: true;  data: T };
-export type Err<E=any> = { ok: false; error: E };
+export type Ok<T>    = { ok: true;  data: T; error?: never };
+export type Err<E=any> = { ok: false; error: E; data?: never };
 export type Res<T>   = Ok<T> | Err;
 
 export function isOk<T>(r: Res<T>): r is Ok<T> { return (r as any).ok === true; }
+export function isErr<T>(r: Res<T>): r is Err { return !(r as any).ok; }
 
 export async function withFallback<T>(
   valueOrFactory: T | (() => T | Promise<T>),
@@ -122,29 +123,33 @@ export async function safeUpdate<T = any>(
   }
 }
 
-// Safe query for optional table - supports both 2 and 3 param signatures
+// Safe query for optional table - returns Res<T[]> wrapper for consistent error handling
 export async function safeQueryOptionalTable<T = any>(
   tableName: string,
   columnsOrFilters?: string | Record<string, any>,
   maybeFilters?: Record<string, any>
-): Promise<T[]> {
-  // Handle both 2-param and 3-param calls
-  // If 2nd param is an object, treat it as filters
-  // If 2nd param is a string, treat it as columns and use 3rd param as filters
+): Promise<Res<T[]>> {
   const columns = typeof columnsOrFilters === 'string' ? columnsOrFilters : '*';
   const filters = typeof columnsOrFilters === 'object' ? columnsOrFilters : (maybeFilters || {});
-  
-  const result = await safeSelect<T>(tableName, columns, filters);
+  return await safeSelect<T>(tableName, columns, filters);
+}
+
+// Legacy wrapper - returns T[] directly for backward compatibility with 3-param signature
+export async function legacyQueryOptionalTable<T = any>(
+  tableName: string,
+  columnsOrFilters?: string | Record<string, any>,
+  maybeFilters?: Record<string, any>
+): Promise<T[]> {
+  const result = await safeQueryOptionalTable<T>(tableName, columnsOrFilters, maybeFilters);
   return isOk(result) ? result.data : [];
 }
 
-// Safe insert for optional table
+// Safe insert for optional table - returns Res<T> wrapper for consistent error handling
 export async function safeInsertOptionalTable<T = any>(
   tableName: string,
   record: Record<string, any>
-): Promise<T | null> {
-  const result = await safeInsert<T>(tableName, record);
-  return isOk(result) ? result.data : null;
+): Promise<Res<T>> {
+  return await safeInsert<T>(tableName, record);
 }
 
 // Legacy wrapper for backward compatibility - returns array directly instead of Res<T[]>
