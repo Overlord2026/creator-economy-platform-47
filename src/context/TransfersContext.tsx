@@ -161,7 +161,7 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
     fetchTransfers();
 
     // Set up real-time subscription for transfers
-    const channel = supabase
+    const channel = sb
       .channel('transfers_changes')
       .on(
         'postgres_changes',

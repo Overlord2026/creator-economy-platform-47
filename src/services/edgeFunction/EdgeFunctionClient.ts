@@ -1,4 +1,4 @@
-import { getAnonClient } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 
 export type EdgeFunctionResponse<T = unknown> = {
   success: boolean;
@@ -7,7 +7,7 @@ export type EdgeFunctionResponse<T = unknown> = {
 };
 
 export class EdgeFunctionClient {
-  private s = getAnonClient();
+  private s = supabase;
 
   async invoke<T = unknown>(name: string, payload?: any): Promise<EdgeFunctionResponse<T>> {
     const { data, error } = await this.s.functions.invoke(name, { body: payload ?? {} });
