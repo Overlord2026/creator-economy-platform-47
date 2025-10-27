@@ -1,19 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import DevSafeApp from './DevSafeApp';
+import App from './App';
+import { setupNetworkErrorHandling } from '@/components/monitoring/network';
 
-try {
-  const mod = require('@/components/monitoring/network');
-  if (mod && typeof mod.setupNetworkErrorHandling === 'function') {
-    mod.setupNetworkErrorHandling();
-  }
-} catch (_){}
+setupNework();
 
-const rootEl = document.getElementById('root');
-if (!rootEl) throw new Error('Root element #root missing');
+function setupNework() {
+  try { setupNetworkErrorHandling(); } catch (_e) {}
+}
 
-ReactDOM.createRoot(rootEl).render(
+const el = document.getElementById('root');
+if (!el) throw new Error('Missing #root');
+
+ReactDOM.createRoot(el).render(
   <React.StrictMode>
-    <DevSafeApp />
+    <App />
   </React.StrictMode>
 );

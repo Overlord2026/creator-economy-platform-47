@@ -1,13 +1,11 @@
+'use client';
 import React from 'react';
 import { BOOTSTRAP_MODE } from '@/config/bootstrap';
-import AuthProvider from '@/context/AuthContext';
+import AuthProvider from '@/context/AuthContext'; // your existing client-safe AuthProvider
 
 type Props = { children: React.ReactNode };
 
 export default function SafeProviders({ children }: Props) {
-  if (BOOTSTRAP_MODE) {
-    // In Lovable preview, avoid heavy providers to prevent hook/dispatcher crashes
-    return <>{children}</>;
-  }
+  if (BOOTSTRAP_MODE) return <>{children}</>;
   return <AuthProvider>{children}</AuthProvider>;
 }

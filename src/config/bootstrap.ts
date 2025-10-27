@@ -1,5 +1,12 @@
 export const isLovableHost =
   typeof window !== 'undefined' && /\.lovableproject\.com$/i.test(window.location.hostname);
 
-// You can also force this with VITE_BOOTSTRAP_MODE=true if needed.
-export const BOOTSTRAP_MODE = isLovableHost || import.meta.env.VITE_BOOTSTRAP_MODE === 'true';
+export const BOOTSTRAP_MODE =
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_BOOTSTRAP_MODE === 'true')
+  || !!isLobbyPreview()
+  || false;
+
+function isLobbyPreview(): boolean {
+  const h = typeof window !== 'undefined' ? window.location.hostname : '';
+  return /(?:-pr-|\blovableproject\.com$)/.test(h);
+}
