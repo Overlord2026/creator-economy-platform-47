@@ -220,8 +220,7 @@ export const VIPOnboardingEngine: React.FC = () => {
       const data = await legacyQueryOptionalTable('vip_organizations', '*', { 
           order: { column: 'created_at', ascending: false },
           limit: 50 
-        }) => mockOrgs
-      );
+        }).then((data) => data.length > 0 ? data : mockOrgs);
 
       setVipOrgs(data || []);
     } catch (error: any) {

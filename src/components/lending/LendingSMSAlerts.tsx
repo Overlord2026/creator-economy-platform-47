@@ -37,12 +37,14 @@ export function LendingSMSAlerts() {
 
   const loadRecentAlerts = async () => {
     try {
-      const { withFallback, safeSelect } = await import('@/lib/db/safeSupabase');
+      const { withFallback, safeSelect, legacyQueryOptionalTable } = await import('@/lib/db/safeSupabase');
       
-      const alertsData = await legacyQueryOptionalTable('lending_sms_alerts', '*', { 
+      const alertsData = await withFallback(
+        () => legacyQueryOptionalTable('lending_sms_alerts', '*', { 
           order: { column: 'created_at', ascending: false },
           limit: 10 
-        }) => []
+        }),
+        []
       );
       const data = alertsData || [];
       

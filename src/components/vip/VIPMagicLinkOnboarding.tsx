@@ -110,8 +110,7 @@ export const VIPMagicLinkOnboarding: React.FC = () => {
 
       const data = await legacyQueryOptionalTable('vip_organizations', '*', { 
           limit: 1
-        }) => [mockOrgData]
-      );
+        }).then((data) => data.length > 0 ? data : [mockOrgData]);
 
       const orgData = Array.isArray(data) ? data[0] : data;
 

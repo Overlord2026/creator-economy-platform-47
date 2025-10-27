@@ -68,11 +68,13 @@ export const LeadRoutingOptimizer: React.FC = () => {
 
   const fetchRules = async () => {
     try {
-      const { withFallback, safeSelect } = await import('@/lib/db/safeSupabase');
+      const { withFallback, safeSelect, legacyQueryOptionalTable } = await import('@/lib/db/safeSupabase');
       
-      const rulesData = await legacyQueryOptionalTable('lead_routing_rules', '*', { 
+      const rulesData = await withFallback(
+        () => legacyQueryOptionalTable('lead_routing_rules', '*', { 
           order: { column: 'weight_score', ascending: false } 
-        }) => []
+        }),
+        []
       );
       const data = rulesData || [];
       

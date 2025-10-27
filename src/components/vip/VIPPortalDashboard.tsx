@@ -104,13 +104,16 @@ export const VIPPortalDashboard: React.FC = () => {
 
       if (hasVipTables) {
         // Real implementation would query the database
-        const orgData = await legacyQueryOptionalTable('vip_organizations', '*', { limit: 1 }) => [mockOrgData]
+        const orgData = await legacyQueryOptionalTable('vip_organizations', '*', { limit: 1 }).then(
+          (data) => data.length > 0 ? data : [mockOrgData]
         );
 
-        const memberData = await legacyQueryOptionalTable('vip_organization_members', '*', { limit: 10 }) => mockMembers
+        const memberData = await legacyQueryOptionalTable('vip_organization_members', '*', { limit: 10 }).then(
+          (data) => data.length > 0 ? data : mockMembers
         );
 
-        const referralData = await legacyQueryOptionalTable('vip_referral_networks', '*', { limit: 10 }) => mockReferrals
+        const referralData = await legacyQueryOptionalTable('vip_referral_networks', '*', { limit: 10 }).then(
+          (data) => data.length > 0 ? data : mockReferrals
         );
 
         setOrganization(Array.isArray(orgData) ? orgData[0] : orgData);
