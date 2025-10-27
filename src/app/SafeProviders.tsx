@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { BOOTSTRAP_MODE } from '@/config/bootstrap';
-import AuthProvider from '@/context/AuthContext'; // your existing client-safe AuthProvider
+import AuthProvider from '@/context/AuthContext';
 
 type Props = { children: React.ReactNode };
 

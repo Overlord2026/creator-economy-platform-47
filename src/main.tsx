@@ -3,16 +3,12 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { setupNetworkErrorHandling } from '@/components/monitoring/network';
 
-setupNework();
+setupNetworkErrorHandling();
 
-function setupNework() {
-  try { setupNetworkErrorHandling(); } catch (_e) {}
-}
+const root = document.getElementById('root');
+if (!root) throw new Error('Missing #root');
 
-const el = document.getElementById('root');
-if (!el) throw new Error('Missing #root');
-
-ReactDOM.createRoot(el).render(
+ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>

@@ -2,7 +2,6 @@
 import React from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import SafeProviders from '@/app/SafeProviders';
-import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
 // UI pages
 import LandingPage from '@/pages/marketing/LandingPage';
@@ -17,10 +16,10 @@ import DemoOfferLock from '@/pages/DemoOfferLock';
 import DemoContract from '@/pages/DemoContract';
 import DemoSettlement from '@/pages/DemoSettlement';
 
-// New dashboard stub
+// Dashboard stub
 import DashboardPage from '@/pages/app/DashboardPage';
 
-// Optional dev CSS
+// dev styles (optional)
 try { require('./devsafe.css'); } catch {}
 
 export default function App() {
@@ -41,13 +40,13 @@ export default function App() {
           <Route path="/demo/contract" element={<DemoContract />} />
           <Route path="/demo/settlement" element={<DemoSettlement />} />
 
-          {/* App area (can be auth-gated later) */}
+          {/* App area */}
           <Route path="/dashboard" element={<DashboardPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<LandingPage />} />
         </Routes>
       </HashRouter>
-    </div>
+    </SafeProviders>
   );
 }
