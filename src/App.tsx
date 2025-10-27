@@ -11,7 +11,7 @@ import ProsDetailPage from '@/pages/marketing/ProsDetailPage';
 import ConnectionsPage from '@/pages/marketing/ConnectionsPage';
 import WhyReceiptsPage from '@/pages/marketing/WhyReceiptsPage';
 
-// Demo flows (already exist)
+// Demo flows
 import DemoOfferLock from '@/pages/DemoOfferLock';
 import DemoContract from '@/pages/DemoContract';
 import DemoSettlement from '@/pages/DemoSettlement';

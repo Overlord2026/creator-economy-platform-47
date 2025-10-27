@@ -17,12 +17,10 @@ export default defineConfig({
     },
     dedupe: ['react', 'react-dom'],
   },
-  esbuild: {
-    loader: 'jsx',
-  },
   optimizeDeps: {
     dedupe: ['react', 'react-dom'],
     include: ['react', 'react-dom'],
+    // Only treat plain .js as JSX during prebundle; leave .ts/.tsx alone.
     esbuildOptions: { loader: { '.js': 'jsx' } },
   },
   build: { rollupOptions: { input: 'index.html' } },
