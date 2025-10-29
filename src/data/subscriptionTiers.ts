@@ -1,7 +1,7 @@
 
-import { SubscriptionTier } from "@/types/subscription";
+import { SubscriptionTierDetails } from "@/types/subscription";
 
-export const subscriptionTiers: SubscriptionTier[] = [
+export const subscriptionTiers: SubscriptionTierDetails[] = [
   {
     id: "basic",
     name: "Basic",

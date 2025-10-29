@@ -2,13 +2,13 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { SubscriptionTier } from '@/types/subscription';
+import { SubscriptionTierDetails } from '@/types/subscription';
 import { Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSubscription } from '@/context/SubscriptionContext';
 
 interface SubscriptionTierCardProps {
-  tier: SubscriptionTier;
+  tier: SubscriptionTierDetails;
   onSelectTier: (tierId: string) => void;
 }
 

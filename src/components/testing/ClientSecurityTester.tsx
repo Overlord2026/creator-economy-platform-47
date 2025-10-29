@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/context/AuthContext';
-import { withFallback, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
+import { withFallback, safeQueryOptionalTable, isOk } from '@/lib/db/safeSupabase';
 import { 
   Shield, 
   AlertTriangle, 
@@ -91,7 +91,10 @@ export const ClientSecurityTester: React.FC<ClientSecurityTesterProps> = ({ onRe
 
   const testProfileEnumeration = async (): Promise<SecurityTestResult> => {
     try {
-      const profiles = await withFallback('profiles', () => safeQueryOptionalTable('profiles', '*'), () => []);
+      const profiles = await withFallback('profiles', async () => {
+        const res = await safeQueryOptionalTable('profiles', '*');
+        return isOk(res) ? (res.data || []) : [];
+      }, async () => []);
       
       return {
         id: 'profile-enum-test',
@@ -118,7 +121,10 @@ export const ClientSecurityTester: React.FC<ClientSecurityTesterProps> = ({ onRe
 
   const testProfileAccessControl = async (): Promise<SecurityTestResult> => {
     try {
-      const otherProfiles = await withFallback('profiles', () => safeQueryOptionalTable('profiles', '*'), () => []);
+      const otherProfiles = await withFallback('profiles', async () => {
+        const res = await safeQueryOptionalTable('profiles', '*');
+        return isOk(res) ? (res.data || []) : [];
+      }, async () => []);
       
       return {
         id: 'profile-access-test',
@@ -145,7 +151,10 @@ export const ClientSecurityTester: React.FC<ClientSecurityTesterProps> = ({ onRe
 
   const testFamilyMemberRLS = async (): Promise<SecurityTestResult> => {
     try {
-      const families = await withFallback('family_members', () => safeQueryOptionalTable('family_members', '*'), () => []);
+      const families = await withFallback('family_members', async () => {
+        const res = await safeQueryOptionalTable('family_members', '*');
+        return isOk(res) ? (res.data || []) : [];
+      }, async () => []);
       
       return {
         id: 'family-rls-test',
@@ -172,7 +181,10 @@ export const ClientSecurityTester: React.FC<ClientSecurityTesterProps> = ({ onRe
 
   const testAdvisorAssignmentSecurity = async (): Promise<SecurityTestResult> => {
     try {
-      const assignments = await withFallback('advisor_assignments', () => safeQueryOptionalTable('advisor_assignments', '*'), () => []);
+      const assignments = await withFallback('advisor_assignments', async () => {
+        const res = await safeQueryOptionalTable('advisor_assignments', '*');
+        return isOk(res) ? (res.data || []) : [];
+      }, async () => []);
       
       return {
         id: 'advisor-assignment-test',
@@ -199,7 +211,10 @@ export const ClientSecurityTester: React.FC<ClientSecurityTesterProps> = ({ onRe
 
   const testAdminEscalation = async (): Promise<SecurityTestResult> => {
     try {
-      const adminProfiles = await withFallback('profiles', () => safeQueryOptionalTable('profiles', '*'), () => []);
+      const adminProfiles = await withFallback('profiles', async () => {
+        const res = await safeQueryOptionalTable('profiles', '*');
+        return isOk(res) ? (res.data || []) : [];
+      }, async () => []);
       
       return {
         id: 'admin-escalation-test',
@@ -224,7 +239,10 @@ export const ClientSecurityTester: React.FC<ClientSecurityTesterProps> = ({ onRe
 
   const testDataLeakage = async (): Promise<SecurityTestResult> => {
     try {
-      const allProfiles = await withFallback('profiles', () => safeQueryOptionalTable('profiles', '*'), () => []);
+      const allProfiles = await withFallback('profiles', async () => {
+        const res = await safeQueryOptionalTable('profiles', '*');
+        return isOk(res) ? (res.data || []) : [];
+      }, async () => []);
       
       return {
         id: 'data-leakage-test',

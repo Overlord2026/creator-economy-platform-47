@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { legacyQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
+import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable, isOk } from '@/lib/db/safeSupabase';
 import { sb } from '@/lib/supabase-relaxed';
 
 interface Persona {
@@ -38,16 +38,22 @@ export default function PersonaSwitcher() {
 
       // Load personas using safe database pattern
       const personaData = await withFallback('personas',
-        () => safeQueryOptionalTable('personas', '*', { order: { column: 'created_at', ascending: true } }),
-        () => []
+        async () => {
+          const res = await safeQueryOptionalTable('personas', '*', { order: { column: 'created_at', ascending: true } });
+          return isOk(res) ? (res.data || []) : [];
+        },
+        async () => []
       );
 
       setPersonas(personaData.map((p: any) => ({ ...p, kind: (p.persona_kind ?? p.kind) as any })));
 
       // Load active session using safe database pattern
       const sessionData = await withFallback('persona_sessions',
-        () => safeQueryOptionalTable('persona_sessions', 'persona_id', { limit: 1 }),
-        () => []
+        async () => {
+          const res = await safeQueryOptionalTable('persona_sessions', 'persona_id', { limit: 1 });
+          return isOk(res) ? (res.data || []) : [];
+        },
+        async () => []
       );
 
       if (sessionData.length > 0 && (sessionData[0] as any)?.persona_id) {

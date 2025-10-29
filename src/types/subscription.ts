@@ -43,3 +43,29 @@ export type SubscriptionPlan = {
   usage_counters?: UsageCounters;
   usage_limits?: UsageCounters;
 };
+
+// Subscription tier details (object shape for UI components)
+export interface SubscriptionTierFeature {
+  id: string;
+  name: string;
+  included: boolean;
+}
+
+export interface SubscriptionTierDetails {
+  id: SubscriptionTier;
+  name: string;
+  price: number | string;
+  description: string;
+  buttonText: string;
+  recommended?: boolean;
+  color?: string;
+  features: SubscriptionTierFeature[];
+}
+
+export interface PremiumUpgradePrompt {
+  feature_name: string;
+  required_tier: SubscriptionTier;
+  current_usage?: number;
+  usage_limit?: number;
+  add_on_required?: boolean;
+}

@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, CheckCircle, XCircle, Clock, RefreshCw } from 'lucide-react';
 import { sb } from '@/lib/supabase-relaxed';
-import { safeInsertOptionalTable, safeQueryOptionalTable, safeUpdate, withFallback } from '@/lib/db/safeSupabase';
+import { safeInsertOptionalTable, safeQueryOptionalTable, safeUpdate, withFallback, isOk } from '@/lib/db/safeSupabase';
 
 interface SecurityTestResult {
   id: string;
@@ -190,8 +190,11 @@ export const IntegrationTestSuite: React.FC = () => {
     try {
       // Use safe database pattern for testing
       const result = await withFallback('offers', 
-        () => safeQueryOptionalTable('offers', '*', { limit: 1 }),
-        () => []
+        async () => {
+          const res = await safeQueryOptionalTable('offers', '*', { limit: 1 });
+          return isOk(res) ? (res.data || []) : [];
+        },
+        async () => []
       );
       updateTestStatus('Database Operations', 'basic-queries', 'passed', 'Basic queries working');
     } catch (error) {
@@ -222,8 +225,11 @@ export const IntegrationTestSuite: React.FC = () => {
     updateTestStatus('Authentication', 'profile-access', 'running');
     try {
       const profiles = await withFallback('profiles',
-        () => safeQueryOptionalTable('profiles', '*', { limit: 1 }),
-        () => []
+        async () => {
+          const res = await safeQueryOptionalTable('profiles', '*', { limit: 1 });
+          return isOk(res) ? (res.data || []) : [];
+        },
+        async () => []
       );
       updateTestStatus('Authentication', 'profile-access', 'passed', 'Profile access working');
     } catch (error) {
@@ -279,8 +285,11 @@ export const IntegrationTestSuite: React.FC = () => {
     try {
       // Test RLS policies using safe database pattern
       const profiles = await withFallback('profiles',
-        () => safeQueryOptionalTable('profiles', '*', { limit: 1 }),
-        () => []
+        async () => {
+          const res = await safeQueryOptionalTable('profiles', '*', { limit: 1 });
+          return isOk(res) ? (res.data || []) : [];
+        },
+        async () => []
       );
       updateTestStatus('Security & Compliance', 'rls-policies', 'passed', 'RLS policies enforced');
     } catch (error) {
@@ -309,8 +318,11 @@ export const IntegrationTestSuite: React.FC = () => {
     try {
       // Test query performance using safe database pattern
       const result = await withFallback('offers',
-        () => safeQueryOptionalTable('offers', '*', { limit: 10 }),
-        () => []
+        async () => {
+          const res = await safeQueryOptionalTable('offers', '*', { limit: 10 });
+          return isOk(res) ? (res.data || []) : [];
+        },
+        async () => []
       );
       const duration = Date.now() - startTime;
       updateTestStatus('Performance', 'query-performance', 'passed', `Query completed in ${duration}ms`, undefined, duration);

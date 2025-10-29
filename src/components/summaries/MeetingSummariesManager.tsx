@@ -75,7 +75,7 @@ export function MeetingSummariesManager() {
   const fetchSummaries = async () => {
     try {
       setLoading(true);
-      const { data, error } = await (supabase as any)
+      const { data, error } = await (sb as any)
         .from('meeting_summaries')
         .select(`
           *,
