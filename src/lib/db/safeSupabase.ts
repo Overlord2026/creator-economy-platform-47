@@ -8,9 +8,6 @@ export type Res<T>   = Ok<T> | Err;
 export function isOk<T>(r: Res<T>): r is Ok<T> { return (r as any).ok === true; }
 export function isErr<T>(r: Res<T>): r is Err { return !(r as any).ok; }
 
-
-}
-
 // Check if a table exists
 export async function tableExists(tableName: string): Promise<boolean> {
   try {
