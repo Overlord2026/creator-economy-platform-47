@@ -23,7 +23,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useEventTracking } from '@/hooks/useEventTracking';
 import { useToast } from '@/hooks/use-toast';
-import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
+import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable, isOk } from '@/lib/db/safeSupabase';
 
 interface PrivacySettings {
   data_collection: {
@@ -100,10 +100,13 @@ export const PrivacyDataSettings: React.FC = () => {
     try {
       const profilesData = await withFallback(
         'profiles',
-        () => safeQueryOptionalTable('profiles', '*'),
-        () => []
+        async () => {
+          const res = await safeQueryOptionalTable('profiles', '*');
+          return isOk(res) ? (res.data || []) : [];
+        },
+        async () => []
       );
-      const result = profilesData || [];
+      const result = profilesData;
       
       const profileData = result.find((p: any) => p.id === user.id);
       if (profileData && (profileData as any)?.privacy_settings) {

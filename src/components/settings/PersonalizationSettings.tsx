@@ -31,7 +31,7 @@ import { useSubscriptionAccess } from '@/hooks/useSubscriptionAccess';
 import { useEventTracking } from '@/hooks/useEventTracking';
 import { useToast } from '@/hooks/use-toast';
 import { sb } from '@/lib/supabase-relaxed';
-import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
+import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable, isOk } from '@/lib/db/safeSupabase';
 
 interface PersonalizationSettings {
   theme: 'light' | 'dark' | 'system';
@@ -93,10 +93,13 @@ export const PersonalizationSettings: React.FC = () => {
     try {
       const profilesData = await withFallback(
         'profiles',
-        () => safeQueryOptionalTable('profiles', '*'),
-        () => []
+        async () => {
+          const res = await safeQueryOptionalTable('profiles', '*');
+          return isOk(res) ? (res.data || []) : [];
+        },
+        async () => []
       );
-      const result = profilesData || [];
+      const result = profilesData;
       
       const profileData = result.find((p: any) => p.id === user.id);
       if (profileData && (profileData as any)?.personalization_settings) {

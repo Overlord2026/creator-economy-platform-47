@@ -28,7 +28,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useEventTracking } from '@/hooks/useEventTracking';
 import { useToast } from '@/hooks/use-toast';
 import { sb } from '@/lib/supabase-relaxed';
-import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
+import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable, isOk } from '@/lib/db/safeSupabase';
 
 interface LoginSession {
   id: string;
@@ -75,10 +75,13 @@ export const SecuritySettings: React.FC = () => {
     try {
       // Load user profile for 2FA status using safe database pattern
       const profilesData = await withFallback('profiles', 
-        () => safeQueryOptionalTable('profiles', 'two_factor_enabled', { limit: 1 }),
-        () => []
+        async () => {
+          const res = await safeQueryOptionalTable('profiles', 'two_factor_enabled', { limit: 1 });
+          return isOk(res) ? (res.data || []) : [];
+        },
+        async () => []
       );
-      const profileData = profilesData || [];
+      const profileData = profilesData;
       
       if (profileData.length > 0) {
         setTwoFactorEnabled((profileData[0] as any)?.two_factor_enabled || false);

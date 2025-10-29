@@ -77,7 +77,7 @@ const businessFilingSchema = z.object({
   completed: z.boolean().default(false),
 });
 
-type BusinessFilingForm = z.infer<typeof businessFilingSchema>;
+type BusinessFilingForm = z.input<typeof businessFilingSchema>;
 
 const filingTypes = [
   "State Filing", 
