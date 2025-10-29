@@ -4,6 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 
 type AuthValue = {
   user: any;
+  userProfile?: any;
+  isAuthenticated: boolean;
+  isLoading: boolean;
   loading: boolean;
   error?: any;
   session?: any;
@@ -15,6 +18,9 @@ type AuthValue = {
 
 const Ctx = createContext<AuthValue>({
   user: null,
+  userProfile: null,
+  isAuthenticated: false,
+  isLoading: false,
   loading: false,
   error: undefined,
   session: undefined,
@@ -63,7 +69,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   };
 
   const value = useMemo<AuthValue>(() => ({
-    user, loading, error, session,
+    user,
+    userProfile: user,
+    isAuthenticated: !!user,
+    isLoading: loading,
+    loading,
+    error,
+    session,
     isQABypassActive: false,
     login: async () => ({ success: false }),
     logout: async () => {},

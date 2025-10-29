@@ -8,6 +8,20 @@ export type Res<T>   = Ok<T> | Err;
 export function isOk<T>(r: Res<T>): r is Ok<T> { return (r as any).ok === true; }
 export function isErr<T>(r: Res<T>): r is Err { return !(r as any).ok; }
 
+// Unwrap helpers
+export function unwrap<T>(res: Res<T>, fallback: T): T {
+  return isOk(res) ? res.data : fallback;
+}
+
+export function unwrapArray<T>(res: Res<T[]>): T[] {
+  return isOk(res) ? res.data : [];
+}
+
+export function unwrapOrThrow<T>(res: Res<T>, errorMsg?: string): T {
+  if (isOk(res)) return res.data;
+  throw new Error(errorMsg || `Operation failed: ${JSON.stringify(res.error)}`);
+}
+
 // Check if a table exists
 export async function tableExists(tableName: string): Promise<boolean> {
   try {

@@ -53,7 +53,7 @@ export const ProgressOnboarding: React.FC<ProgressOnboardingProps> = ({
 
   useEffect(() => {
     setSteps(getEnhancedOnboardingSteps(role));
-    trackEvent('onboarding', 'onboarding_started', { role });
+    trackEvent('onboarding_started', { category: 'onboarding', role });
   }, [role, trackEvent]);
 
   const getEnhancedOnboardingSteps = (userRole: string): OnboardingStep[] => {
@@ -204,7 +204,7 @@ export const ProgressOnboarding: React.FC<ProgressOnboardingProps> = ({
     ));
     
     // Track completion
-    trackEvent('onboarding', `${stepId}_completed`, { role });
+    trackEvent(`${stepId}_completed`, { category: 'onboarding', role });
     
     // Check for milestones
     const completedCount = steps.filter(s => s.completed).length + 1;

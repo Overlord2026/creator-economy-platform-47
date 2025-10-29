@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Calculator, DollarSign, Calendar, TrendingDown, Save, BarChart3 } from 'lucide-react';
-import { tableExists, safeInsert, withFallback, safeSelect } from '@/lib/db/safeSupabase';
+import { tableExists, safeInsert, withFallback, safeSelect, isOk } from '@/lib/db/safeSupabase';
 import { mockLoanScenarios, type LoanScenario } from '@/lib/mocks/loanScenarios.mock';
 import FallbackBanner from '@/components/common/FallbackBanner';
 import { sb } from '@/lib/supabase-relaxed';
@@ -55,15 +55,16 @@ export function LoanScenarioCalculator() {
           'loan_scenarios',
           async () => {
             const { data: { user } } = await sb.auth.getUser();
-            if (!user) return { ok: true, data: [] };
+            if (!user) return [];
             
-            return safeSelect<LoanScenario>('loan_scenarios', '*', {
+            const result = await safeSelect<LoanScenario>('loan_scenarios', '*', {
               order: { column: 'created_at', ascending: false }
             });
+            return isOk(result) ? result.data : [];
           },
-          () => mockLoanScenarios
+          async () => mockLoanScenarios
         );
-        const scenarioData = scenariosData || [];
+        const scenarioData = Array.isArray(scenariosData) ? scenariosData : [];
 
         setSavedScenarios(scenarioData);
       } catch (error) {
@@ -189,12 +190,15 @@ export function LoanScenarioCalculator() {
       // Reload scenarios
       const reloadedData = await withFallback(
         'loan_scenarios',
-        async () => safeSelect<LoanScenario>('loan_scenarios', '*', {
-          order: { column: 'created_at', ascending: false }
-        }),
-        () => mockLoanScenarios
+        async () => {
+          const result = await safeSelect<LoanScenario>('loan_scenarios', '*', {
+            order: { column: 'created_at', ascending: false }
+          });
+          return isOk(result) ? result.data : [];
+        },
+        async () => mockLoanScenarios
       );
-      const scenarioData2 = reloadedData || [];
+      const scenarioData2 = Array.isArray(reloadedData) ? reloadedData : [];
       
       setSavedScenarios(scenarioData2);
     } catch (error) {

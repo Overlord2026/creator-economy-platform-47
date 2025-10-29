@@ -1,4 +1,4 @@
-import { tableExists, safeSelect, withFallback, safeUpdate } from '@/lib/db/safeSupabase';
+import { tableExists, safeSelect, withFallback, safeUpdate, unwrapArray, isOk } from '@/lib/db/safeSupabase';
 import type { KycRecord } from '@/lib/mocks/kyc.mock';
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -74,15 +74,18 @@ export const KYCVerificationFlow: React.FC<KYCVerificationFlowProps> = ({
       const { withFallback, safeSelect, tableExists } = await import('@/lib/db/safeSupabase');
       const { mockKyc } = await import('@/lib/mocks/kyc.mock');
 
-      const rowsData = await withFallback<KycRecord>(
+      const rowsData = await withFallback(
         'kyc_verifications',
-        () => safeSelect<KycRecord>('kyc_verifications', '*', {
-          order: { column: 'created_at', ascending: false },
-          limit: 50,
-        }),
+        async () => {
+          const result = await safeSelect<KycRecord>('kyc_verifications', '*', {
+            order: { column: 'created_at', ascending: false },
+            limit: 50,
+          });
+          return isOk(result) ? result.data : [];
+        },
         async () => mockKyc
       );
-      const rows = rowsData || [];
+      const rows = Array.isArray(rowsData) ? rowsData : [];
 
       setKyc(rows);
       setFallbackActive(!(await tableExists('kyc_verifications')));
