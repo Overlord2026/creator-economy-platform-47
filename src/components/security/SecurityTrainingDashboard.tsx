@@ -85,23 +85,22 @@ export const SecurityTrainingDashboard: React.FC = () => {
   const fetchTrainingData = async () => {
     try {
       // Use safe queries for training data with fallbacks
-      const schedulesData = await withFallback(
+      const schedules = await withFallback(
         'security_training_schedules',
         async () => {
           const result = await safeQueryOptionalTable('security_training_schedules', '*', {
             order: { column: 'next_due_date', ascending: true }
           });
-          return result;
+          return result.ok && result.data ? result.data : [];
         },
-        async () => []
+        []
       );
-      const schedules = schedulesData || [];
 
-      const completionsData = await withFallback(
+      const userCompletions = await withFallback(
         'security_training_completions',
         async () => {
           const user = await sb.auth.getUser();
-          if (!user.data.user) return { ok: true, data: [] };
+          if (!user.data.user) return [];
           
           const result = await safeQueryOptionalTable('security_training_completions', '*', {
             order: { column: 'completed_at', ascending: false }
@@ -109,22 +108,20 @@ export const SecurityTrainingDashboard: React.FC = () => {
           
           // Filter by user_id on client side since we can't use eq with safe pattern
           if (result.ok && result.data) {
-            const filteredData = result.data.filter((completion: any) => 
+            return result.data.filter((completion: any) => 
               completion.user_id === user.data.user.id
             );
-            return { ok: true, data: filteredData };
           }
-          return result;
+          return [];
         },
-        async () => []
+        []
       );
-      const userCompletions = completionsData || [];
 
-      const phishingData = await withFallback(
+      const phishing = await withFallback(
         'phishing_simulation_results',
         async () => {
           const user = await sb.auth.getUser();
-          if (!user.data.user) return { ok: true, data: [] };
+          if (!user.data.user) return [];
           
           const result = await safeQueryOptionalTable('phishing_simulation_results', '*', {
             order: { column: 'created_at', ascending: false }
@@ -132,20 +129,18 @@ export const SecurityTrainingDashboard: React.FC = () => {
           
           // Filter by user_id on client side
           if (result.ok && result.data) {
-            const filteredData = result.data.filter((result: any) => 
+            return result.data.filter((result: any) => 
               result.user_id === user.data.user.id
             );
-            return { ok: true, data: filteredData };
           }
-          return result;
+          return [];
         },
-        async () => []
+        []
       );
-      const phishing = phishingData || [];
 
-      setTrainingSchedules(schedules || []);
-      setCompletions(userCompletions || []);
-      setPhishingResults(phishing || []);
+      setTrainingSchedules(schedules);
+      setCompletions(userCompletions);
+      setPhishingResults(phishing);
     } catch (error) {
       console.error('Error fetching training data:', error);
       toast({

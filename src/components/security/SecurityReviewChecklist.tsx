@@ -58,7 +58,7 @@ export const SecurityReviewChecklist: React.FC<SecurityReviewChecklistProps> = (
   const fetchChecklist = async () => {
     try {
       // Use withFallback pattern to handle missing table gracefully
-      const checklistResult = await withFallback(
+      const checklistData = await withFallback(
         'security_review_checklists',
         async () => {
           const result = await safeQueryOptionalTable('security_review_checklists', '*', {
@@ -70,29 +70,25 @@ export const SecurityReviewChecklist: React.FC<SecurityReviewChecklistProps> = (
             const data = result.data[0] as any;
             // Filter by checklist_type and is_active if those fields exist
             if (data.checklist_type === checklistType && data.is_active !== false) {
-              return { ok: true, data: [data] };
+              return [data];
             }
           }
-          return { ok: false, data: [] };
+          return [];
         },
-        async () => {
-          // Fallback to default checklist when table doesn't exist
-          return [{
-            id: 'default',
-            checklist_name: `Default ${checklistType.replace('_', ' ')} Checklist`,
-            checklist_type: checklistType,
-            checklist_items: [
-              { id: '1', item: 'Review code for security vulnerabilities', required: true },
-              { id: '2', item: 'Verify input validation and sanitization', required: true },
-              { id: '3', item: 'Check authentication and authorization logic', required: true },
-              { id: '4', item: 'Review error handling and logging', required: false }
-            ],
-            mandatory_items: ['1', '2', '3'],
-            version: 1
-          }];
-        }
+        [{
+          id: 'default',
+          checklist_name: `Default ${checklistType.replace('_', ' ')} Checklist`,
+          checklist_type: checklistType,
+          checklist_items: [
+            { id: '1', item: 'Review code for security vulnerabilities', required: true },
+            { id: '2', item: 'Verify input validation and sanitization', required: true },
+            { id: '3', item: 'Check authentication and authorization logic', required: true },
+            { id: '4', item: 'Review error handling and logging', required: false }
+          ],
+          mandatory_items: ['1', '2', '3'],
+          version: 1
+        }]
       );
-      const checklistData = checklistResult || [];
 
       if (checklistData.length > 0) {
         const data = checklistData[0];

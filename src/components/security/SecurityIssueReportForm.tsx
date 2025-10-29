@@ -30,7 +30,7 @@ const reportSchema = z.object({
   anonymized: z.boolean().default(false)
 });
 
-type ReportFormData = z.infer<typeof reportSchema>;
+type ReportFormData = z.input<typeof reportSchema>;
 
 interface SecurityIssueReportFormProps {
   onSuccess?: () => void;

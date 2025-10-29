@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { legacyQueryOptionalTable, withFallback, isOk, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
+import { legacyQueryOptionalTable, withFallback, isOk, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +23,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useEventTracking } from '@/hooks/useEventTracking';
 import { useToast } from '@/hooks/use-toast';
 import { sb } from '@/lib/supabase-relaxed';
-import { withFallback, safeQueryOptionalTable, safeInsertOptionalTable } from '@/lib/db/safeSupabase';
+
 
 export const AccountSettings: React.FC = () => {
   const { user } = useAuth();
