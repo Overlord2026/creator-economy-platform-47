@@ -82,7 +82,7 @@ export function ProfessionalFeatures({ selectedSegment }: ProfessionalFeaturesPr
         </h2>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
           Comprehensive tools and integrations designed specifically for financial professionals.
-          {currentPlan !== 'elite' && (
+          {currentPlan !== 'enterprise' && (
             <span className="block mt-2">
               <Button 
                 variant="link" 

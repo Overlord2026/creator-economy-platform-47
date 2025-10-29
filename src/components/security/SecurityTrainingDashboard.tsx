@@ -169,7 +169,7 @@ export const SecurityTrainingDashboard: React.FC = () => {
       }
 
       // Use type assertion to bypass TypeScript validation for optional table
-      const { error } = await (supabase as any)
+      const { error } = await sb
         .from('security_training_completions')
         .insert([{
           user_id: user.id,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { legacyQueryOptionalTable } from '@/lib/db/safeSupabase';
+import { legacyQueryOptionalTable, withFallback, isOk, safeQueryOptionalTable } from '@/lib/db/safeSupabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -59,10 +59,13 @@ export const AccountSettings: React.FC = () => {
     try {
       const profilesData = await withFallback(
         'profiles',
-        () => safeQueryOptionalTable('profiles', '*'),
-        () => []
+        async () => {
+          const result = await safeQueryOptionalTable('profiles', '*');
+          return isOk(result) ? result.data : [];
+        },
+        async () => []
       );
-      const result = profilesData || [];
+      const result = Array.isArray(profilesData) ? profilesData : [];
       
       const profileData = result.find((p: any) => p.id === user.id);
       if (profileData) {
