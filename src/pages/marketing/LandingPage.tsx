@@ -2,28 +2,27 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ArrowRight, Check, ShieldCheck, Zap, FileSignature, Banknote,
-  Shield, BadgeCheck, Lock, KeyRound, Search, Users, Building2,
-  Quote, Sparkles, Hash, ExternalLink
+  ArrowRight, Check, Shield, BadgeCheck, Lock,
+  Zap, FileSignature, Banknote, Search, Quote, Sparkles, Hash, ExternalLink
 } from "lucide-react";
 
 /**
- * Landing Page (NIL • Navy+Gold)
- * Structure per master plan:
- * 1) Sticky Header
- * 2) Hero
- * 3) Logo Strip
- * 4) Why We’re Different (3 proof cards)
- * 5) How It Works (3 steps + micro-proof)
- * 6) Trust Rails (4 bullets + “Patent & IP”)
- * 7) Live Demo + Verifier (stub)
- * 8) Why Join (two tiles)
- * 9) Personas Grid (7 cards)
- * 10) Features Index (static stub)
- * 11) Social Proof (quotes)
- * 12) Pricing (simple)
- * 13) FAQ (3)
- * 14) Footer
+ * NIL Landing (Navy + Gold)
+ * Sections:
+ *  - Sticky header
+ *  - Hero
+ *  - Logo strip
+ *  - Why different
+ *  - How it works
+ *  - Trust rails
+ *  - Live demo + verifier (UI-only stub)
+ *  - Why join
+ *  - Personas
+ *  - Features index
+ *  - Social proof
+ *  - Pricing
+ *  - FAQ
+ *  - Footer
  */
 
 const NAVY = "#0B2239";
@@ -110,14 +109,12 @@ function Hero() {
     <section className="border-b border-white/10 py-12 sm:py-16">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 md:grid-cols-2">
         <div>
-          {/* credibility/kicker ribbon */}
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs text-white/80">
             <span>AI with guardrails</span>
             <span className="h-3 w-px bg-white/20" />
             <span>private receipts</span>
           </div>
 
-          {/* H1 from master plan */}
           <motion.h1
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -127,7 +124,6 @@ function Hero() {
             “Deals and projects, minus the drama.”
           </motion.h1>
 
-          {/* Subhead */}
           <p className="mt-4 max-w-2xl text-lg text-white/80">
             One place for creators and athletes to lock offers, e-sign with confidence, and
             keep private proof of every step.
@@ -141,7 +137,6 @@ function Hero() {
           <p className="mt-6 text-sm text-white/60">Built by compliance nerds. Designed for humans.</p>
         </div>
 
-        {/* Right: simple proof tiles */}
         <div className="grid gap-3 sm:grid-cols-2">
           <HeroTile icon={Zap} title="OfferLock" desc="Write down what was discussed. No surprises." />
           <HeroTile icon={FileSignature} title="E-Sign" desc="Everyone signs the same deal, the right way." />
@@ -154,14 +149,8 @@ function Hero() {
 }
 
 function HeroTile({
-  icon: Icon,
-  title,
-  desc,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  desc: string;
-}) {
+  icon: Icon, title, desc,
+}: { icon: React.ComponentType<{ className?: string }>; title: string; desc: string }) {
   return (
     <div className="rounded-xl border border-white/10 bg-white/5 p-4">
       <div className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
@@ -179,7 +168,6 @@ function LogoStrip() {
   return (
     <section className="border-b border-white/10 bg-white/5 py-6">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-6 px-4 opacity-80">
-        {/* Placeholder; swap with grayscale logos when ready */}
         <span className="text-xs text-white/70">Trusted by creators, programs & brands</span>
       </div>
     </section>
@@ -190,21 +178,9 @@ function LogoStrip() {
 
 function WhyDifferent() {
   const cards = [
-    {
-      icon: Shield,
-      title: "Policy-first automation",
-      desc: "Actions run through Policy Gates before execution."
-    },
-    {
-      icon: BadgeCheck,
-      title: "Content-free receipts",
-      desc: "OfferLock → Contract → Settlement → Dispute; multi-anchor; live verifier."
-    },
-    {
-      icon: Lock,
-      title: "WORM vault & legal hold",
-      desc: "Write-once retention; exportable packs for audits."
-    }
+    { icon: Shield, title: "Policy-first automation", desc: "Actions run through Policy Gates before execution." },
+    { icon: BadgeCheck, title: "Content-free receipts", desc: "Offer → Contract → Settlement → Dispute; live verifier." },
+    { icon: Lock, title: "WORM vault & legal hold", desc: "Write-once retention; exportable packs for audits." },
   ];
   return (
     <Section id="why" title="Why we’re different">
@@ -263,7 +239,7 @@ function TrustRails() {
     "Enterprise Policy Gates — approve/deny with reasons before actions run.",
     "Content-Free Receipts — hash-backed proofs; verify “Included ✓” locally.",
     "WORM Vault & Legal Hold — write-once retention; audit exports.",
-    "Anchors (K-of-N) — multiple anchors for durable verification."
+    "Anchors (K-of-N) — multiple anchors for durable verification.",
   ];
   return (
     <Section id="trust" title="Trust rails">
@@ -293,22 +269,19 @@ function LiveDemoVerifier() {
 
   const verify = async () => {
     setLoading(true);
-    // UI-only stub: treat any hash that contains "demo" as Included ✓
     await new Promise(r => setTimeout(r, 600));
     setStatus(hash.includes("demo") ? "included" : "notfound");
     setLoading(false);
   };
 
-  const chip = (label: string) => (
-    <span key={label} className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-xs text-white/80">
-      {label}
-    </span>
-  );
-
   return (
     <Section title="Live demo • verifier">
       <div className="flex flex-wrap gap-2">
-        {["offer_locked", "contract_signed", "escrow_funded", "funds_released"].map(chip)}
+        {["offer_locked", "contract_signed", "escrow_funded", "funds_released"].map((label) => (
+          <span key={label} className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-xs text-white/80">
+            {label}
+          </span>
+        ))}
       </div>
 
       <div className="mt-4 flex max-w-lg items-center gap-2">
@@ -363,7 +336,7 @@ function WhyJoin() {
     <Section title="Why join">
       <div className="grid gap-4 md:grid-cols-2">
         {tiles.map(t => (
-          <div key={t.title} className="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div key={t.title} className="rounded-xl border border-white/10 bg白/5 p-5">
             <div className="text-lg font-semibold">{t.title}</div>
             <ul className="mt-2 space-y-1 text-sm text-white/80">
               {t.bullets.map(b => (
