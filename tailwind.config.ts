@@ -16,6 +16,7 @@ export default {
     },
     extend: {
       colors: {
+        'bfo-navy':'#0B2239', 'bfo-gold':'#D4AF37', 'bfo-black':'#000000', 'bfo-white':'#FFFFFF',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -37,7 +38,7 @@ export default {
         
         // BFO Premium Brand Colors (HSL for proper theming)
         bfo: {
-          navy: '#0B0F14',
+          navy: '#0B2239',
           gold: '#D4AF37',
           black: '#000000',
           white: '#FFFFFF'

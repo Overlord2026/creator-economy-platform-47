@@ -13,7 +13,7 @@ interface CTAStickyBarProps {
 export default function CTAStickyBar({ className }: CTAStickyBarProps) {
   const [isVisible, setIsVisible] = useState(true);
 
-  if (!isVisible || !PUBLIC_CONFIG.CTA_BAR_ENABLED) return null;
+  if (!isVisible) return null;
 
   const handleStartWorkspace = () => {
     // Redirect to families onboarding as default
