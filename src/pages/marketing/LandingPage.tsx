@@ -1,408 +1,563 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Check, Github, ShieldCheck, Zap, Wrench, LineChart, GitPullRequest, Bell, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useScrollToHash } from "@/lib/useScrollToHash";
+import { motion } from "framer-motion";
+import {
+  ArrowRight, Check, ShieldCheck, Zap, FileSignature, Banknote,
+  Shield, BadgeCheck, Lock, KeyRound, Search, Users, Building2,
+  Quote, Sparkles, Hash, ExternalLink
+} from "lucide-react";
+
+/**
+ * Landing Page (NIL • Navy+Gold)
+ * Structure per master plan:
+ * 1) Sticky Header
+ * 2) Hero
+ * 3) Logo Strip
+ * 4) Why We’re Different (3 proof cards)
+ * 5) How It Works (3 steps + micro-proof)
+ * 6) Trust Rails (4 bullets + “Patent & IP”)
+ * 7) Live Demo + Verifier (stub)
+ * 8) Why Join (two tiles)
+ * 9) Personas Grid (7 cards)
+ * 10) Features Index (static stub)
+ * 11) Social Proof (quotes)
+ * 12) Pricing (simple)
+ * 13) FAQ (3)
+ * 14) Footer
+ */
+
+const NAVY = "#0B2239";
+const GOLD = "#D4AF37";
 
 export default function LandingPage() {
-  useScrollToHash();
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 text-slate-900">
-      <SiteHeader />
+    <div className="min-h-screen text-white" style={{ backgroundColor: NAVY }}>
+      <StickyHeader />
       <Hero />
-      <Logos />
-      <Features />
+      <LogoStrip />
+      <WhyDifferent />
       <HowItWorks />
-      <ValueProps />
+      <TrustRails />
+      <LiveDemoVerifier />
+      <WhyJoin />
+      <Personas />
+      <FeaturesIndex />
+      <SocialProof />
       <Pricing />
-      <Testimonials />
       <FAQ />
-      <CTA />
-      <SiteFooter />
+      <Footer />
     </div>
   );
 }
 
-// Header / Navigation Bar
-function SiteHeader() {
+/* ---------------------------------- Header --------------------------------- */
+
+function StickyHeader() {
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-[rgba(11,34,57,0.85)] backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-2">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white">
-            <Sparkles className="h-5 w-5" />
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
+            <Sparkles className="h-4 w-4 text-white" />
           </span>
-          <span className="font-semibold">Creator NIL</span>
+          <span className="text-sm font-semibold">Creator • NIL</span>
         </Link>
-        <nav className="hidden items-center gap-6 text-sm md:flex">
-          <Link to="/#features" className="text-slate-600 hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-white">Features</Link>
-          <Link to="/#how" className="text-slate-600 hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-white">How it works</Link>
-          <Link to="/#pricing" className="text-slate-600 hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-white">Pricing</Link>
-          <Link to="/#faq" className="text-slate-600 hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-white">FAQ</Link>
+        <nav className="hidden items-center gap-5 text-sm md:flex">
+          <a href="#why" className="hover:text-[var(--gold)]">Why us</a>
+          <a href="#how" className="hover:text-[var(--gold)]">How it works</a>
+          <a href="#trust" className="hover:text-[var(--gold)]">Trust Rails</a>
+          <a href="#personas" className="hover:text-[var(--gold)]">Personas</a>
+          <a href="#features" className="hover:text-[var(--gold)]">Features</a>
+          <a href="#pricing" className="hover:text-[var(--gold)]">Pricing</a>
         </nav>
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" className="hidden md:inline-flex">
-            <Link to="/signin" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-white">Sign in</Link>
-          </Button>
-          <Button asChild className="group">
-            <Link to="/signup" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-white">
-              Sign up
-              <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </Button>
+          <HeaderGhostCTA to="/demo/offerlock">See Demo</HeaderGhostCTA>
+          <HeaderGoldCTA to="/signup">Start Workspace</HeaderGoldCTA>
         </div>
       </div>
+      <style>{`:root{--gold:${GOLD}}`}</style>
     </header>
   );
 }
 
-// Hero Section
+function HeaderGoldCTA({ to, children }: { to: string; children: React.ReactNode }) {
+  return (
+    <Link
+      to={to}
+      className="inline-flex items-center gap-1 rounded-md border border-[var(--gold)] bg-[var(--gold)] px-3 py-1.5 text-sm font-semibold text-black shadow hover:opacity-95"
+    >
+      {children}
+      <ArrowRight className="h-4 w-4" />
+    </Link>
+  );
+}
+
+function HeaderGhostCTA({ to, children }: { to: string; children: React.ReactNode }) {
+  return (
+    <Link
+      to={to}
+      className="inline-flex items-center gap-1 rounded-md border border-[var(--gold)] px-3 py-1.5 text-sm font-semibold text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black"
+    >
+      {children}
+    </Link>
+  );
+}
+
+/* ----------------------------------- Hero ----------------------------------- */
+
 function Hero() {
   return (
-    <section className="relative overflow-hidden border-b bg-white">
-      <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:py-20 lg:px-8">
+    <section className="border-b border-white/10 py-12 sm:py-16">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 md:grid-cols-2">
         <div>
-          <motion.h1 
-            initial={{ opacity: 0, y: 12 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ duration: 0.5 }} 
-            className="text-4xl font-extrabold tracking-tight sm:text-5xl"
+          {/* credibility/kicker ribbon */}
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs text-white/80">
+            <span>AI with guardrails</span>
+            <span className="h-3 w-px bg-white/20" />
+            <span>private receipts</span>
+          </div>
+
+          {/* H1 from master plan */}
+          <motion.h1
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-4xl font-extrabold sm:text-5xl md:text-6xl leading-tight"
           >
-            Unlock the value of your <span className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Name, Image & Likeness</span>.
+            “Deals and projects, minus the drama.”
           </motion.h1>
-          <p className="mt-5 max-w-xl text-lg text-slate-600">
-            Creator NIL is a platform that empowers creators to monetize their personal brand through streamlined sponsorship deals and partnerships.
+
+          {/* Subhead */}
+          <p className="mt-4 max-w-2xl text-lg text-white/80">
+            One place for creators and athletes to lock offers, e-sign with confidence, and
+            keep private proof of every step.
           </p>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" className="h-11 px-6">
-              <Link to="/signup" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-white">Get Started</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="h-11 px-6">
-              <Link to="/contact" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-white">Learn More</Link>
-            </Button>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <PrimaryCTA to="/demo/offerlock">Try the OfferLock demo</PrimaryCTA>
+            <GhostCTA to="/personas">Explore personas</GhostCTA>
           </div>
-          <ul className="mt-6 grid grid-cols-1 gap-2 text-sm text-slate-600 sm:grid-cols-2">
-            {[
-              "Find and manage sponsorships",
-              "No middlemen or hidden fees",
-              "Secure contracts & payments",
-              "Insights into your impact",
-            ].map((t) => (
-              <li key={t} className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-[#D4AF37]" /> {t}
-              </li>
-            ))}
-          </ul>
+
+          <p className="mt-6 text-sm text-white/60">Built by compliance nerds. Designed for humans.</p>
         </div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative"
-        >
-          {/* Placeholder for hero image or illustration */}
-          <div className="relative h-64 w-full rounded-2xl border bg-slate-100 shadow-sm sm:h-80">
-            <span className="absolute inset-0 flex items-center justify-center text-slate-400">[Hero Image]</span>
-          </div>
-          <div className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-yellow-200/40 blur-3xl" />
-        </motion.div>
-      </div>
-    </section>
-  );
-}
 
-// Logos / Trust Indicators
-function Logos() {
-  return (
-    <section className="border-b bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-8 flex flex-wrap items-center justify-center gap-6 opacity-75">
-        {/* TODO: Insert sponsor/partner logos if available */}
-        <span className="text-sm text-slate-500">Trusted by 100+ creators and brands</span>
-      </div>
-    </section>
-  );
-}
-
-// Features Section
-function Features() {
-  return (
-    <section id="features" className="border-b bg-white scroll-mt-24">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold">Key Features</h2>
-        <p className="mt-2 max-w-2xl text-slate-600">Our platform provides everything you need to make the most of your NIL opportunities.</p>
-        <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-4 rounded-full bg-[#0b1a2b] p-3">
-              <Zap className="h-6 w-6 text-[#D4AF37]" />
-            </div>
-            <h3 className="text-lg font-semibold">Find Sponsorships</h3>
-            <p className="mt-2 text-slate-600">Browse and get matched with NIL opportunities from brands that fit your audience.</p>
-          </div>
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-4 rounded-full bg-[#0b1a2b] p-3">
-              <ShieldCheck className="h-6 w-6 text-[#D4AF37]" />
-            </div>
-            <h3 className="text-lg font-semibold">Secure & Compliant</h3>
-            <p className="mt-2 text-slate-600">We ensure contracts and payments are secure and NCAA-compliant for student-athletes.</p>
-          </div>
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-4 rounded-full bg-[#0b1a2b] p-3">
-              <LineChart className="h-6 w-6 text-[#D4AF37]" />
-            </div>
-            <h3 className="text-lg font-semibold">Insights & Growth</h3>
-            <p className="mt-2 text-slate-600">Track your earnings and measure engagement with built-in analytics dashboards.</p>
-          </div>
+        {/* Right: simple proof tiles */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <HeroTile icon={Zap} title="OfferLock" desc="Write down what was discussed. No surprises." />
+          <HeroTile icon={FileSignature} title="E-Sign" desc="Everyone signs the same deal, the right way." />
+          <HeroTile icon={Banknote} title="Settlement" desc="Payouts with a private receipt. No oversharing." />
+          <HeroTile icon={BadgeCheck} title="Verifier" desc="Status-only checks. No private payloads." />
         </div>
       </div>
     </section>
   );
 }
 
-// How It Works Section
-function HowItWorks() {
-  const steps = [
-    { icon: Wrench, title: "Sign Up", desc: "Create your profile to join the platform." },
-    { icon: Sparkles, title: "Connect", desc: "Get matched with brands or browse sponsorship deals." },
-    { icon: Check, title: "Earn", desc: "Sign contracts and start earning from NIL opportunities." },
-  ];
-  return (
-    <section id="how" className="border-b bg-white scroll-mt-24">
-      <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
-        <h2 className="text-center text-3xl font-bold">How it works</h2>
-        <ol className="mt-8 flex flex-col gap-8 sm:flex-row">
-          {steps.map((step, idx) => (
-            <li key={idx} className="flex-1 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#0b1a2b] text-white">
-                <step.icon className="h-6 w-6 text-[#D4AF37]" />
-              </div>
-              <h3 className="mt-4 text-lg font-semibold">{step.title}</h3>
-              <p className="mt-2 text-slate-600">{step.desc}</p>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
-  );
-}
-
-// Why Choose Us / Value Proposition Section
-function ValueProps() {
-  const bullets = [
-    "Connect with reputable brands directly",
-    "Maintain control of your brand and image",
-    "Track all deals and earnings in one place",
-    "No hidden fees or middlemen",
-  ];
-  return (
-    <section className="mx-auto max-w-6xl px-4 py-16">
-      <div className="rounded-2xl border bg-white p-6 shadow-sm md:p-10">
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="md:col-span-2">
-            <h3 className="text-2xl font-bold">Why creators choose Creator NIL</h3>
-            <p className="mt-2 max-w-xl text-slate-600">Focus on growing your personal brand while we handle the rest. Creator NIL takes care of the details so you can maximize your earnings and opportunities.</p>
-          </div>
-          <ul className="space-y-2 text-sm text-slate-700">
-            {bullets.map((b) => (
-              <li key={b} className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-[#D4AF37]" /> {b}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Pricing Section
-function Pricing() {
-  return (
-    <section id="pricing" className="border-t bg-white scroll-mt-24">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <h2 className="text-center text-3xl font-bold">Simple, transparent pricing</h2>
-        <p className="mx-auto mt-2 max-w-xl text-center text-slate-600">No upfront costs. Free to join, with optional upgrades as you grow.</p>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          <PriceCard
-            name="Free"
-            price="$0"
-            blurb="For new creators starting out"
-            features={["Access marketplace", "Standard support", "Community resources"]}
-            cta="Join for free"
-            to="/signup?plan=free"
-          />
-          <PriceCard
-            name="Pro"
-            price="$49"
-            tag="Most Popular"
-            blurb="For growing creators ready for more"
-            features={["Featured profile", "Advanced analytics", "Priority support"]}
-            cta="Upgrade to Pro"
-            to="/signup?plan=pro"
-            highlighted
-          />
-          <PriceCard
-            name="Enterprise"
-            price="Custom"
-            blurb="For agencies & large programs"
-            features={["Dedicated account manager", "Custom integrations", "Bulk onboarding"]}
-            cta="Contact us"
-            to="/contact"
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PriceCard({
-  name, price, blurb, features, cta, highlighted, tag, to,
+function HeroTile({
+  icon: Icon,
+  title,
+  desc,
 }: {
-  name: string; price: string; blurb: string; features: string[];
-  cta: string; highlighted?: boolean; tag?: string; to?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  desc: string;
 }) {
   return (
-    <Card className={`relative ${highlighted ? "border-slate-900 shadow-md" : "shadow-sm"}`}>
-      {tag && <span className="absolute right-3 top-3 rounded-full bg-slate-900 px-2 py-1 text-xs font-semibold text-white">{tag}</span>}
-      <CardHeader>
-        <CardTitle className="text-xl">{name}</CardTitle>
-        <div className="mt-1 text-3xl font-extrabold">
-          {price}{price !== "Custom" && <span className="text-base font-normal text-slate-500">/mo</span>}
-        </div>
-        <p className="text-sm text-slate-600">{blurb}</p>
-      </CardHeader>
-      <CardContent>
-        <ul className="space-y-2 text-sm text-slate-700">
-          {features.map(f => (
-            <li key={f} className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-[#D4AF37]" /> {f}
-            </li>
-          ))}
-        </ul>
-        {to ? (
-          <Button asChild className="mt-6 w-full" variant={highlighted ? "default" : "outline"}>
-            <Link to={to} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-white">{cta}</Link>
-          </Button>
-        ) : (
-          <Button className="mt-6 w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-white" variant={highlighted ? "default" : "outline"}>
-            {cta}
-          </Button>
-        )}
-      </CardContent>
-    </Card>
+    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+      <div className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
+        <Icon className="h-5 w-5 text-[var(--gold)]" />
+      </div>
+      <div className="text-base font-semibold">{title}</div>
+      <div className="mt-1 text-sm text-white/70">{desc}</div>
+    </div>
   );
 }
 
-// Testimonials Section
-function Testimonials() {
-  const quotes = [
-    { name: "Alex J.", role: "College Athlete", quote: "I signed multiple endorsement deals within weeks of joining. The process was seamless!" },
-    { name: "Jamie L.", role: "Content Creator", quote: "Creator NIL opened up opportunities I never had access to before. It's a game changer." },
-  ];
+/* --------------------------------- Logos ------------------------------------ */
+
+function LogoStrip() {
   return (
-    <section className="bg-slate-50">
-      <div className="mx-auto max-w-6xl px-4 py-16">
-        <h2 className="text-center text-3xl font-bold">Trusted by creators nationwide</h2>
-        <div className="mt-8 grid gap-6 md:grid-cols-2">
-          {quotes.map((q) => (
-            <Card key={q.name} className="shadow-sm">
-              <CardContent className="pt-6 text-slate-700">
-                “{q.quote}”
-                <div className="mt-4 text-sm text-slate-500">— {q.name}, {q.role}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+    <section className="border-b border-white/10 bg-white/5 py-6">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-6 px-4 opacity-80">
+        {/* Placeholder; swap with grayscale logos when ready */}
+        <span className="text-xs text-white/70">Trusted by creators, programs & brands</span>
       </div>
     </section>
   );
 }
 
-// FAQ Section
-function FAQ() {
-  const faqs = [
-    { q: "What is the Creator NIL platform?", a: "Creator NIL is an online marketplace that connects creators (like student-athletes and influencers) with brand sponsorship opportunities. It streamlines the process of finding, negotiating, and managing name-image-likeness deals." },
-    { q: "Who can join?", a: "Any creator who wants to monetize their name, image, and likeness can join. This includes student-athletes, content creators, and influencers looking for sponsorship or partnership deals." },
-    { q: "What does it cost to use?", a: "Signing up and using Creator NIL is free for creators. We may take a small commission or fee from successful deals to sustain the platform, but there are no upfront charges." },
-    { q: "How do I get started?", a: "Simply sign up and create your profile. Once your profile is set up, you can browse available sponsorship opportunities or get matched with interested brands. From there, you can negotiate terms and finalize deals all through our platform." },
+/* --------------------------- Why We’re Different ---------------------------- */
+
+function WhyDifferent() {
+  const cards = [
+    {
+      icon: Shield,
+      title: "Policy-first automation",
+      desc: "Actions run through Policy Gates before execution."
+    },
+    {
+      icon: BadgeCheck,
+      title: "Content-free receipts",
+      desc: "OfferLock → Contract → Settlement → Dispute; multi-anchor; live verifier."
+    },
+    {
+      icon: Lock,
+      title: "WORM vault & legal hold",
+      desc: "Write-once retention; exportable packs for audits."
+    }
   ];
   return (
-    <section id="faq" className="bg-[#0b1a2b] text-white px-4 py-16 scroll-mt-24">
-      <h2 className="text-center text-3xl font-bold">Frequently Asked Questions</h2>
-      <Accordion type="single" collapsible className="mt-6 space-y-3">
-        {faqs.map((f, i) => (
-          <AccordionItem key={i} value={`faq-${i}`} className="border-b border-white/25">
-            <AccordionTrigger className="text-left hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1a2b]">
-              {f.q}
-            </AccordionTrigger>
-            <AccordionContent className="mt-2 text-white/80">{f.a}</AccordionContent>
-          </AccordionItem>
+    <Section id="why" title="Why we’re different">
+      <div className="grid gap-4 md:grid-cols-3">
+        {cards.map((c, i) => (
+          <div key={i} className="rounded-xl border border-white/10 bg-white/5 p-5">
+            <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
+              <c.icon className="h-5 w-5 text-[var(--gold)]" />
+            </div>
+            <div className="text-lg font-semibold">{c.title}</div>
+            <p className="mt-1 text-sm text-white/75">{c.desc}</p>
+          </div>
         ))}
-      </Accordion>
-    </section>
-  );
-}
-
-// Final Call-to-Action Section
-function CTA() {
-  return (
-    <section className="border-y bg-white">
-      <div className="mx-auto max-w-5xl px-4 py-16 text-center">
-        <h3 className="text-3xl font-bold">Ready to unlock your NIL potential?</h3>
-        <p className="mx-auto mt-2 max-w-2xl text-slate-600">
-          Get started today. Create your profile and start connecting with brands that value what you have to offer.
-        </p>
-        <div className="mt-6 flex justify-center gap-3">
-          <Button asChild size="lg">
-            <Link to="/signup" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-white">Sign up now</Link>
-          </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link to="/contact" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-white">Contact us</Link>
-          </Button>
-        </div>
       </div>
-    </section>
+    </Section>
   );
 }
 
-// Footer
-function SiteFooter() {
+/* ------------------------------ How it works -------------------------------- */
+
+function HowItWorks() {
+  const steps = [
+    { icon: Search, title: "Brief", desc: "Share scope & disclosures." },
+    { icon: FileSignature, title: "OfferLock → e-Sign", desc: "Prevent overlap, route approvals, sign the same contract." },
+    { icon: Banknote, title: "Settlement", desc: "Payouts & deliverables packaged for audits." },
+  ];
   return (
-    <footer className="bg-slate-50">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <Section id="how" title="How it works">
+      <div className="grid gap-4 md:grid-cols-3">
+        {steps.map((s, i) => (
+          <div key={i} className="rounded-xl border border-white/10 bg-white/5 p-5">
+            <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
+              <s.icon className="h-5 w-5 text-[var(--gold)]" />
+            </div>
+            <div className="text-lg font-semibold">{s.title}</div>
+            <p className="mt-1 text-sm text-white/75">{s.desc}</p>
+            {i === 2 && (
+              <p className="mt-3 text-xs text-white/60">
+                Micro-proof: Every important action leaves a private receipt.
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="mt-6">
+        <GhostCTA to="/demo/offerlock">Start a deal</GhostCTA>
+      </div>
+    </Section>
+  );
+}
+
+/* -------------------------------- Trust Rails ------------------------------- */
+
+function TrustRails() {
+  const bullets = [
+    "Enterprise Policy Gates — approve/deny with reasons before actions run.",
+    "Content-Free Receipts — hash-backed proofs; verify “Included ✓” locally.",
+    "WORM Vault & Legal Hold — write-once retention; audit exports.",
+    "Anchors (K-of-N) — multiple anchors for durable verification."
+  ];
+  return (
+    <Section id="trust" title="Trust rails">
+      <ul className="space-y-2 text-sm text-white/80">
+        {bullets.map((b) => (
+          <li key={b} className="flex items-start gap-2">
+            <Check className="mt-0.5 h-4 w-4 text-[var(--gold)]" />
+            <span>{b}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-4">
+        <a href="/patents" className="inline-flex items-center gap-1 rounded-md border border-[var(--gold)] px-3 py-1.5 text-sm text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black">
+          Patent &amp; IP <ExternalLink className="h-4 w-4" />
+        </a>
+      </div>
+    </Section>
+  );
+}
+
+/* --------------------------- Live Demo + Verifier --------------------------- */
+
+function LiveDemoVerifier() {
+  const [hash, setHash] = useState("pslip_demo_abc123");
+  const [status, setStatus] = useState<"idle" | "included" | "notfound">("idle");
+  const [loading, setLoading] = useState(false);
+
+  const verify = async () => {
+    setLoading(true);
+    // UI-only stub: treat any hash that contains "demo" as Included ✓
+    await new Promise(r => setTimeout(r, 600));
+    setStatus(hash.includes("demo") ? "included" : "notfound");
+    setLoading(false);
+  };
+
+  const chip = (label: string) => (
+    <span key={label} className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-xs text-white/80">
+      {label}
+    </span>
+  );
+
+  return (
+    <Section title="Live demo • verifier">
+      <div className="flex flex-wrap gap-2">
+        {["offer_locked", "contract_signed", "escrow_funded", "funds_released"].map(chip)}
+      </div>
+
+      <div className="mt-4 flex max-w-lg items-center gap-2">
+        <div className="flex flex-1 items-center rounded-md border border-white/15 bg-white/5 px-3">
+          <Hash className="h-4 w-4 text-white/50" />
+          <input
+            value={hash}
+            onChange={(e)=>setHash(e.target.value)}
+            placeholder="enter proof hash"
+            className="ml-2 w-full bg-transparent p-2 text-sm outline-none placeholder:text-white/40"
+          />
+        </div>
+        <button
+          onClick={verify}
+          disabled={loading}
+          className="inline-flex items-center gap-1 rounded-md border border-[var(--gold)] bg-[var(--gold)] px-3 py-2 text-sm font-semibold text-black hover:opacity-95 disabled:opacity-60"
+        >
+          {loading ? "Verifying…" : "Verify"}
+        </button>
+      </div>
+
+      {status !== "idle" && (
+        <div className="mt-3 text-sm">
+          {status === "included" ? (
+            <span className="text-emerald-300">Included ✓ (status only)</span>
+          ) : (
+            <span className="text-rose-300">Not found</span>
+          )}
+          <span className="ml-2 text-white/60">We verify status only — no private payloads.</span>
+        </div>
+      )}
+    </Section>
+  );
+}
+
+/* -------------------------------- Why Join --------------------------------- */
+
+function WhyJoin() {
+  const tiles = [
+    {
+      title: "Athletes",
+      bullets: ["Brand kit", "Approvals & e-sign on rails", "Proof-backed reports"],
+      cta: { label: "Start", to: "/signup?persona=athlete" },
+    },
+    {
+      title: "Coaches/Schools",
+      bullets: ["Plain-language policy", "Right-sized visibility", "Exportable oversight"],
+      cta: { label: "See demo", to: "/demo/offerlock" },
+    },
+  ];
+  return (
+    <Section title="Why join">
+      <div className="grid gap-4 md:grid-cols-2">
+        {tiles.map(t => (
+          <div key={t.title} className="rounded-xl border border-white/10 bg-white/5 p-5">
+            <div className="text-lg font-semibold">{t.title}</div>
+            <ul className="mt-2 space-y-1 text-sm text-white/80">
+              {t.bullets.map(b => (
+                <li key={b} className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-[var(--gold)]" /> {b}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4">
+              <GhostCTA to={t.cta.to}>{t.cta.label}</GhostCTA>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* -------------------------------- Personas --------------------------------- */
+
+function Personas() {
+  const items = [
+    "Athlete","Creator","Coach/School","Parent/Guardian","Agent/Rep","Brand/Partner","Service Pros"
+  ];
+  return (
+    <Section id="personas" title="Who it’s for">
+      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+        {items.map((label) => (
+          <div key={label} className="rounded-xl border border-white/10 bg-white/5 p-4">
+            <div className="text-base font-semibold">{label}</div>
+            <div className="mt-2">
+              <GhostCTA to={`/personas?who=${encodeURIComponent(label)}`}>Open</GhostCTA>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* ------------------------------ Features index ------------------------------ */
+
+function FeaturesIndex() {
+  const features = [
+    { name: "Marketplace", desc: "Find NIL fit fast; run it on rails.", to: "/features/marketplace" },
+    { name: "Offer → Contract → Payment", desc: "One track, one source, one receipt each step.", to: "/features/ocp" },
+    { name: "Disclosure Packs", desc: "Channel-specific message + legal ready-to-send.", to: "/features/disclosure-packs" },
+  ];
+  return (
+    <Section id="features" title="Features">
+      <div className="grid gap-3 md:grid-cols-3">
+        {features.map(f => (
+          <div key={f.name} className="rounded-xl border border-white/10 bg-white/5 p-4">
+            <div className="text-base font-semibold">{f.name}</div>
+            <div className="mt-1 text-sm text-white/75">{f.desc}</div>
+            <div className="mt-3">
+              <GhostCTA to={f.to}>Open</GhostCTA>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* ------------------------------- Social proof ------------------------------- */
+
+function SocialProof() {
+  const quotes = [
+    { text: "My coach saw approvals; my parents didn’t see $.", name: "— Athlete" },
+    { text: "Finance finally had clean receipts.", name: "— Buyer" },
+  ];
+  return (
+    <Section title="Social proof">
+      <div className="grid gap-3 md:grid-cols-2">
+        {quotes.map((q, i) => (
+          <div key={i} className="rounded-xl border border-white/10 bg-white/5 p-4">
+            <div className="flex items-start gap-2">
+              <Quote className="mt-1 h-5 w-5 text-[var(--gold)]" />
+              <div>
+                <div className="text-white/90">“{q.text}”</div>
+                <div className="mt-1 text-sm text-white/60">{q.name}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* --------------------------------- Pricing --------------------------------- */
+
+function Pricing() {
+  const cards = [
+    { name: "Creators — Free", cta: "Start workspace", to: "/signup", blurb: "No upfront cost. Upgrade when you’re ready." },
+    { name: "Brands & Schools — Request demo", cta: "Request demo", to: "/contact", blurb: "Enterprise visibility & oversight." },
+  ];
+  return (
+    <Section id="pricing" title="Simple, transparent pricing">
+      <div className="grid gap-3 md:grid-cols-2">
+        {cards.map(c => (
+          <div key={c.name} className="rounded-xl border border-white/10 bg-white/5 p-4">
+            <div className="text-base font-semibold">{c.name}</div>
+            <div className="mt-1 text-sm text-white/75">{c.blurb}</div>
+            <div className="mt-3">
+              <PrimaryCTA to={c.to}>{c.cta}</PrimaryCTA>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* ----------------------------------- FAQ ----------------------------------- */
+
+function FAQ() {
+  const items = [
+    { q: "What is OfferLock?", a: "A quick pre-agreement so everyone aligns before signing — no ghost edits." },
+    { q: "What’s a “receipt”?", a: "A small, private proof of what happened and why — helpful for oversight and disputes." },
+    { q: "Can my school or parent see my deals?", a: "Only what you share; amounts can remain private." },
+  ];
+  return (
+    <Section id="faq" title="Frequently asked">
+      <div className="divide-y divide-white/10 rounded-xl border border-white/10 bg-white/5">
+        {items.map((f, i) => (
+          <details key={i}>
+            <summary className="cursor-pointer select-none p-4 text-base font-medium hover:text-[var(--gold)]">
+              {f.q}
+            </summary>
+            <div className="px-4 pb-4 text-sm text-white/75">{f.a}</div>
+          </details>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* ---------------------------------- Footer --------------------------------- */
+
+function Footer() {
+  return (
+    <footer className="border-t border-white/10">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <div className="grid gap-6 md:grid-cols-3">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
-                <Sparkles className="h-4 w-4" />
-              </span>
-              <span className="font-semibold">Creator NIL</span>
+            <div className="text-sm font-semibold">Policy-first, receipt-backed NIL & creator deals.</div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <PrimaryCTA to="/signup">Start Workspace</PrimaryCTA>
+              <GhostCTA to="/demo/offerlock">See Demo</GhostCTA>
             </div>
-            <p className="mt-2 text-sm text-slate-600">Empowering creators through name, image &amp; likeness.</p>
           </div>
-          <div className="text-sm text-slate-600">
-            <div className="font-semibold text-slate-900">Product</div>
+          <div className="text-sm text-white/70">
+            <div className="font-semibold text-white">Utility</div>
             <ul className="mt-2 space-y-1">
-              <li><Link to="#features" className="hover:underline hover:text-[#D4AF37]">Features</Link></li>
-              <li><Link to="#pricing" className="hover:underline hover:text-[#D4AF37]">Pricing</Link></li>
-              <li><Link to="#how" className="hover:underline hover:text-[#D4AF37]">How it works</Link></li>
+              <li><a className="hover:text-[var(--gold)]" href="#why">Why us</a></li>
+              <li><a className="hover:text-[var(--gold)]" href="#trust">Trust Rails</a></li>
+              <li><Link className="hover:text-[var(--gold)]" to="/privacy">Privacy</Link></li>
+              <li><Link className="hover:text-[var(--gold)]" to="/terms">Terms</Link></li>
             </ul>
           </div>
-          <div className="text-sm text-slate-600">
-            <div className="font-semibold text-slate-900">Company</div>
-            <ul className="mt-2 space-y-1">
-              <li><Link to="/contact" className="hover:underline hover:text-[#D4AF37]">Contact</Link></li>
-              <li><a href="#" className="hover:underline hover:text-[#D4AF37]">Privacy Policy</a></li>
-              <li><a href="#" className="hover:underline hover:text-[#D4AF37]">Terms of Service</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="mt-8 border-t pt-4 text-sm text-slate-500">
-          © ${new Date().getFullYear()} Creator NIL. All rights reserved.
+          <div className="text-sm text-white/60">© {new Date().getFullYear()} Creator NIL. All rights reserved.</div>
         </div>
       </div>
     </footer>
+  );
+}
+
+/* ------------------------------ Shared bits -------------------------------- */
+
+function Section({ id, title, children }:{ id?: string; title: string; children: React.ReactNode }) {
+  return (
+    <section id={id} className="border-t border-white/10 px-4 py-12 sm:px-6">
+      <div className="mx-auto max-w-7xl">
+        <h2 className="text-2xl font-bold">{title}</h2>
+        <div className="mt-6">{children}</div>
+      </div>
+    </section>
+  );
+}
+
+function PrimaryCTA({ to, children }:{ to:string; children:React.ReactNode }) {
+  return (
+    <Link to={to} className="inline-flex items-center gap-1 rounded-md border border-[var(--gold)] bg-[var(--gold)] px-3 py-2 text-sm font-semibold text-black hover:opacity-95">
+      {children} <ArrowRight className="h-4 w-4" />
+    </Link>
+  );
+}
+
+function GhostCTA({ to, children }:{ to:string; children:React.ReactNode }) {
+  return (
+    <Link to={to} className="inline-flex items-center gap-1 rounded-md border border-[var(--gold)] px-3 py-2 text-sm font-semibold text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black">
+      {children}
+    </Link>
   );
 }
