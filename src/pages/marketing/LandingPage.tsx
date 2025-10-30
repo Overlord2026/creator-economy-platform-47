@@ -62,13 +62,13 @@ function StickyHeader() {
           <span className="text-sm font-semibold">Creator • NIL</span>
         </Link>
         <nav className="hidden items-center gap-5 text-sm md:flex">
-          <a href="#why" className="hover:text-[var(--gold)]">Why us</a>
-          <a href="#how" className="hover:text-[var(--gold)]">How it works</a>
-          <a href="#trust" className="hover:text-[var(--gold)]">Trust Rails</a>
-          <a href="#personas" className="hover:text-[var(--gold)]">Personas</a>
-          <a href="#features" className="hover:text-[var(--gold)]">Features</a>
-          <a href="#pricing" className="hover:text-[var(--gold)]">Pricing</a>
-        </nav>
+    <a href="#why" className="text-white/90 hover:text-[var(--gold)]">Why us</a>
+    <a href="#how" className="text-white/90 hover:text-[var(--gold)]">How it works</a>
+    <a href="#trust" className="text-white/90 hover:text-[var(--gold)]">Trust Rails</a>
+    <a href="#personas" className="text-white/90 hover:text-[var(--gold)]">Personas</a>
+    <a href="#features" className="text-white/90 hover:text-[var(--gold)]">Features</a>
+    <a href="#pricing" className="text-white/90 hover:text-[var(--gold)]">Pricing</a>
+  </nav>
         <div className="flex items-center gap-2">
           <HeaderGhostCTA to="/demo/offerlock">See Demo</HeaderGhostCTA>
           <HeaderGoldCTA to="/signup">Start Workspace</HeaderGoldCTA>
@@ -134,7 +134,7 @@ function Hero() {
             <GhostCTA to="/personas">Explore personas</GhostCTA>
           </div>
 
-          <p className="mt-6 text-sm text-white/60">Built by compliance nerds. Designed for humans.</p>
+          <p className="mt-6 text-sm text-white/70">Built by compliance nerds. Designed for humans.</p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -156,8 +156,8 @@ function HeroTile({
       <div className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
         <Icon className="h-5 w-5 text-[var(--gold)]" />
       </div>
-      <div className="text-base font-semibold">{title}</div>
-      <div className="mt-1 text-sm text-white/70">{desc}</div>
+      <div className="text-base font-semibold text-white">{title}</div>
+      <div className="mt-1 text-sm text-white/75">{desc}</div>
     </div>
   );
 }
@@ -218,7 +218,7 @@ function HowItWorks() {
             <div className="text-lg font-semibold">{s.title}</div>
             <p className="mt-1 text-sm text-white/75">{s.desc}</p>
             {i === 2 && (
-              <p className="mt-3 text-xs text-white/60">
+              <p className="mt-3 text-xs text-white/70">
                 Micro-proof: Every important action leaves a private receipt.
               </p>
             )}
@@ -310,7 +310,7 @@ function LiveDemoVerifier() {
           ) : (
             <span className="text-rose-300">Not found</span>
           )}
-          <span className="ml-2 text-white/60">We verify status only — no private payloads.</span>
+          <span className="ml-2 text-white/70">We verify status only — no private payloads.</span>
         </div>
       )}
     </Section>
@@ -366,7 +366,7 @@ function Personas() {
       <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
         {items.map((label) => (
           <div key={label} className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="text-base font-semibold">{label}</div>
+            <div className="text-base font-semibold text-white">{label}</div>
             <div className="mt-2">
               <GhostCTA to={`/personas?who=${encodeURIComponent(label)}`}>Open</GhostCTA>
             </div>
@@ -390,7 +390,7 @@ function FeaturesIndex() {
       <div className="grid gap-3 md:grid-cols-3">
         {features.map(f => (
           <div key={f.name} className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="text-base font-semibold">{f.name}</div>
+            <div className="text-base font-semibold text-white">{f.name}</div>
             <div className="mt-1 text-sm text-white/75">{f.desc}</div>
             <div className="mt-3">
               <GhostCTA to={f.to}>Open</GhostCTA>
@@ -418,7 +418,7 @@ function SocialProof() {
               <Quote className="mt-1 h-5 w-5 text-[var(--gold)]" />
               <div>
                 <div className="text-white/90">“{q.text}”</div>
-                <div className="mt-1 text-sm text-white/60">{q.name}</div>
+                <div className="mt-1 text-sm text-white/70">{q.name}</div>
               </div>
             </div>
           </div>
@@ -440,7 +440,7 @@ function Pricing() {
       <div className="grid gap-3 md:grid-cols-2">
         {cards.map(c => (
           <div key={c.name} className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="text-base font-semibold">{c.name}</div>
+            <div className="text-base font-semibold text-white">{c.name}</div>
             <div className="mt-1 text-sm text-white/75">{c.blurb}</div>
             <div className="mt-3">
               <PrimaryCTA to={c.to}>{c.cta}</PrimaryCTA>
@@ -499,7 +499,7 @@ function Footer() {
               <li><Link className="hover:text-[var(--gold)]" to="/terms">Terms</Link></li>
             </ul>
           </div>
-          <div className="text-sm text-white/60">© {new Date().getFullYear()} Creator NIL. All rights reserved.</div>
+          <div className="text-sm text-white/70">© {new Date().getFullYear()} Creator NIL. All rights reserved.</div>
         </div>
       </div>
     </footer>
