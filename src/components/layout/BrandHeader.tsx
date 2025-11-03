@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { TopNav } from '@/components/layout/TopNav';
 import RunNILDemo from '@/components/demos/RunNILDemo';
@@ -106,8 +105,8 @@ function BrandHeader() {
             <RunNILDemo />
             <Link to="/marketplace" className="text-white hover:text-bfo-gold transition-colors">Marketplace</Link>
             <Link to="/admin/hq" className="text-bfo-gold hover:underline">HQ</Link>
-            <a className="text-white hover:text-bfo-gold transition-colors" href="/book">Book Demo</Link>
-            <a className="text-white hover:text-bfo-gold transition-colors" href="/login">Log In</Link>
+            <Link to="/book" className="text-white hover:text-bfo-gold transition-colors">Book Demo</Link>
+            <Link to="/login" className="text-white hover:text-bfo-gold transition-colors">Log In</Link>
             <MuteLindaToggle />
             {process.env.NODE_ENV !== 'production' && (
               <Link to="/dev/try">
