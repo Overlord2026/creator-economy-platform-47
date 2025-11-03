@@ -1,2 +1,2 @@
-export const RUNTIME_REPO = typeof __RUNTIME_REPO__ !== 'undefined' ? __RUNTIME_REPO__ : 'unknown';
-export const RUNTIME_BRANCH = typeof __RUNTIME_BRANCH__ !== 'undefined' ? __RUNTIME_BRANCH__ : 'local';
+export const RUNTIME_REPO = import.meta.env.VITE_RUNTIME_REPO || 'unknown';
+export const RUNTIME_BRANCH = import.meta.env.VITE_RUNTIME_BRANCH || 'local';

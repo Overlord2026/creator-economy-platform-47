@@ -71,7 +71,7 @@ export async function sendAdvisorInvite(inviteData: AdvisorInviteRequest): Promi
  */
 export async function getAdvisorInvitations(): Promise<any[]> {
   try {
-    const { data: invitations, error } = await supabase
+    const { data: invitations, error } = await sb
       .from('prospect_invitations')
       .select(`
         id,

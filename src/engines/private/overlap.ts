@@ -227,7 +227,7 @@ export async function persistOverlapResults(
   results: OverlapResult
 ): Promise<string> {
   const { data, error } = await supabase
-    .from('fund_holdings_overlap')
+    .from('fund_holdings_lookup' as any)
     .insert({
       user_id: userId,
       portfolio_id: portfolioId,

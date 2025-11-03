@@ -43,7 +43,7 @@ export async function scoreLiquidity(input: LiquidityScoreInput): Promise<Liquid
   // Fetch recent liquidity events if not provided
   let liquidityEvents = events;
   if (!liquidityEvents) {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('liquidity_events')
       .select('*')
       .eq('fund_id', fundId)
@@ -206,7 +206,7 @@ export async function persistLiquidityScore(
   result: LiquidityScoreResult,
   asOfDate?: string
 ): Promise<string> {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('liquidity_scores')
     .upsert({
       user_id: userId,

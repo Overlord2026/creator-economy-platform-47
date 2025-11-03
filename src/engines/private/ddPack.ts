@@ -112,7 +112,7 @@ export async function buildDDPackage(input: DDPackageInput): Promise<DDPackageRe
     const packageHash = await Canonical.sha256Hex(packageContent);
 
     // Get next version number
-    const { data: existingPackages } = await supabase
+    const { data: existingPackages } = await sb
       .from('dd_packages')
       .select('id, fund_name, strategy_type, created_at, fund_details')
       .eq('user_id', userId)
@@ -123,7 +123,7 @@ export async function buildDDPackage(input: DDPackageInput): Promise<DDPackageRe
     const nextVersion = (existingPackages?.length || 0) + 1;
 
     // Persist to database with enhanced metadata
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('dd_packages')
       .insert({
         user_id: userId,

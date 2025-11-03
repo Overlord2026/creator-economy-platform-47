@@ -66,7 +66,7 @@ export function BankAccountsProvider({ children }: { children: React.ReactNode }
       const { data: { user } } = await sb.auth.getUser();
       if (!user) return false;
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('bank_accounts')
         .insert([{
           user_id: user.id,
