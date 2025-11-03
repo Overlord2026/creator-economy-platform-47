@@ -27,6 +27,7 @@ export default function App() {
           <Routes>
             {/* Marketing routes */}
             <Route path="/" element={<LandingPage />} />
+            <Route path="/nil" element={<LandingPage />} />
             <Route path="/personas" element={<PersonasPage />} />
             <Route path="/pros" element={<ProsPage />} />
             <Route path="/pros/:id" element={<ProsDetailPage />} />

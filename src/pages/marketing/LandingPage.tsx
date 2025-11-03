@@ -5,6 +5,10 @@ import {
   ArrowRight, Check, Shield, BadgeCheck, Lock,
   Zap, FileSignature, Banknote, Search, Quote, Sparkles, Hash, ExternalLink
 } from "lucide-react";
+import RoleToggle from "@/components/landing/RoleToggle";
+import ProofStrip from "@/components/landing/ProofStrip";
+import SafeByDesign from "@/components/landing/SafeByDesign";
+import { landing } from "@/data/landing";
 
 /**
  * NIL Landing (Navy + Gold)
@@ -36,7 +40,7 @@ export default function LandingPage() {
       <LogoStrip />
       <WhyDifferent />
       <HowItWorks />
-      <TrustRails />
+      <SafeByDesign />
       <LiveDemoVerifier />
       <WhyJoin />
       <Personas />
