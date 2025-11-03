@@ -379,7 +379,7 @@ async function generateDDZip(
 
 // Get existing DD packages for a user/fund
 export async function getDDPackages(userId: string, fundId?: string) {
-  let query = supabase
+  let query = sb
     .from('dd_packages')
     .select('*')
     .eq('user_id', userId)

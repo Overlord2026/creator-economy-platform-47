@@ -1,0 +1,2 @@
+npm WARN invalid config omit="optionalit.lingering" set in command line options
+npm WARN invalid config Must be one or more of: dev, optional, peer
