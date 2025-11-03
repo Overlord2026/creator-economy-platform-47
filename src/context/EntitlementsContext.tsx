@@ -1,5 +1,4 @@
 'use client';
-<<<<<<< Updated upstream
 import React, { createContext, useContext, useMemo } from 'react';
 import { BOOTSTRAP_MODE } from '@/config/bootstrap';
 
@@ -18,17 +17,4 @@ export function EntitlementsProvider({ children }: { children: React.ReactNode }
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 export const useEntitlements = () => useContext(Ctx);
-=======
-import React, { createContext, useContext } from 'react';
-
-type Entitlements = { has: (feature: string) => boolean };
-const Ctx = createContext<Entitlements>({ has: () => false });
-
-export const useEntitlements = () => useContext(Ctx);
-
-export const EntitlementsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <Ctx.Provider value={{ has: () => false }}>{children}</Ctx.Provider>;
-};
-
->>>>>>> Stashed changes
 export default EntitlementsProvider;

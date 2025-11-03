@@ -1,4 +1,4 @@
-ccexport type WorkspaceTools = {
+export type WorkspaceTools = {
   installed: ToolKey[];
   persona?: string;   // 'family'|'advisor'|...
   segment?: string;   // 'aspiring'|'retiree'
