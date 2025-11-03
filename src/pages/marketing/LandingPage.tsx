@@ -8,6 +8,7 @@ import {
 import RoleToggle from "@/components/landing/RoleToggle";
 import ProofStrip from "@/components/landing/ProofStrip";
 import SafeByDesign from "@/components/landing/SafeByDesign";
+import SocialProofMetrics from "@/components/landing/SocialProofMetrics";
 import { landing } from "@/data/landing";
 
 /**
@@ -113,11 +114,31 @@ function Hero() {
     <section className="border-b border-white/10 py-12 sm:py-16">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 md:grid-cols-2">
         <div>
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs text-white/80">
-            <span>AI with guardrails</span>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            viewport={{ once: true }}
+            className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs text-white/80"
+          >
+            <motion.span
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              AI with guardrails
+            </motion.span>
             <span className="h-3 w-px bg-white/20" />
-            <span>private receipts</span>
-          </div>
+            <motion.span
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.35 }}
+              viewport={{ once: true }}
+            >
+              private receipts
+            </motion.span>
+          </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 14 }}
