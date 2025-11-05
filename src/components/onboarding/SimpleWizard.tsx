@@ -48,6 +48,7 @@ export default function SimpleWizard({
       onComplete();
     }
   };
+
   const back = () => { if (idx > 0) setIdx(idx - 1); };
   const skip = () => next();
 
