@@ -2,6 +2,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SafeProviders from '@/app/SafeProviders';
+import DealsList from '@/pages/deals/DealsList';
+import DealDetail from '@/pages/deals/DealDetail';
 
 // Marketing pages
 import LandingPage from '@/pages/marketing/LandingPage';
@@ -43,6 +45,10 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
 
             {/* Fallback */}
+            {/* Deals */}
+            <Route path="/deals" element={<DealsList />} />
+            <Route path="/deals/:id" element={<DealDetail />} />
+      
             <Route path="*" element={<LandingPage />} />
           </Routes>
         </div>
