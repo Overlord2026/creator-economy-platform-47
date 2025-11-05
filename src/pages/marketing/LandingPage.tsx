@@ -5,17 +5,12 @@ import {
   ArrowRight, Check, Shield, BadgeCheck, Lock,
   Zap, FileSignature, Banknote, Search, Quote, Sparkles, Hash, ExternalLink
 } from "lucide-react";
-import RoleToggle from "@/components/landing/RoleToggle";
-import ProofStrip from "@/components/landing/ProofStrip";
-import SafeByDesign from "@/components/landing/SafeByDesign";
-import SocialProofMetrics from "@/components/landing/SocialProofMetrics";
-import { landing } from "@/data/landing";
 
 /**
  * NIL Landing (Navy + Gold)
  * Sections:
  *  - Sticky header
- *  - Hero
+ *  - Hero (animated overlay)
  *  - Logo strip
  *  - Why different
  *  - How it works
@@ -24,9 +19,9 @@ import { landing } from "@/data/landing";
  *  - Why join
  *  - Personas
  *  - Features index
- *  - Social proof
- *  - Pricing
- *  - FAQ
+ *  - Social proof (quotes + logos)
+ *  - Pricing (3-tier)
+ *  - FAQ (10 items)
  *  - Footer
  */
 
@@ -41,7 +36,7 @@ export default function LandingPage() {
       <LogoStrip />
       <WhyDifferent />
       <HowItWorks />
-      <SafeByDesign />
+      <TrustRails />
       <LiveDemoVerifier />
       <WhyJoin />
       <Personas />
@@ -67,13 +62,14 @@ function StickyHeader() {
           <span className="text-sm font-semibold">Creator • NIL</span>
         </Link>
         <nav className="hidden items-center gap-5 text-sm md:flex">
-    <a href="#why" className="text-white/90 hover:text-[var(--gold)]">Why us</a>
-    <a href="#how" className="text-white/90 hover:text-[var(--gold)]">How it works</a>
-    <a href="#trust" className="text-white/90 hover:text-[var(--gold)]">Trust Rails</a>
-    <a href="#personas" className="text-white/90 hover:text-[var(--gold)]">Personas</a>
-    <a href="#features" className="text-white/90 hover:text-[var(--gold)]">Features</a>
-    <a href="#pricing" className="text-white/90 hover:text-[var(--gold)]">Pricing</a>
-  </nav>
+          <a href="#why" className="text-white/90 hover:text-[var(--gold)]">Why us</a>
+          <a href="#how" className="text-white/90 hover:text-[var(--gold)]">How it works</a>
+          <a href="#trust" className="text-white/90 hover:text-[var(--gold)]">Trust Rails</a>
+          <a href="#personas" className="text-white/90 hover:text-[var(--gold)]">Personas</a>
+          <a href="#features" className="text-white/90 hover:text-[var(--gold)]">Features</a>
+          <a href="#pricing" className="text-white/90 hover:text-[var(--gold)]">Pricing</a>
+          <a href="#faq" className="text-white/90 hover:text-[var(--gold)]">FAQ</a>
+        </nav>
         <div className="flex items-center gap-2">
           <HeaderGhostCTA to="/demo/offerlock">See Demo</HeaderGhostCTA>
           <HeaderGoldCTA to="/signup">Start Workspace</HeaderGoldCTA>
@@ -111,34 +107,16 @@ function HeaderGhostCTA({ to, children }: { to: string; children: React.ReactNod
 
 function Hero() {
   return (
-    <section className="border-b border-white/10 py-12 sm:py-16">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 md:grid-cols-2">
+    <section className="relative border-b border-white/10 py-14 sm:py-18">
+      {/* animated overlay */}
+      <div className="hero-animated-overlay" />
+      <div className="relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 md:grid-cols-2">
         <div>
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            viewport={{ once: true }}
-            className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs text-white/80"
-          >
-            <motion.span
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              AI with guardrails
-            </motion.span>
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs text-white/80">
+            <span>AI with guardrails</span>
             <span className="h-3 w-px bg-white/20" />
-            <motion.span
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.35 }}
-              viewport={{ once: true }}
-            >
-              private receipts
-            </motion.span>
-          </motion.div>
+            <span>content-free receipts</span>
+          </div>
 
           <motion.h1
             initial={{ opacity: 0, y: 14 }}
@@ -150,8 +128,8 @@ function Hero() {
           </motion.h1>
 
           <p className="mt-4 max-w-2xl text-lg text-white/80">
-            One place for creators and athletes to lock offers, e-sign with confidence, and
-            keep private proof of every step.
+            One place for creators and athletes to lock offers, e-sign with confidence,
+            and keep private proof of every step.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -194,6 +172,13 @@ function LogoStrip() {
     <section className="border-b border-white/10 bg-white/5 py-6">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-6 px-4 opacity-80">
         <span className="text-xs text-white/70">Trusted by creators, programs & brands</span>
+        <div className="flex flex-wrap items-center gap-5 text-white/60">
+          {/* replace with real logos when ready */}
+          <span className="text-xs">🏫 State U</span>
+          <span className="text-xs">🏆 ProBrand</span>
+          <span className="text-xs">🎤 PodNet</span>
+          <span className="text-xs">📰 Sports Daily</span>
+        </div>
       </div>
     </section>
   );
@@ -229,7 +214,7 @@ function WhyDifferent() {
 function HowItWorks() {
   const steps = [
     { icon: Search, title: "Brief", desc: "Share scope & disclosures." },
-    { icon: FileSignature, title: "OfferLock → e-Sign", desc: "Prevent overlap, route approvals, sign the same contract." },
+    { icon: FileSignature, title: "OfferLock → e-Sign", desc: "Prevent overlap, approvals on rails, sign the same contract." },
     { icon: Banknote, title: "Settlement", desc: "Payouts & deliverables packaged for audits." },
   ];
   return (
@@ -268,7 +253,7 @@ function TrustRails() {
   ];
   return (
     <Section id="trust" title="Trust rails">
-      <ul className="space-y-2 text-sm text-white/80">
+      <ul className="space-y-2 text-sm text白/80">
         {bullets.map((b) => (
           <li key={b} className="flex items-start gap-2">
             <Check className="mt-0.5 h-4 w-4 text-[var(--gold)]" />
@@ -361,7 +346,7 @@ function WhyJoin() {
     <Section title="Why join">
       <div className="grid gap-4 md:grid-cols-2">
         {tiles.map(t => (
-          <div key={t.title} className="rounded-xl border border-white/10 bg白/5 p-5">
+          <div key={t.title} className="rounded-xl border border-white/10 bg-white/5 p-5">
             <div className="text-lg font-semibold">{t.title}</div>
             <ul className="mt-2 space-y-1 text-sm text-white/80">
               {t.bullets.map(b => (
@@ -391,7 +376,7 @@ function Personas() {
       <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
         {items.map((label) => (
           <div key={label} className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="text-base font-semibold text-white">{label}</div>
+            <div className="text-base font-semibold">{label}</div>
             <div className="mt-2">
               <GhostCTA to={`/personas?who=${encodeURIComponent(label)}`}>Open</GhostCTA>
             </div>
@@ -415,7 +400,7 @@ function FeaturesIndex() {
       <div className="grid gap-3 md:grid-cols-3">
         {features.map(f => (
           <div key={f.name} className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="text-base font-semibold text-white">{f.name}</div>
+            <div className="text-base font-semibold">{f.name}</div>
             <div className="mt-1 text-sm text-white/75">{f.desc}</div>
             <div className="mt-3">
               <GhostCTA to={f.to}>Open</GhostCTA>
@@ -449,6 +434,13 @@ function SocialProof() {
           </div>
         ))}
       </div>
+      {/* secondary logo strip */}
+      <div className="mt-6 flex flex-wrap items-center gap-5 text-white/60">
+        <span className="text-xs">🏫 Metro State</span>
+        <span className="text-xs">🏆 BrandCo</span>
+        <span className="text-xs">🎧 PodNow</span>
+        <span className="text-xs">📰 NIL Weekly</span>
+      </div>
     </Section>
   );
 }
@@ -457,18 +449,26 @@ function SocialProof() {
 
 function Pricing() {
   const cards = [
-    { name: "Creators — Free", cta: "Start workspace", to: "/signup", blurb: "No upfront cost. Upgrade when you’re ready." },
-    { name: "Brands & Schools — Request demo", cta: "Request demo", to: "/contact", blurb: "Enterprise visibility & oversight." },
+    { name: "Free", price: "$0/mo", blurb: "For creators getting started", bullets: ["Marketplace access", "Standard support", "3 active offers"], cta: { label: "Join free", to: "/signup?plan=free" }, tag: "" },
+    { name: "Pro", price: "$49/mo", blurb: "For growing NIL creators", bullets: ["Featured profile", "Analytics", "Priority support"], cta: { label: "Upgrade", to: "/signup?plan=pro" }, tag: "Most Popular" },
+    { name: "Enterprise", price: "Custom", blurb: "For brands & schools", bullets: ["Dedicated manager", "Custom integrations", "Bulk onboarding"], cta: { label: "Contact sales", to: "/contact" }, tag: "" },
   ];
   return (
     <Section id="pricing" title="Simple, transparent pricing">
-      <div className="grid gap-3 md:grid-cols-2">
-        {cards.map(c => (
-          <div key={c.name} className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="text-base font-semibold text-white">{c.name}</div>
+      <div className="grid gap-3 md:grid-cols-3">
+        {cards.map((c, idx) => (
+          <div key={c.name} className={`relative rounded-xl border bg-white/5 p-5 ${idx===1 ? "border-[var(--gold)] shadow" : "border-white/10"}`}>
+            {c.tag && <span className="absolute right-3 top-3 rounded-full bg-white/10 px-2 py-1 text-xs font-semibold text-white">{c.tag}</span>}
+            <div className="text-xl font-semibold">{c.name}</div>
+            <div className="mt-1 text-3xl font-extrabold">{c.price}</div>
             <div className="mt-1 text-sm text-white/75">{c.blurb}</div>
-            <div className="mt-3">
-              <PrimaryCTA to={c.to}>{c.cta}</PrimaryCTA>
+            <ul className="mt-3 space-y-1 text-sm text-white/80">
+              {c.bullets.map(b => (
+                <li key={b} className="flex items-center gap-2"><Check className="h-4 w-4 text-[var(--gold)]" /> {b}</li>
+              ))}
+            </ul>
+            <div className="mt-4">
+              <PrimaryCTA to={c.cta.to}>{c.cta.label}</PrimaryCTA>
             </div>
           </div>
         ))}
@@ -484,6 +484,13 @@ function FAQ() {
     { q: "What is OfferLock?", a: "A quick pre-agreement so everyone aligns before signing — no ghost edits." },
     { q: "What’s a “receipt”?", a: "A small, private proof of what happened and why — helpful for oversight and disputes." },
     { q: "Can my school or parent see my deals?", a: "Only what you share; amounts can remain private." },
+    { q: "Is this NCAA compliant?", a: "Yes—policy gates ensure actions are reviewed for compliance before execution." },
+    { q: "Do I need an agent?", a: "Not required—brands can reach out directly; agents can manage deals for you." },
+    { q: "How do payouts work?", a: "Payments settle after deliverables; a private receipt proves timing and reason." },
+    { q: "Can I export receipts?", a: "Yes—multi-anchor packs are exportable for audits and disputes." },
+    { q: "Does this work for minors?", a: "Guardian co-sign workflows support under-18 athletes." },
+    { q: "What’s the cost?", a: "Free for creators; Pro adds analytics & priority support; Enterprise is custom." },
+    { q: "How do I start?", a: "Click “Try the OfferLock demo” or “Start Workspace” to see it in action." },
   ];
   return (
     <Section id="faq" title="Frequently asked">
@@ -524,7 +531,7 @@ function Footer() {
               <li><Link className="hover:text-[var(--gold)]" to="/terms">Terms</Link></li>
             </ul>
           </div>
-          <div className="text-sm text-white/70">© {new Date().getFullYear()} Creator NIL. All rights reserved.</div>
+          <div className="text-sm text-white/60">© {new Date().getFullYear()} Creator NIL. All rights reserved.</div>
         </div>
       </div>
     </footer>

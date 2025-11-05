@@ -911,3 +911,20 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* === Landing hero animated overlay === */
+.hero-animated-overlay{
+  position:absolute; inset:-20%;
+  background: radial-gradient(60% 60% at 30% 30%, rgba(212,175,55,0.18), transparent 60%),
+              radial-gradient(50% 50% at 70% 40%, rgba(255,255,255,0.12), transparent 60%),
+              radial-gradient(40% 40% at 60% 75%, rgba(212,175,55,0.12), transparent 60%);
+  filter: blur(22px);
+  animation: heroFloat 14s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes heroFloat {
+  0%   { transform: translate(-10px, -8px) scale(1.0);  opacity: 0.85; }
+  50%  { transform: translate(8px, 6px) scale(1.03);   opacity: 1;    }
+  100% { transform: translate(14px, -10px) scale(1.05); opacity: 0.9; }
+}
+:root{ --bfo-navy: #0B2239; --bfo-gold: #D4AF37; }
