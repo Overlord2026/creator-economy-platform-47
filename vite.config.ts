@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+const previewStubPath = path.resolve(__dirname, 'src/_stubs/empty.ts');
 import { componentTagger } from 'lovable-tagger';
 
 export default defineConfig(({ mode }) => ({

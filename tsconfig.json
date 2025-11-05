@@ -13,6 +13,36 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@/components/estate-planning/*": [
+        "src/_stubs/empty.ts"
+      ],
+      "@/components/vault/*": [
+        "src/_stubs/empty.ts"
+      ],
+      "@/components/vip/*": [
+        "src/_stubs/empty.ts"
+      ],
+      "@/components/healthcare/*": [
+        "src/_stubs/empty.ts"
+      ],
+      "@/components/insurance/*": [
+        "src/_stubs/empty.ts"
+      ],
+      "@/components/webhooks/*": [
+        "src/_stubs/empty.ts"
+      ],
+      "@/pages/estate/*": [
+        "src/_stubs/empty.ts"
+      ],
+      "@/pages/vault/*": [
+        "src/_stubs/empty.ts"
+      ],
+      "@/pages/vip/*": [
+        "src/_stubs/empty.ts"
+      ],
+      "@/hooks/legacy/*": [
+        "src/_stubs/empty.ts"
       ]
     },
     "noImplicitAny": false,
