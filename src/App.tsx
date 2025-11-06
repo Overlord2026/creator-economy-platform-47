@@ -26,6 +26,7 @@ import DashboardPage from '@/pages/app/DashboardPage';
 import { PersonaRedirect } from '@/components/PersonaRedirect';
 import FamiliesPage from '@/pages/FamiliesPage';
 import OnboardingPage from '@/pages/OnboardingPage';
+import Index from '@/pages/Index';
 
 export default function App() {
   return (
@@ -33,9 +34,10 @@ export default function App() {
       <BrowserRouter>
         <div className="min-h-screen bg-[#0B2239] text-white">
           <Routes>
-            <Route path="/marketing" element={<LandingPage />} />
             {/* Marketing and persona routes */}
-            <Route path="/" element={<SplitHeroRoot />} />
+            <Route path="/" element={<Index />} />
+            <Route path="/marketing" element={<LandingPage />} />
+            <Route path="/personas-select" element={<SplitHeroRoot />} />
             <Route path="/nil" element={<LandingPage />} />
             <Route path="/personas" element={<PersonasPage />} />
             <Route path="/families" element={<FamiliesPage />} />
