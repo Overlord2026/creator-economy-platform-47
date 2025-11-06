@@ -369,74 +369,54 @@ function WhyJoin() {
 
 
 
-      {/* Personas / Audience */}
+      {/* Who it's for - 3 Main Sections */}
       <section className="py-12 md:py-16">
-        {/* 2-up: Athletes / Coaches & Schools */}
-        <div className="grid gap-4 md:grid-cols-2 mb-10">
-          {/* Athletes */}
+        <div className="mb-8">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-white">Who it's for</h2>
+        </div>
+        
+        <div className="grid gap-6 md:grid-cols-3">
+          {/* Athletes & Creators */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h3 className="text-xl font-extrabold text-white">Athletes</h3>
-            <ul className="mt-3 space-y-2 text-white/80 text-sm">
-              <li>✓ Brand kit</li>
+            <h3 className="text-xl font-extrabold text-white mb-4">Athletes & Creators</h3>
+            <ul className="space-y-2 text-white/80 text-sm mb-6">
+              <li>✓ Brand kit & portfolio</li>
               <li>✓ Approvals & e-sign on rails</li>
               <li>✓ Proof-backed reports</li>
+              <li>✓ Payment tracking</li>
             </ul>
-            <div className="mt-5">
-              <Link to="/onboarding/athlete" className="inline-flex items-center gap-2 rounded-md border border-[var(--gold)] px-3 py-2 text-sm font-semibold text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black">
-                Start
-              </Link>
-            </div>
+            <Link to="/onboarding" className="inline-flex items-center gap-2 rounded-md bg-[var(--gold)] px-4 py-2 text-sm font-semibold text-black hover:bg-[var(--gold)]/90">
+              Start free workspace
+            </Link>
           </div>
-          {/* Coaches / Schools */}
+
+          {/* Coaches & Schools */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h3 className="text-xl font-extrabold text-white">Coaches/Schools</h3>
-            <ul className="mt-3 space-y-2 text-white/80 text-sm">
-              <li>✓ Plain-language policy</li>
+            <h3 className="text-xl font-extrabold text-white mb-4">Coaches & Schools</h3>
+            <ul className="space-y-2 text-white/80 text-sm mb-6">
+              <li>✓ Plain-language policy gates</li>
               <li>✓ Right-sized visibility</li>
               <li>✓ Exportable oversight</li>
+              <li>✓ Compliance-ready receipts</li>
             </ul>
-            <div className="mt-5">
-              <Link to="/onboarding/school" className="inline-flex items-center gap-2 rounded-md border border-[var(--gold)] px-3 py-2 text-sm font-semibold text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black">
-                See demo
-              </Link>
-            </div>
+            <Link to="/nil" className="inline-flex items-center gap-2 rounded-md border border-[var(--gold)] px-4 py-2 text-sm font-semibold text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black">
+              Request demo
+            </Link>
           </div>
-        </div>
 
-        {/* Grid: Who it’s for */}
-        <div className="mb-6">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-white">Who it’s for</h2>
-        </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {/* Athlete */}
-          <div className="rounded-2xl bg-[color:var(--bfo-navy)]/40 border border-[#D4AF37]/40 p-5">
-            <div className="text-lg font-semibold text-white mb-3">Athlete</div>
-            <Link to="/onboarding/athlete" className="inline-flex items-center gap-2 rounded-md border border-[#D4AF37] text-[#D4AF37] px-3 py-2 hover:bg-[#D4AF37]/10">Open</Link>
-          </div>
-          {/* Creator */}
-          <div className="rounded-2xl bg-[color:var(--bfo-navy)]/40 border border-[#D4AF37]/20 p-5">
-            <div className="text-lg font-semibold text-white mb-3">Creator</div>
-            <Link to="/creator" className="inline-flex items-center gap-2 rounded-md border border-[#D4AF37] text-[#D4AF37] px-3 py-2 hover:bg-[#D4AF37]/10">Open</Link>
-          </div>
-          {/* Coach/School */}
-          <div className="rounded-2xl bg-[color:var(--bfo-navy)]/40 border border-[#D4AF37]/20 p-5">
-            <div className="text-lg font-semibold text-white mb-3">Coach/School</div>
-            <Link to="/onboarding/school" className="inline-flex items-center gap-2 rounded-md border border-[#D4AF37] text-[#D4AF37] px-3 py-2 hover:bg-[#D4AF37]/10">Open</Link>
-          </div>
-          {/* Parent/Guardian */}
-          <div className="rounded-2xl bg-[color:var(--bfo-navy)]/40 border border-[#D4AF37]/20 p-5">
-            <div className="text-lg font-semibold text-white mb-3">Parent/Guardian</div>
-            <Link to="/families" className="inline-flex items-center gap-2 rounded-md border border-[#D4AF37] text-[#D4AF37] px-3 py-2 hover:bg-[#D4AF37]/10">Open</Link>
-          </div>
-          {/* Agent/Rep */}
-          <div className="rounded-2xl bg-[color:var(--bfo-navy)]/40 border border-[#D4AF37]/20 p-5">
-            <div className="text-lg font-semibold text-white mb-3">Agent/Rep</div>
-            <Link to="/onboarding/agent" className="inline-flex items-center gap-2 rounded-md border border-[#D4AF37] text-[#D4AF37] px-3 py-2 hover:bg-[#D4AF37]/10">Open</Link>
-          </div>
-          {/* Brand/Partner */}
-          <div className="rounded-2xl bg-[color:var(--bfo-navy)]/40 border border-[#D4AF37]/20 p-5">
-            <div className="text-lg font-semibold text-white mb-3">Brand/Partner</div>
-            <Link to="/onboarding/brand" className="inline-flex items-center gap-2 rounded-md border border-[#D4AF37] text-[#D4AF37] px-3 py-2 hover:bg-[#D4AF37]/10">Open</Link>
+          {/* Professionals */}
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <h3 className="text-xl font-extrabold text-white mb-4">Professionals</h3>
+            <p className="text-white/70 text-sm mb-3">For agents, brands, parents, and service providers</p>
+            <ul className="space-y-2 text-white/80 text-sm mb-6">
+              <li>✓ Client management tools</li>
+              <li>✓ Multi-party oversight</li>
+              <li>✓ Secure collaboration</li>
+              <li>✓ Private audit trails</li>
+            </ul>
+            <Link to="/pros" className="inline-flex items-center gap-2 rounded-md border border-[var(--gold)] px-4 py-2 text-sm font-semibold text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black">
+              Explore professional tools
+            </Link>
           </div>
         </div>
       </section>
