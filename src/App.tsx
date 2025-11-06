@@ -33,7 +33,7 @@ export default function App() {
         <div className="min-h-screen bg-[#0B2239] text-white">
           <Routes>
             {/* Marketing and persona routes */}
-            <Route path="/" element={<PersonaRedirect />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/nil" element={<LandingPage />} />
             <Route path="/personas" element={<PersonasPage />} />
             <Route path="/families" element={<FamiliesPage />} />
