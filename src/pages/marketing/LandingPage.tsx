@@ -367,59 +367,56 @@ function WhyJoin() {
 
 /* -------------------------------- Personas --------------------------------- */
 
-
-
-      {/* Who it's for - 3 Main Sections */}
-      <section className="py-12 md:py-16">
-        <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-white">Who it's for</h2>
+function WhoItsFor() {
+  return (
+    <Section id="personas" title="Who it's for">
+      <div className="grid gap-6 md:grid-cols-3">
+        {/* Athletes & Creators */}
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h3 className="text-xl font-extrabold text-white mb-4">Athletes & Creators</h3>
+          <ul className="space-y-2 text-white/80 text-sm mb-6">
+            <li>✓ Brand kit & portfolio</li>
+            <li>✓ Approvals & e-sign on rails</li>
+            <li>✓ Proof-backed reports</li>
+            <li>✓ Payment tracking</li>
+          </ul>
+          <Link to="/onboarding" className="inline-flex items-center gap-2 rounded-md bg-[var(--gold)] px-4 py-2 text-sm font-semibold text-black hover:bg-[var(--gold)]/90">
+            Start free workspace
+          </Link>
         </div>
-        
-        <div className="grid gap-6 md:grid-cols-3">
-          {/* Athletes & Creators */}
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h3 className="text-xl font-extrabold text-white mb-4">Athletes & Creators</h3>
-            <ul className="space-y-2 text-white/80 text-sm mb-6">
-              <li>✓ Brand kit & portfolio</li>
-              <li>✓ Approvals & e-sign on rails</li>
-              <li>✓ Proof-backed reports</li>
-              <li>✓ Payment tracking</li>
-            </ul>
-            <Link to="/onboarding" className="inline-flex items-center gap-2 rounded-md bg-[var(--gold)] px-4 py-2 text-sm font-semibold text-black hover:bg-[var(--gold)]/90">
-              Start free workspace
-            </Link>
-          </div>
 
-          {/* Coaches & Schools */}
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h3 className="text-xl font-extrabold text-white mb-4">Coaches & Schools</h3>
-            <ul className="space-y-2 text-white/80 text-sm mb-6">
-              <li>✓ Plain-language policy gates</li>
-              <li>✓ Right-sized visibility</li>
-              <li>✓ Exportable oversight</li>
-              <li>✓ Compliance-ready receipts</li>
-            </ul>
-            <Link to="/nil" className="inline-flex items-center gap-2 rounded-md border border-[var(--gold)] px-4 py-2 text-sm font-semibold text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black">
-              Request demo
-            </Link>
-          </div>
-
-          {/* Professionals */}
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h3 className="text-xl font-extrabold text-white mb-4">Professionals</h3>
-            <p className="text-white/70 text-sm mb-3">For agents, brands, parents, and service providers</p>
-            <ul className="space-y-2 text-white/80 text-sm mb-6">
-              <li>✓ Client management tools</li>
-              <li>✓ Multi-party oversight</li>
-              <li>✓ Secure collaboration</li>
-              <li>✓ Private audit trails</li>
-            </ul>
-            <Link to="/pros" className="inline-flex items-center gap-2 rounded-md border border-[var(--gold)] px-4 py-2 text-sm font-semibold text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black">
-              Explore professional tools
-            </Link>
-          </div>
+        {/* Coaches & Schools */}
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h3 className="text-xl font-extrabold text-white mb-4">Coaches & Schools</h3>
+          <ul className="space-y-2 text-white/80 text-sm mb-6">
+            <li>✓ Plain-language policy gates</li>
+            <li>✓ Right-sized visibility</li>
+            <li>✓ Exportable oversight</li>
+            <li>✓ Compliance-ready receipts</li>
+          </ul>
+          <Link to="/nil" className="inline-flex items-center gap-2 rounded-md border border-[var(--gold)] px-4 py-2 text-sm font-semibold text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black">
+            Request demo
+          </Link>
         </div>
-      </section>
+
+        {/* Professionals */}
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h3 className="text-xl font-extrabold text-white mb-4">Professionals</h3>
+          <p className="text-white/70 text-sm mb-3">For agents, brands, parents, and service providers</p>
+          <ul className="space-y-2 text-white/80 text-sm mb-6">
+            <li>✓ Client management tools</li>
+            <li>✓ Multi-party oversight</li>
+            <li>✓ Secure collaboration</li>
+            <li>✓ Private audit trails</li>
+          </ul>
+          <Link to="/pros" className="inline-flex items-center gap-2 rounded-md border border-[var(--gold)] px-4 py-2 text-sm font-semibold text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black">
+            Explore professional tools
+          </Link>
+        </div>
+      </div>
+    </Section>
+  );
+}
 
 /* ------------------------------ Features index ------------------------------ */
 
