@@ -5,7 +5,7 @@ import { useNetWorth } from '@/context/NetWorthContext';
 
 interface FamilyWealthSummary {
   totalBalance: string;
-  formattedTotalBalance: string;
+  totalBalance: string;
   accountCount: number;
   planCount: number;
   activePlanCount: number;
@@ -36,8 +36,14 @@ export const useFamilyWealthData = (): FamilyWealthSummary => {
   } = useNetWorth();
 
   // Memoize expensive calculations
-  const totalBalance = useMemo(() => {
-    return getFormattedTotalBalance();
+  const totalBalanceNumber = useMemo(
+  () => (accounts || []).reduce((sum: number, a: any) => sum + (a?.balance || 0), 0),
+  [accounts]
+);
+const totalBalance = useMemo(
+  () => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalBalanceNumber),
+  [totalBalanceNumber]
+);
   }, [getFormattedTotalBalance]);
 
   const accountCount = useMemo(() => {
@@ -64,7 +70,7 @@ export const useFamilyWealthData = (): FamilyWealthSummary => {
 
   return useMemo(() => ({
     totalBalance,
-    formattedTotalBalance: totalBalance,
+    totalBalance: totalBalance,
     accountCount,
     ...planMetrics,
     netWorth,

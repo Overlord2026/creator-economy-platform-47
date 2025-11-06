@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { supabase } from '@/integrations/supabase/client';
 import { useUser } from "@/context/UserContext";
 import { sb } from '@/lib/supabase-relaxed';
 

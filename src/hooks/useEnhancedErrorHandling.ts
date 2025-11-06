@@ -35,9 +35,10 @@ export const useEnhancedErrorHandling = () => {
     setErrors(prev => [...prev, error]);
     
     // Enhanced logging with correlation ID
-    logger.error('Enhanced Error Handler', {
-      ...error,
-      stack: error instanceof Error ? error.stack : undefined
+    logger.error('Enhanced Error Handler', typeof {
+      ...error === 'string' ? {
+      ...error : JSON.stringify({
+      ...error), stack: error instanceof Error ? error.stack : undefined
     }, 'useEnhancedErrorHandling');
   }, []);
 

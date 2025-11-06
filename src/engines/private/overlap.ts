@@ -152,7 +152,7 @@ export async function computeOverlap(input: OverlapInput): Promise<OverlapResult
     sector?: string;
   }>();
 
-  for (const [fundId, holdings] of Object.entries(fundHoldings)) {
+  for (const [fundId, holdings] of Object.entries(fundHoldings) as Array<[string, Map<any, any>]>) {
     for (const holding of holdings.values()) {
       const current = holdingContribution.get(holding.holding_id) || {
         name: holding.holding_name,

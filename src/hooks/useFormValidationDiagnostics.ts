@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { FormValidationTestResult } from '@/types/diagnostics';
 import { sb } from '@/lib/supabase-relaxed';
 import { useDatabaseDiagnostics } from './useDatabaseDiagnostics';

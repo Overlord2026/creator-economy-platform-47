@@ -25,7 +25,7 @@ type LegacyItem = {
 
 type VaultMember = {
   id: string;
-  email: string;
+  email?: string;
   first_name?: string;
   last_name?: string;
   role: string;

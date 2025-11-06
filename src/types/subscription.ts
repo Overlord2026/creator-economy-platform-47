@@ -67,5 +67,5 @@ export interface PremiumUpgradePrompt {
   required_tier: SubscriptionTier;
   current_usage?: number;
   usage_limit?: number;
-  add_on_required?: boolean;
+  add_on_required?: string | boolean;
 }

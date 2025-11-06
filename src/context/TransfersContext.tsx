@@ -119,7 +119,7 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
   }) => {
     setProcessing(true);
     
-    const response = await edgeFunctionClient.invoke('process-transfer', transferData);
+    const response = await edgeFunctionClient.invoke<{ transfer: any }>('process-transfer', transferData);
     
     if (!response.error && response.data?.transfer) {
       setTransfers(prev => [response.data.transfer, ...prev]);
@@ -140,7 +140,7 @@ export function TransfersProvider({ children }: { children: React.ReactNode }) {
   }) => {
     setProcessing(true);
     
-    const response = await edgeFunctionClient.invoke('stripe-ach-transfer', transferData);
+    const response = await edgeFunctionClient.invoke<{ transfer: any }>('stripe-ach-transfer', transferData);
     
     if (!response.error && response.data?.transfer) {
       setTransfers(prev => [response.data.transfer, ...prev]);

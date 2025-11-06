@@ -1,4 +1,5 @@
 import { useMemo, useCallback, useEffect, useState } from "react";
+import { supabase } from '@/integrations/supabase/client';
 import { useSubscriptionAccess } from "@/hooks/useSubscriptionAccess";
 import { sb } from '@/lib/supabase-relaxed';
 import { useToast } from "@/hooks/use-toast";
