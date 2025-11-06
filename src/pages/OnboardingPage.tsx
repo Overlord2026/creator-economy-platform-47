@@ -12,6 +12,7 @@ import { LinkAccounts } from "./onboarding/steps/LinkAccounts";
 import { UploadDoc } from "./onboarding/steps/UploadDoc";
 import { Goals } from "./onboarding/steps/Goals";
 import { InvitePro } from "./onboarding/steps/InvitePro";
+import { Check } from "lucide-react";
 
 type StepKey =
   | "email-verify" | "profile" | "household" | "link-accounts"
@@ -43,7 +44,7 @@ export default function OnboardingPage() {
     const user_id = user?.user?.id;
     if (!user_id) { setSaving(false); return; }
 
-    await supabase
+    await sb
       .from('user_onboarding_progress')
       .upsert(
         { 
@@ -71,79 +72,102 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold">{copy.hero}</h1>
-        <ul className="mt-4 space-y-2">
-          {copy.bullets.map((bullet, index) => (
-            <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
-              <span className="text-primary">•</span>
-              {bullet}
-            </li>
-          ))}
-        </ul>
-      </header>
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+      {/* Background Pattern Overlay */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+          backgroundSize: '40px 40px'
+        }} />
+      </div>
 
-      <OnboardingProgress 
-        currentStep={currentStep} 
-        totalSteps={STEPS.length} 
-        steps={STEPS.map(s => s.replace('-', ' '))} 
-        className="mb-6"
-      />
+      {/* Content Container */}
+      <div className="relative z-10 container mx-auto px-4 py-12 max-w-4xl">
+        {/* Header Section */}
+        <header className="mb-12 text-center">
+          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-400 bg-clip-text text-transparent">
+            {copy.hero}
+          </h1>
+          <div className="max-w-2xl mx-auto">
+            <ul className="space-y-3">
+              {copy.bullets.map((bullet, index) => (
+                <li key={index} className="flex items-start gap-3 text-lg text-slate-200">
+                  <Check className="h-6 w-6 text-amber-400 flex-shrink-0 mt-0.5" />
+                  <span>{bullet}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </header>
 
-      <section className="mt-6">
-        {active === "email-verify" && (
-          <EmailVerify 
-            onComplete={(data) => markComplete("email-verify", data)}
-            persona={persona}
-            segment={segment}
-          />
-        )}
-        {active === "profile" && (
-          <Profile 
-            onComplete={(data) => markComplete("profile", data)}
-            persona={persona}
-            segment={segment}
-          />
-        )}
-        {active === "household" && (
-          <Household 
-            onComplete={(data) => markComplete("household", data)}
-            persona={persona}
-            segment={segment}
-          />
-        )}
-        {active === "link-accounts" && (
-          <LinkAccounts
-            onComplete={(data) => markComplete("link-accounts", data)}
-            persona={persona}
-            segment={segment}
-          />
-        )}
-        {active === "upload-doc" && (
-          <UploadDoc
-            onComplete={(data) => markComplete("upload-doc", data)}
-            persona={persona}
-            segment={segment}
-          />
-        )}
-        {active === "goals" && (
-          <Goals 
-            onComplete={(data) => markComplete("goals", data)}
-            persona={persona}
-            segment={segment}
-          />
-        )}
-        {active === "invite-pro" && (
-          <InvitePro 
-            onComplete={(data) => markComplete("invite-pro", data)}
-            persona={persona}
-            segment={segment}
-          />
-        )}
-      </section>
+        {/* Progress Bar */}
+        <OnboardingProgress 
+          currentStep={currentStep} 
+          totalSteps={STEPS.length} 
+          steps={STEPS.map(s => s.replace('-', ' '))} 
+          className="mb-12"
+        />
 
-      <footer className="mt-6 text-sm opacity-75">{saving ? "Saving…" : null}</footer>
+        {/* Step Content */}
+        <section className="mt-8">
+          {active === "email-verify" && (
+            <EmailVerify 
+              onComplete={(data) => markComplete("email-verify", data)}
+              persona={persona}
+              segment={segment}
+            />
+          )}
+          {active === "profile" && (
+            <Profile 
+              onComplete={(data) => markComplete("profile", data)}
+              persona={persona}
+              segment={segment}
+            />
+          )}
+          {active === "household" && (
+            <Household 
+              onComplete={(data) => markComplete("household", data)}
+              persona={persona}
+              segment={segment}
+            />
+          )}
+          {active === "link-accounts" && (
+            <LinkAccounts
+              onComplete={(data) => markComplete("link-accounts", data)}
+              persona={persona}
+              segment={segment}
+            />
+          )}
+          {active === "upload-doc" && (
+            <UploadDoc
+              onComplete={(data) => markComplete("upload-doc", data)}
+              persona={persona}
+              segment={segment}
+            />
+          )}
+          {active === "goals" && (
+            <Goals 
+              onComplete={(data) => markComplete("goals", data)}
+              persona={persona}
+              segment={segment}
+            />
+          )}
+          {active === "invite-pro" && (
+            <InvitePro 
+              onComplete={(data) => markComplete("invite-pro", data)}
+              persona={persona}
+              segment={segment}
+            />
+          )}
+        </section>
+
+        {/* Footer */}
+        {saving && (
+          <footer className="mt-8 text-center">
+            <p className="text-sm text-slate-400 animate-pulse">Saving your progress...</p>
+          </footer>
+        )}
+      </div>
     </div>
   );
 }
