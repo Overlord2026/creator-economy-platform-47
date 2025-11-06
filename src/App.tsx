@@ -21,16 +21,24 @@ import DemoSettlement from '@/pages/DemoSettlement';
 // Dashboard stub (if you added it)
 import DashboardPage from '@/pages/app/DashboardPage';
 
+// Persona routing and onboarding
+import { PersonaRedirect } from '@/components/PersonaRedirect';
+import FamiliesPage from '@/pages/FamiliesPage';
+import OnboardingPage from '@/pages/OnboardingPage';
+
 export default function App() {
   return (
     <SafeProviders>
       <BrowserRouter>
         <div className="min-h-screen bg-[#0B2239] text-white">
           <Routes>
-            {/* Marketing routes */}
-            <Route path="/" element={<LandingPage />} />
+            {/* Marketing and persona routes */}
+            <Route path="/" element={<PersonaRedirect />} />
             <Route path="/nil" element={<LandingPage />} />
             <Route path="/personas" element={<PersonasPage />} />
+            <Route path="/families" element={<FamiliesPage />} />
+            <Route path="/families/:segment" element={<FamiliesPage />} />
+            <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/pros" element={<ProsPage />} />
             <Route path="/pros/:id" element={<ProsDetailPage />} />
             <Route path="/connections" element={<ConnectionsPage />} />
