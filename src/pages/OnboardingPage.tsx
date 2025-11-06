@@ -1,136 +1,149 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { analytics } from "@/lib/analytics";
+import { sb } from '@/lib/supabase-relaxed';
+import { goToPricingForFeature } from "@/lib/upgrade";
+import { getPersonaCopy } from "@/config/personaCopy";
+import { OnboardingProgress } from "@/components/OnboardingProgress";
+import { EmailVerify } from "./onboarding/steps/EmailVerify";
+import { Profile } from "./onboarding/steps/Profile";
+import { Household } from "./onboarding/steps/Household";
+import { LinkAccounts } from "./onboarding/steps/LinkAccounts";
+import { UploadDoc } from "./onboarding/steps/UploadDoc";
+import { Goals } from "./onboarding/steps/Goals";
+import { InvitePro } from "./onboarding/steps/InvitePro";
 
-/** Minimal local Stepper so we don't depend on missing "@/components/ui/stepper" */
-function Stepper({ steps, current }: { steps: string[]; current: number }) {
-  return (
-    <ol className="flex flex-wrap items-center gap-3 text-sm">
-      {steps.map((label, i) => (
-        <li
-          key={label}
-          className={`rounded-full px-2.5 py-0.5 border ${
-            i <= current ? "border-[var(--gold)] text-[var(--gold)]" : "border-white/20 text-white/60"
-          }`}
-        >
-          {i + 1}. {label}
-        </li>
-      ))}
-    </ol>
-  );
-}
+type StepKey =
+  | "email-verify" | "profile" | "household" | "link-accounts"
+  | "upload-doc" | "goals" | "invite-pro";
 
-const NAVY = "#0B2239";
+const STEPS: StepKey[] = [
+  "email-verify","profile","household","link-accounts","upload-doc","goals","invite-pro"
+];
 
-/** Simple, self-contained onboarding page */
 export default function OnboardingPage() {
-  const nav = useNavigate();
-  const storageKey = "onb-athlete"; // tweak per persona if you fork this file
-  const steps = useMemo(() => ["Profile", "Compliance", "Payout"], []);
-  const [idx, setIdx] = useState(0);
-  const total = steps.length;
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = new URLSearchParams(location.search);
+  const persona = (params.get("persona") ?? "family") as "family" | "professional";
+  const segment = params.get("segment") ?? "retirees";
+  const [active, setActive] = useState<StepKey>(STEPS[0]);
+  const [saving, setSaving] = useState(false);
+
+  const copy = useMemo(() => getPersonaCopy(persona, segment), [persona, segment]);
+  const currentStep = STEPS.indexOf(active) + 1;
 
   useEffect(() => {
-    const saved = Number(localStorage.getItem(storageKey));
-    if (Number.isFinite(saved) && saved >= 0 && saved < total) setIdx(saved);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storageKey, total]);
+    analytics.trackEvent("onboarding.viewed", { persona, segment });
+  }, [persona, segment]);
 
-  useEffect(() => {
-    localStorage.setItem(storageKey, String(idx));
-  }, [idx, storageKey]);
+  async function markComplete(step: StepKey, data: Record<string, any> = {}) {
+    setSaving(true);
+    const { data: user } = await sb.auth.getUser();
+    const user_id = user?.user?.id;
+    if (!user_id) { setSaving(false); return; }
 
-  const next = () => {
-    if (idx + 1 < total) setIdx(idx + 1);
-    else {
-      localStorage.removeItem(storageKey);
-      nav("/athlete/dashboard"); // success route; change if you need
+    await supabase
+      .from('user_onboarding_progress')
+      .upsert(
+        { 
+          user_id, 
+          user_type: persona, 
+          step_name: step, 
+          is_completed: true, 
+          completed_at: new Date().toISOString(), 
+          updated_at: new Date().toISOString() 
+        },
+        { onConflict: 'user_id,user_type,step_name' }
+      );
+
+    analytics.trackEvent("onboarding.step_completed", { step, persona, segment });
+    setSaving(false);
+    const nextIndex = Math.min(STEPS.indexOf(step) + 1, STEPS.length - 1);
+    setActive(STEPS[nextIndex]);
+    if (nextIndex === STEPS.length - 1) {
+      analytics.trackEvent("onboarding.completed", { persona, segment });
     }
-  };
-  const back = () => idx > 0 && setIdx(idx - 1);
+  }
+
+  function requirePremium(featureKey: string) {
+    goToPricingForFeature(navigate, featureKey, { planHint: "premium", source: "onboarding" });
+  }
 
   return (
-    <main className="min-h-screen p-8 text-white" style={{ background: NAVY }}>
-      <div className="mx-auto max-w-2xl">
-        <h1 className="text-3xl font-extrabold">Athlete onboarding</h1>
-        <div className="mt-4">
-          <Stepper steps={steps} current={idx} />
-        </div>
+    <div className="container mx-auto px-4 py-6">
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold">{copy.hero}</h1>
+        <ul className="mt-4 space-y-2">
+          {copy.bullets.map((bullet, index) => (
+            <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+              <span className="text-primary">•</span>
+              {bullet}
+            </li>
+          ))}
+        </ul>
+      </header>
 
-        {/* card */}
-        <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6">
-          <h2 className="text-xl font-semibold">{steps[idx]}</h2>
-          <div className="mt-4 space-y-3">
-            {/* We use plain HTML inputs as safe fallback */}
-            {idx === 0 && (
-              <>
-                <label className="block text-sm text-white/80">
-                  Name
-                  <input
-                    className="mt-1 block w-full rounded border border-white/20 bg-transparent p-2 text-white/90"
-                    placeholder="Your full name"
-                  />
-                </label>
-                <label className="block text-sm text-white/80">
-                  School / Program
-                  <input
-                    className="mt-1 block w-full rounded border border-white/20 bg-transparent p-2 text-white/90"
-                    placeholder="e.g., State University"
-                  />
-                </label>
-              </>
-            )}
-            {idx === 1 && (
-              <>
-                <p className="text-white/80 text-sm">
-                  Quick compliance questions (demo). Select any answer and continue.
-                </p>
-                <label className="inline-flex items-center gap-2 text-sm text-white/80">
-                  <input type="checkbox" className="accent-[var(--gold)]" /> I understand disclosure requirements.
-                </label>
-                <label className="inline-flex items-center gap-2 text-sm text-white/80">
-                  <input type="checkbox" className="accent-[var(--gold)]" /> I’ll keep receipts for every deal.
-                </label>
-              </>
-            )}
-            {idx === 2 && (
-              <>
-                <label className="block text-sm text-white/80">
-                  Bank account (demo)
-                  <input
-                    className="mt-1 block w-full rounded border border-white/20 bg-transparent p-2 text-white/90"
-                    placeholder="**** **** **** 1234"
-                  />
-                </label>
-                <p className="text-xs text-white/60">Payments are simulated in demo mode.</p>
-              </>
-            )}
-          </div>
+      <OnboardingProgress 
+        currentStep={currentStep} 
+        totalSteps={STEPS.length} 
+        steps={STEPS.map(s => s.replace('-', ' '))} 
+        className="mb-6"
+      />
 
-          <div className="mt-6 flex items-center justify-between">
-            <button
-              onClick={back}
-              disabled={idx === 0}
-              className="rounded-md border border-white/20 px-3 py-1.5 text-sm text-white/80 disabled:opacity-50"
-            >
-              Back
-            </button>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={next}
-                className="inline-flex items-center gap-1 rounded-md border border-[var(--gold)] bg-[var(--gold)] px-3 py-1.5 text-sm font-semibold text-black hover:opacity-95"
-              >
-                {idx + 1 < total ? "Next" : "Finish"}
-              </button>
-              <Link
-                to="/"
-                className="rounded-md border border-white/20 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
-              >
-                Cancel
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
+      <section className="mt-6">
+        {active === "email-verify" && (
+          <EmailVerify 
+            onComplete={(data) => markComplete("email-verify", data)}
+            persona={persona}
+            segment={segment}
+          />
+        )}
+        {active === "profile" && (
+          <Profile 
+            onComplete={(data) => markComplete("profile", data)}
+            persona={persona}
+            segment={segment}
+          />
+        )}
+        {active === "household" && (
+          <Household 
+            onComplete={(data) => markComplete("household", data)}
+            persona={persona}
+            segment={segment}
+          />
+        )}
+        {active === "link-accounts" && (
+          <LinkAccounts
+            onComplete={(data) => markComplete("link-accounts", data)}
+            persona={persona}
+            segment={segment}
+          />
+        )}
+        {active === "upload-doc" && (
+          <UploadDoc
+            onComplete={(data) => markComplete("upload-doc", data)}
+            persona={persona}
+            segment={segment}
+          />
+        )}
+        {active === "goals" && (
+          <Goals 
+            onComplete={(data) => markComplete("goals", data)}
+            persona={persona}
+            segment={segment}
+          />
+        )}
+        {active === "invite-pro" && (
+          <InvitePro 
+            onComplete={(data) => markComplete("invite-pro", data)}
+            persona={persona}
+            segment={segment}
+          />
+        )}
+      </section>
+
+      <footer className="mt-6 text-sm opacity-75">{saving ? "Saving…" : null}</footer>
+    </div>
   );
 }

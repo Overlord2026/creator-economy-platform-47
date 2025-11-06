@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SafeProviders from '@/app/SafeProviders';
 import DealsList from '@/pages/deals/DealsList';
 import DealDetail from '@/pages/deals/DealDetail';
-import SplitHeroRoot from '@/pages/landing/SplitHeroRoot';
 
 // Marketing pages
 import LandingPage from '@/pages/marketing/LandingPage';
@@ -26,7 +25,6 @@ import DashboardPage from '@/pages/app/DashboardPage';
 import { PersonaRedirect } from '@/components/PersonaRedirect';
 import FamiliesPage from '@/pages/FamiliesPage';
 import OnboardingPage from '@/pages/OnboardingPage';
-import Index from '@/pages/Index';
 
 export default function App() {
   return (
@@ -35,9 +33,7 @@ export default function App() {
         <div className="min-h-screen bg-[#0B2239] text-white">
           <Routes>
             {/* Marketing and persona routes */}
-            <Route path="/" element={<Index />} />
-            <Route path="/marketing" element={<LandingPage />} />
-            <Route path="/personas-select" element={<SplitHeroRoot />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/nil" element={<LandingPage />} />
             <Route path="/personas" element={<PersonasPage />} />
             <Route path="/families" element={<FamiliesPage />} />

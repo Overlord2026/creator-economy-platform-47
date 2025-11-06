@@ -9,11 +9,10 @@
       "vite/client"
     ],
     "allowSyntheticDefaultImports": true,
-    "isolatedModules": true,
-    "baseUrl": "."
+    "isolatedModules": true
   },
   "include": [
-    "./src"
+    "src"
   ],
   "exclude": [
     "src/components/estate-planning/**",
