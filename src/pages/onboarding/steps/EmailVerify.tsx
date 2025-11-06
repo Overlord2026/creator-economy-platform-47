@@ -75,21 +75,21 @@ export const EmailVerify: React.FC<EmailVerifyProps> = ({
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto bg-slate-800/40 backdrop-blur-xl border-slate-700/50 shadow-2xl">
-      <CardHeader className="text-center pb-4">
-        <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4 ring-2 ring-blue-500/30">
-          <Mail className="h-8 w-8 text-blue-400" />
+    <Card className="w-full max-w-xl mx-auto bg-slate-900/60 backdrop-blur-2xl border-slate-700/30 shadow-2xl ring-1 ring-slate-700/20">
+      <CardHeader className="text-center pb-6 pt-10">
+        <div className="w-20 h-20 bg-gradient-to-br from-amber-500/10 to-amber-600/5 rounded-2xl flex items-center justify-center mx-auto mb-6 ring-1 ring-amber-400/20 shadow-lg shadow-amber-500/10">
+          <Mail className="h-10 w-10 text-amber-400" />
         </div>
-        <CardTitle className="text-2xl text-slate-100">Verify Your Email</CardTitle>
-        <CardDescription className="text-slate-300 text-base">
+        <CardTitle className="text-3xl font-bold text-slate-50 mb-3">Verify Your Email</CardTitle>
+        <CardDescription className="text-slate-400 text-base leading-relaxed max-w-md mx-auto">
           We'll send you important updates about your onboarding progress
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-5 pt-2">
+      <CardContent className="space-y-6 px-10 pb-10">
         {!verificationSent ? (
           <>
-            <div className="space-y-3">
-              <Label htmlFor="email" className="text-slate-200 text-sm font-medium">Email Address</Label>
+            <div className="space-y-4">
+              <Label htmlFor="email" className="text-slate-300 text-sm font-semibold">Email Address</Label>
               <Input
                 id="email"
                 type="email"
@@ -98,21 +98,21 @@ export const EmailVerify: React.FC<EmailVerifyProps> = ({
                 placeholder="your@email.com"
                 disabled={isVerifying}
                 autoFocus
-                className="bg-slate-900/50 border-slate-600/50 text-slate-100 placeholder:text-slate-500 focus:border-blue-500/50 focus:ring-blue-500/30 h-12 text-base"
+                className="bg-slate-950/80 border-slate-700/50 text-slate-100 placeholder:text-slate-600 focus:border-amber-500/50 focus:ring-amber-500/20 h-14 text-base px-5 rounded-lg transition-all"
                 aria-describedby={error ? "email-error" : undefined}
               />
               {error && (
-                <Alert variant="destructive" id="email-error" className="bg-red-950/50 border-red-900/50 text-red-200">
+                <Alert variant="destructive" id="email-error" className="bg-red-950/30 border-red-900/40 text-red-300 rounded-lg">
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-4 pt-4">
               <Button
                 onClick={handleSendVerification}
                 disabled={isVerifying || !email}
-                className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white shadow-lg shadow-blue-600/30 transition-all duration-200"
+                className="flex-1 h-14 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-semibold shadow-lg shadow-amber-600/30 transition-all duration-200 hover:scale-[1.02] rounded-lg"
               >
                 {isVerifying && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
                 {isVerifying ? 'Sending...' : 'Send Verification'}
@@ -120,26 +120,26 @@ export const EmailVerify: React.FC<EmailVerifyProps> = ({
               <Button 
                 variant="outline" 
                 onClick={handleSkip}
-                className="bg-slate-700/30 border-slate-600/50 text-slate-300 hover:bg-slate-700/50 hover:text-slate-100 h-12 px-6"
+                className="bg-transparent border-slate-600/50 text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 hover:border-slate-500/50 h-14 px-8 rounded-lg transition-all"
               >
                 Skip
               </Button>
             </div>
           </>
         ) : (
-          <div className="text-center space-y-5 py-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-500/20 to-emerald-600/20 rounded-full flex items-center justify-center mx-auto ring-2 ring-green-500/30">
-              <CheckCircle2 className="h-8 w-8 text-green-400" />
+          <div className="text-center space-y-6 py-6">
+            <div className="w-20 h-20 bg-gradient-to-br from-green-500/10 to-emerald-600/5 rounded-2xl flex items-center justify-center mx-auto ring-1 ring-green-500/20 shadow-lg shadow-green-500/10">
+              <CheckCircle2 className="h-10 w-10 text-green-400" />
             </div>
-            <Alert className="bg-green-950/30 border-green-900/50 text-green-200">
-              <AlertDescription className="text-center text-base">
-                Verification email sent to <strong className="text-green-300">{email}</strong>
+            <Alert className="bg-green-950/20 border-green-900/30 text-green-200 rounded-lg">
+              <AlertDescription className="text-center text-base leading-relaxed">
+                Verification email sent to <strong className="text-green-300 font-semibold">{email}</strong>
                 <br />
-                <span className="text-sm text-green-300/80">Check your inbox and click the link</span>
+                <span className="text-sm text-green-400/70 mt-2 inline-block">Check your inbox and click the link</span>
               </AlertDescription>
             </Alert>
-            <div className="flex items-center justify-center gap-2 text-sm text-slate-400">
-              <div className="h-2 w-2 bg-blue-500 rounded-full animate-pulse" />
+            <div className="flex items-center justify-center gap-3 text-sm text-slate-400">
+              <div className="h-2.5 w-2.5 bg-amber-500 rounded-full animate-pulse" />
               <span>Waiting for verification...</span>
             </div>
           </div>

@@ -19,17 +19,19 @@ export const OnboardingProgress: React.FC<OnboardingProgressProps> = ({
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   return (
-    <div className={cn("w-full space-y-6", className)}>
+    <div className={cn("w-full space-y-8", className)}>
       {/* Progress Bar with Glow Effect */}
-      <div className="relative">
-        <Progress 
-          value={progressPercentage} 
-          className="h-3 bg-slate-700/50 backdrop-blur-sm border border-slate-600/30"
-        />
-        <div 
-          className="absolute top-0 left-0 h-3 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-400 rounded-full transition-all duration-500 shadow-lg shadow-amber-500/50"
-          style={{ width: `${progressPercentage}%` }}
-        />
+      <div className="space-y-3">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-semibold text-slate-400">Step {currentStep} of {totalSteps}</span>
+          <span className="text-sm font-bold text-amber-400">{Math.round(progressPercentage)}% complete</span>
+        </div>
+        <div className="relative h-2 bg-slate-800/60 rounded-full overflow-hidden ring-1 ring-slate-700/30">
+          <div 
+            className="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 rounded-full transition-all duration-700 ease-out shadow-lg shadow-amber-500/40"
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
       </div>
 
       {/* Step Indicators */}
@@ -45,10 +47,10 @@ export const OnboardingProgress: React.FC<OnboardingProgressProps> = ({
               {/* Circle */}
               <div
                 className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-300 mb-2",
-                  isCompleted && "bg-gradient-to-br from-amber-400 to-yellow-500 text-slate-900 shadow-lg shadow-amber-500/30",
-                  isCurrent && "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/40 ring-4 ring-blue-400/30 scale-110",
-                  isPending && "bg-slate-700/50 text-slate-400 border-2 border-slate-600/50"
+                  "w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 mb-3",
+                  isCompleted && "bg-gradient-to-br from-amber-400 to-amber-500 text-slate-950 shadow-lg shadow-amber-500/20 ring-1 ring-amber-400/50",
+                  isCurrent && "bg-gradient-to-br from-amber-500 to-amber-600 text-slate-950 shadow-xl shadow-amber-500/40 ring-2 ring-amber-400/60 scale-110",
+                  isPending && "bg-slate-800/60 text-slate-500 border-2 border-slate-700/50"
                 )}
               >
                 {isCompleted ? (
@@ -61,10 +63,10 @@ export const OnboardingProgress: React.FC<OnboardingProgressProps> = ({
               {/* Label */}
               <span
                 className={cn(
-                  "text-xs text-center capitalize transition-colors duration-300 line-clamp-2",
-                  isCurrent && "text-blue-300 font-semibold",
-                  isCompleted && "text-amber-300",
-                  isPending && "text-slate-500"
+                  "text-xs text-center capitalize transition-colors duration-300 line-clamp-2 font-medium",
+                  isCurrent && "text-amber-300 font-bold",
+                  isCompleted && "text-amber-400/80",
+                  isPending && "text-slate-600"
                 )}
               >
                 {step}

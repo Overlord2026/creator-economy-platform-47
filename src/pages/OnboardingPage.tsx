@@ -72,28 +72,34 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">
       {/* Background Pattern Overlay */}
-      <div className="absolute inset-0 opacity-5">
+      <div className="absolute inset-0 opacity-[0.02]">
         <div className="absolute inset-0" style={{
           backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
-          backgroundSize: '40px 40px'
+          backgroundSize: '48px 48px'
         }} />
       </div>
+      
+      {/* Gradient Orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
 
       {/* Content Container */}
-      <div className="relative z-10 container mx-auto px-4 py-12 max-w-4xl">
+      <div className="relative z-10 container mx-auto px-6 py-16 max-w-5xl">
         {/* Header Section */}
-        <header className="mb-12 text-center">
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-400 bg-clip-text text-transparent">
+        <header className="mb-16 text-center">
+          <h1 className="text-6xl font-bold mb-8 bg-gradient-to-r from-slate-50 via-slate-100 to-slate-50 bg-clip-text text-transparent leading-tight">
             {copy.hero}
           </h1>
           <div className="max-w-2xl mx-auto">
-            <ul className="space-y-3">
+            <ul className="space-y-4">
               {copy.bullets.map((bullet, index) => (
-                <li key={index} className="flex items-start gap-3 text-lg text-slate-200">
-                  <Check className="h-6 w-6 text-amber-400 flex-shrink-0 mt-0.5" />
-                  <span>{bullet}</span>
+                <li key={index} className="flex items-start gap-4 text-lg text-slate-300">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400/20 to-amber-600/20 flex items-center justify-center ring-1 ring-amber-400/30 flex-shrink-0 mt-0.5">
+                    <Check className="h-4 w-4 text-amber-400" />
+                  </div>
+                  <span className="leading-relaxed">{bullet}</span>
                 </li>
               ))}
             </ul>
@@ -105,7 +111,7 @@ export default function OnboardingPage() {
           currentStep={currentStep} 
           totalSteps={STEPS.length} 
           steps={STEPS.map(s => s.replace('-', ' '))} 
-          className="mb-12"
+          className="mb-16"
         />
 
         {/* Step Content */}
