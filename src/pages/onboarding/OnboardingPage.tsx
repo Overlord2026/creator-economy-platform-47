@@ -1,56 +1,48 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FamilyOnboardingWelcome } from './FamilyOnboardingWelcome';
-import { sb } from '@/lib/supabase-relaxed';
-import { toast } from 'sonner';
+'use client';
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Stepper, StepContent } from '@/components/ui/stepper';
+// ...import your existing step components as needed
 
-export const OnboardingPage: React.FC = () => {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+export default function OnboardingPage() {
+  const { search } = useLocation();
+  const [persona, setPersona] = useState('unknown');
 
-  const handleAuthChoice = async (provider: string) => {
-    setIsLoading(true);
-    
-    try {
-      if (provider === 'email') {
-        // Redirect to auth page for email signup
-        navigate('/auth?mode=signup&redirect=/families');
-        return;
-      }
+  useEffect(() => {
+    const qp = new URLSearchParams(search);
+    const value = qp.get('persona');
+    if (value) setPersona(value);
+  }, [search]);
 
-      // Handle OAuth providers with proper callback URL
-      console.log(`Initiating ${provider} OAuth with callback URL: https://my.bfocfo.com/auth/callback`);
-      
-      const { error } = await sb.auth.signInWithOAuth({
-        provider: provider as any,
-        options: {
-          redirectTo: 'https://my.bfocfo.com/auth/callback',
-        },
-      });
-      
-      console.log('OAuth request initiated, full URL should be logged by Supabase');
-
-      if (error) {
-        console.error(`${provider} OAuth error:`, error);
-        toast.error(`${provider} authentication failed: ${error.message}`);
-        
-        if (error.message.includes('refuse to connect')) {
-          toast.error('Google OAuth configuration issue. Please check Supabase settings.');
-        }
-      } else {
-        console.log(`${provider} OAuth initiated successfully`);
-      }
-    } catch (error) {
-      console.error('Auth error:', error);
-      toast.error(`Something went wrong with ${provider} authentication. Please try again.`);
-    } finally {
-      setIsLoading(false);
+  // 💡 Optional: tweak step config based on persona
+  const steps = useMemo(() => {
+    switch (persona) {
+      case 'coach':
+        return ['email', 'org', 'policy', 'invite'];
+      case 'pro':
+        return ['email', 'profile', 'clients', 'tools'];
+      case 'creator':
+      default:
+        return ['email', 'profile', 'platform', 'goals'];
     }
-  };
+  }, [persona]);
 
   return (
-    <FamilyOnboardingWelcome 
-      onAuthChoice={handleAuthChoice}
-    />
+    <div className="max-w-3xl mx-auto py-12">
+      <h1 className="text-3xl font-bold text-white mb-6">
+        {persona === 'coach' ? 'Coach Onboarding'
+         : persona === 'pro' ? 'Professional Setup'
+         : 'Creator / Athlete Onboarding'}
+      </h1>
+
+      <Stepper steps={steps}>
+        {/* Replace this with your existing step logic */}
+        {steps.map((step, index) => (
+          <StepContent key={step} step={index + 1} title={step}>
+            <p className="text-white/80">Form UI for: {step}</p>
+          </StepContent>
+        ))}
+      </Stepper>
+    </div>
   );
-};
+}
