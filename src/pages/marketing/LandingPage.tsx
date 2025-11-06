@@ -39,7 +39,7 @@ export default function LandingPage() {
       <TrustRails />
       <LiveDemoVerifier />
       <WhyJoin />
-      <Personas />
+      {/* Personas section removed (using inline "Who it’s for") */}
       <FeaturesIndex />
       <SocialProof />
       <Pricing />
@@ -367,25 +367,6 @@ function WhyJoin() {
 
 /* -------------------------------- Personas --------------------------------- */
 
-function Personas() {
-  const items = [
-    "Athlete","Creator","Coach/School","Parent/Guardian","Agent/Rep","Brand/Partner","Service Pros"
-  ];
-  return (
-    <Section id="personas" title="Who it’s for">
-      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-        {items.map((label) => (
-          <div key={label} className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="text-base font-semibold">{label}</div>
-            <div className="mt-2">
-              <GhostCTA to={`/personas?who=${encodeURIComponent(label)}`}>Open</GhostCTA>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Section>
-  );
-}
 
 /* ------------------------------ Features index ------------------------------ */
 
