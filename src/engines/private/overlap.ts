@@ -181,7 +181,7 @@ export async function computeOverlap(input: OverlapInput): Promise<OverlapResult
   // Calculate sector heatmap
   const sectorHeatmap: Record<string, number> = {};
   
-  for (const [fundId, holdings] of Object.entries(fundHoldings)) {
+  for (const [fundId, holdings] of Object.entries(fundHoldings) as Array<[string, Map<any, any>]>) {
     for (const holding of holdings.values()) {
       if (holding.sector) {
         sectorHeatmap[holding.sector] = (sectorHeatmap[holding.sector] || 0) + (holding.weight_pct || 0);

@@ -42,6 +42,15 @@ export function LegacyItems({ vaultId, items, onItemAdded }: LegacyItemsProps) {
   const [showFileUpload, setShowFileUpload] = useState(false);
   const { members } = useFamilyVault(vaultId);
 
+  // Normalize members to match VaultMember type
+  const normalizedMembers: VaultMember[] = (members || []).map((m: any) => ({
+    id: m.id,
+    email: m.email ?? '',
+    first_name: m.first_name ?? '',
+    last_name: m.last_name ?? '',
+    role: m.role ?? m.permission_level ?? 'member',
+  }));
+
   const getItemIcon = (itemType: string) => {
     switch (itemType) {
       case 'video':
@@ -187,10 +196,10 @@ export function LegacyItems({ vaultId, items, onItemAdded }: LegacyItemsProps) {
         )}
       </div>
 
-      {showMessageWizard && members && members.length > 0 && (
+      {showMessageWizard && normalizedMembers.length > 0 && (
         <LeaveMessageWizard
           vaultId={vaultId}
-          members={members.map(m => ({ ...m, role: m.permission_level || 'member' }))}
+          members={normalizedMembers}
           onClose={() => setShowMessageWizard(false)}
           onSuccess={() => {
             setShowMessageWizard(false);

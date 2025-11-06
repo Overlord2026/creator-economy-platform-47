@@ -11,3 +11,9 @@
 - Mapped legacy/unused areas to stub via TS paths + Vite regex aliases
 - Ensures Lovable Preview builds clean while we finish Phase 3
 
+## 2025-11-06 18:52:44 — Build unblock
+- TS union + arrays + types + imports normalized
+- Transfers invoke<T> typed
+- FamilyWealth totals via reduce
+- EnhancedErrorHandling logging normalized
+

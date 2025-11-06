@@ -1,11 +1,11 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
 import { useFinancialPlans } from '@/hooks/useFinancialPlans';
 import { useNetWorth } from '@/context/NetWorthContext';
 
 interface FamilyWealthSummary {
   totalBalance: string;
-  totalBalance: string;
+  formattedTotalBalance: string;
   accountCount: number;
   planCount: number;
   activePlanCount: number;
@@ -19,13 +19,11 @@ interface FamilyWealthSummary {
 export const useFamilyWealthData = (): FamilyWealthSummary => {
   const { 
     accounts, 
-    loading: accountsLoading, 
-    getFormattedTotalBalance 
+    loading: accountsLoading
   } = useBankAccounts();
   
   const { 
     plans, 
-    activePlan, 
     summary, 
     loading: plansLoading 
   } = useFinancialPlans();
@@ -35,16 +33,18 @@ export const useFamilyWealthData = (): FamilyWealthSummary => {
     loading: netWorthLoading 
   } = useNetWorth();
 
-  // Memoize expensive calculations
-  const totalBalanceNumber = useMemo(
-  () => (accounts || []).reduce((sum: number, a: any) => sum + (a?.balance || 0), 0),
-  [accounts]
-);
-const totalBalance = useMemo(
-  () => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalBalanceNumber),
-  [totalBalanceNumber]
-);
-  }, [getFormattedTotalBalance]);
+  // ✅ FIXED: Calculate total balance locally instead of calling non-existent method
+  const totalBalanceNumber = useMemo(() => {
+    return accounts.reduce((sum, account) => sum + (account.balance || 0), 0);
+  }, [accounts]);
+
+  const totalBalance = useMemo(() => {
+    return new Intl.NumberFormat('en-US', { 
+      style: 'currency', 
+      currency: 'USD', 
+      maximumFractionDigits: 0 
+    }).format(totalBalanceNumber);
+  }, [totalBalanceNumber]);
 
   const accountCount = useMemo(() => {
     return accounts.length;
@@ -70,7 +70,7 @@ const totalBalance = useMemo(
 
   return useMemo(() => ({
     totalBalance,
-    totalBalance: totalBalance,
+    formattedTotalBalance: totalBalance,
     accountCount,
     ...planMetrics,
     netWorth,

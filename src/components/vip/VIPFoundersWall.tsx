@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Crown, Users, Star, MapPin, ExternalLink, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { withFallback, tableExists, safeSelect } from '@/lib/db/safeSupabase';
+import { withFallback, tableExists, safeSelect, isOk } from '@/lib/db/safeSupabase';
 import FallbackBanner from '@/components/common/FallbackBanner';
 import { VIPBadge } from '@/components/badges/VIPBadgeSystem';
 
@@ -121,11 +121,19 @@ export const VIPFoundersWall: React.FC = () => {
 
   const fetchFounders = async () => {
     try {
-      const organizations = await withFallback<VipOrganization>('vip_organizations',
-        () => safeSelect<VipOrganization>('vip_organizations', '*', { 
-          order: { column: 'created_at', ascending: true }, 
-          limit: 50 
-        }),
+      const organizations = await withFallback<VipOrganization[]>(
+    'vip_organizations',
+    async () => {
+      const res = await safeSelect<VipOrganization>('vip_organizations', '*', { 
+        limit: 50, 
+        order: { column: 'created_at', ascending: true } 
+      });
+      return isOk(res) ? (res.data || []) : [];
+    },
+    async () => []
+  );
+          return isOk(res) ? (res.data || []) : [];
+        },
         async () => []
       );
 

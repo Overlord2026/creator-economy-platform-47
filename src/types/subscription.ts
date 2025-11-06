@@ -67,5 +67,5 @@ export interface PremiumUpgradePrompt {
   required_tier: SubscriptionTier;
   current_usage?: number;
   usage_limit?: number;
-  add_on_required?: string | boolean;
+  add_on_required?: string | boolean; // ✅ FIXED: Accept both string identifiers and boolean flags
 }
