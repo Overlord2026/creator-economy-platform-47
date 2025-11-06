@@ -1,12 +1,18 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { sb } from '@/lib/supabase-relaxed';
 import { Stepper, StepContent } from '@/components/ui/stepper';
-// ...import your existing step components as needed
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { colors } from '@/components/marketing/_shims/theme';
 
 export default function OnboardingPage() {
   const { search } = useLocation();
-  const [persona, setPersona] = useState('unknown');
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [persona, setPersona] = useState('creator');
 
   useEffect(() => {
     const qp = new URLSearchParams(search);
@@ -14,35 +20,65 @@ export default function OnboardingPage() {
     if (value) setPersona(value);
   }, [search]);
 
-  // 💡 Optional: tweak step config based on persona
   const steps = useMemo(() => {
     switch (persona) {
       case 'coach':
         return ['email', 'org', 'policy', 'invite'];
       case 'pro':
         return ['email', 'profile', 'clients', 'tools'];
-      case 'creator':
       default:
         return ['email', 'profile', 'platform', 'goals'];
     }
   }, [persona]);
 
-  return (
-    <div className="max-w-3xl mx-auto py-12">
-      <h1 className="text-3xl font-bold text-white mb-6">
-        {persona === 'coach' ? 'Coach Onboarding'
-         : persona === 'pro' ? 'Professional Setup'
-         : 'Creator / Athlete Onboarding'}
-      </h1>
+  const handleEmail = async () => {
+    setIsLoading(true);
+    const { error } = await sb.auth.signInWithOtp({ email });
+    if (!error) {
+      navigate('/dashboard/' + persona);
+    }
+    setIsLoading(false);
+  };
 
-      <Stepper steps={steps}>
-        {/* Replace this with your existing step logic */}
-        {steps.map((step, index) => (
-          <StepContent key={step} step={index + 1} title={step}>
-            <p className="text-white/80">Form UI for: {step}</p>
-          </StepContent>
-        ))}
-      </Stepper>
+  return (
+    <div className={`${colors.navyBg} text-white min-h-screen`}>
+      <div className="mx-auto max-w-4xl px-4 pt-16">
+        <h1 className="text-3xl font-bold text-white mb-4 text-center">
+          {persona === 'coach'
+            ? 'Coach Onboarding'
+            : persona === 'pro'
+            ? 'Professional Setup'
+            : 'Creator / Athlete Onboarding'}
+        </h1>
+
+        <Stepper steps={steps} activeStep={1} className="mb-12" />
+
+        <div className="bg-white/5 rounded-xl border border-white/10 p-6 max-w-xl mx-auto">
+          <h2 className="text-xl font-semibold mb-2">Verify Your Email</h2>
+          <p className="text-white/80 mb-4 text-sm">
+            We’ll send you important updates about your onboarding progress.
+          </p>
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="bg-white/10 text-white placeholder:text-white/50 mb-4"
+          />
+          <div className="flex justify-between items-center">
+            <Button
+              onClick={handleEmail}
+              disabled={isLoading}
+              className={`${colors.goldBg} px-5`}
+            >
+              {isLoading ? 'Sending…' : 'Send Verification'}
+            </Button>
+            <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+              Skip
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
