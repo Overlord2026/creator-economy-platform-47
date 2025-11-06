@@ -1,137 +1,136 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useMemo, useState } from 'react';
-import { sb } from '@/lib/supabase-relaxed';
-import { Stepper } from '@/components/ui/stepper';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { colors } from '@/components/marketing/_shims/theme';
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
+/** Minimal local Stepper so we don't depend on missing "@/components/ui/stepper" */
+function Stepper({ steps, current }: { steps: string[]; current: number }) {
+  return (
+    <ol className="flex flex-wrap items-center gap-3 text-sm">
+      {steps.map((label, i) => (
+        <li
+          key={label}
+          className={`rounded-full px-2.5 py-0.5 border ${
+            i <= current ? "border-[var(--gold)] text-[var(--gold)]" : "border-white/20 text-white/60"
+          }`}
+        >
+          {i + 1}. {label}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+const NAVY = "#0B2239";
+
+/** Simple, self-contained onboarding page */
 export default function OnboardingPage() {
-  const { search } = useLocation();
-  const navigate = useNavigate();
+  const nav = useNavigate();
+  const storageKey = "onb-athlete"; // tweak per persona if you fork this file
+  const steps = useMemo(() => ["Profile", "Compliance", "Payout"], []);
+  const [idx, setIdx] = useState(0);
+  const total = steps.length;
 
-  const [persona, setPersona] = useState<'creator' | 'coach' | 'pro'>('creator');
-  const [email, setEmail] = useState('');
-  const [isSending, setIsSending] = useState(false);
-  const [activeStep, setActiveStep] = useState(1);
-
-  // Read persona from ?persona=
   useEffect(() => {
-    const qp = new URLSearchParams(search);
-    const v = (qp.get('persona') || 'creator') as 'creator' | 'coach' | 'pro';
-    setPersona(v);
-  }, [search]);
+    const saved = Number(localStorage.getItem(storageKey));
+    if (Number.isFinite(saved) && saved >= 0 && saved < total) setIdx(saved);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey, total]);
 
-  // Persona-aware steps
-  const steps = useMemo(() => {
-    switch (persona) {
-      case 'coach': return ['Email Verify', 'Org', 'Policy', 'Invite'];
-      case 'pro':   return ['Email Verify', 'Profile', 'Clients', 'Tools'];
-      default:      return ['Email Verify', 'Profile', 'Platform', 'Goals'];
-    }
-  }, [persona]);
-
-  // After real sign-in, store persona and route to dashboard
   useEffect(() => {
-    const { data: { subscription } } = sb.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        await sb.auth.updateUser({ data: { persona } });
-        navigate(persona === 'coach' ? '/dashboard/coach'
-               : persona === 'pro'   ? '/dashboard/pro'
-               : '/dashboard/creator');
-      }
-    });
-    return () => subscription?.unsubscribe();
-  }, [persona, navigate]);
+    localStorage.setItem(storageKey, String(idx));
+  }, [idx, storageKey]);
 
-  // Navigation helpers
-  const goNext = () => setActiveStep((s) => Math.min(s + 1, steps.length));
-  const goPrev = () => setActiveStep((s) => Math.max(s - 1, 1));
-
-  // OTP flow (optional)
-  const sendOtp = async () => {
-    if (!email) return;
-    setIsSending(true);
-    const { error } = await sb.auth.signInWithOtp({ email });
-    setIsSending(false);
-    if (!error) {
-      localStorage.setItem('onboarding_email', email);
+  const next = () => {
+    if (idx + 1 < total) setIdx(idx + 1);
+    else {
+      localStorage.removeItem(storageKey);
+      nav("/athlete/dashboard"); // success route; change if you need
     }
   };
+  const back = () => idx > 0 && setIdx(idx - 1);
 
   return (
-    <div className={`${colors.navyBg} text-white min-h-screen`}>
-      {/* Compact top bar with Home link */}
-      <div className="border-b border-white/10">
-        <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="text-white/80 hover:text-white transition-colors">← Home</Link>
-          <div className="text-sm text-white/60">Onboarding</div>
+    <main className="min-h-screen p-8 text-white" style={{ background: NAVY }}>
+      <div className="mx-auto max-w-2xl">
+        <h1 className="text-3xl font-extrabold">Athlete onboarding</h1>
+        <div className="mt-4">
+          <Stepper steps={steps} current={idx} />
+        </div>
+
+        {/* card */}
+        <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h2 className="text-xl font-semibold">{steps[idx]}</h2>
+          <div className="mt-4 space-y-3">
+            {/* We use plain HTML inputs as safe fallback */}
+            {idx === 0 && (
+              <>
+                <label className="block text-sm text-white/80">
+                  Name
+                  <input
+                    className="mt-1 block w-full rounded border border-white/20 bg-transparent p-2 text-white/90"
+                    placeholder="Your full name"
+                  />
+                </label>
+                <label className="block text-sm text-white/80">
+                  School / Program
+                  <input
+                    className="mt-1 block w-full rounded border border-white/20 bg-transparent p-2 text-white/90"
+                    placeholder="e.g., State University"
+                  />
+                </label>
+              </>
+            )}
+            {idx === 1 && (
+              <>
+                <p className="text-white/80 text-sm">
+                  Quick compliance questions (demo). Select any answer and continue.
+                </p>
+                <label className="inline-flex items-center gap-2 text-sm text-white/80">
+                  <input type="checkbox" className="accent-[var(--gold)]" /> I understand disclosure requirements.
+                </label>
+                <label className="inline-flex items-center gap-2 text-sm text-white/80">
+                  <input type="checkbox" className="accent-[var(--gold)]" /> I’ll keep receipts for every deal.
+                </label>
+              </>
+            )}
+            {idx === 2 && (
+              <>
+                <label className="block text-sm text-white/80">
+                  Bank account (demo)
+                  <input
+                    className="mt-1 block w-full rounded border border-white/20 bg-transparent p-2 text-white/90"
+                    placeholder="**** **** **** 1234"
+                  />
+                </label>
+                <p className="text-xs text-white/60">Payments are simulated in demo mode.</p>
+              </>
+            )}
+          </div>
+
+          <div className="mt-6 flex items-center justify-between">
+            <button
+              onClick={back}
+              disabled={idx === 0}
+              className="rounded-md border border-white/20 px-3 py-1.5 text-sm text-white/80 disabled:opacity-50"
+            >
+              Back
+            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={next}
+                className="inline-flex items-center gap-1 rounded-md border border-[var(--gold)] bg-[var(--gold)] px-3 py-1.5 text-sm font-semibold text-black hover:opacity-95"
+              >
+                {idx + 1 < total ? "Next" : "Finish"}
+              </button>
+              <Link
+                to="/"
+                className="rounded-md border border-white/20 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
+              >
+                Cancel
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
-
-      <div className="mx-auto max-w-4xl px-4 pt-10 pb-16">
-        <h1 className="text-3xl font-bold text-center mb-2">
-          {persona === 'coach' ? 'Coach Onboarding'
-           : persona === 'pro' ? 'Professional Setup'
-           : 'Creator / Athlete Onboarding'}
-        </h1>
-        <p className="text-white/70 text-center mb-8">A fast, 90-second setup. You can verify and finish later.</p>
-
-        <Stepper steps={steps} activeStep={activeStep} className="mb-12" />
-
-        {/* STEP 1: Email verify (with bypass) */}
-        {activeStep === 1 && (
-          <div className="bg-white/5 rounded-xl border border-white/10 p-6 max-w-xl mx-auto">
-            <h2 className="text-xl font-semibold mb-2">Verify your email</h2>
-            <p className="text-white/80 mb-4 text-sm">We'll send a one-time code to continue. You can do this later.</p>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="bg-white/10 text-white placeholder:text-white/50 mb-4"
-            />
-            <div className="flex flex-wrap gap-3 justify-between items-center">
-              <Button onClick={sendOtp} disabled={isSending || !email} className={`${colors.goldBg} px-5`}>
-                {isSending ? 'Sending…' : 'Send Verification'}
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => { if (email) localStorage.setItem('onboarding_email', email); goNext(); }}
-                className="bg-white/10 hover:bg-white/15"
-              >
-                Continue without verifying
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2: Profile */}
-        {activeStep === 2 && (
-          <div className="bg-white/5 rounded-xl border border-white/10 p-6 max-w-xl mx-auto">
-            <h2 className="text-xl font-semibold mb-2">Your profile</h2>
-            <p className="text-white/80 text-sm mb-4">Tell us a bit about you. You can edit later.</p>
-            <div className="flex justify-between">
-              <Button variant="ghost" onClick={goPrev}>Back</Button>
-              <Button className={`${colors.goldBg}`} onClick={goNext}>Next</Button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 3+ placeholders */}
-        {activeStep > 2 && (
-          <div className="bg-white/5 rounded-xl border border-white/10 p-6 max-w-xl mx-auto">
-            <h2 className="text-xl font-semibold mb-2">{steps[activeStep - 1]}</h2>
-            <p className="text-white/80 text-sm mb-4">This step is coming next. Continue to preview the flow.</p>
-            <div className="flex justify-between">
-              <Button variant="ghost" onClick={goPrev}>Back</Button>
-              <Button className={`${colors.goldBg}`} onClick={goNext} disabled={activeStep === steps.length}>
-                {activeStep === steps.length ? 'Finish' : 'Next'}
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+    </main>
   );
 }
