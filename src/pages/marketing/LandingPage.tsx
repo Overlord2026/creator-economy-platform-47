@@ -112,12 +112,12 @@ function StickyHeader() {
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center gap-8 text-[15px] lg:flex" aria-label="Main navigation">
-            <DropdownLink href="/athletes" label="For Athletes" />
-            <DropdownLink href="/brands" label="For Brands" />
-            <a href="/solutions" className="text-white hover:text-[var(--gold)] transition-colors font-medium">
+            <DropdownLink href="/personas" label="For Athletes" />
+            <DropdownLink href="/pros" label="For Brands" />
+            <a href="/why-receipts" className="text-white hover:text-[var(--gold)] transition-colors font-medium">
               Solutions
             </a>
-            <a href="/resources" className="text-white hover:text-[var(--gold)] transition-colors font-medium">
+            <a href="/connections" className="text-white hover:text-[var(--gold)] transition-colors font-medium">
               Resources
             </a>
             <a href="#pricing" className="text-white hover:text-[var(--gold)] transition-colors font-medium">
@@ -128,7 +128,7 @@ function StickyHeader() {
           {/* Desktop CTA */}
           <div className="hidden lg:flex">
             <Link
-              to="/signup"
+              to="/onboarding"
               className="inline-flex items-center gap-2 rounded-lg bg-[#FFD700] px-6 py-2.5 text-[15px] font-semibold text-black shadow-lg hover:bg-[#FFC700] transition-all hover:shadow-xl"
             >
               Get Started
@@ -162,16 +162,16 @@ function StickyHeader() {
           aria-label="Mobile navigation menu"
         >
           <nav className="flex flex-col gap-1 p-6 pt-20" aria-label="Mobile navigation">
-            <MobileNavLink href="/athletes" onClick={() => setMobileMenuOpen(false)}>
+            <MobileNavLink href="/personas" onClick={() => setMobileMenuOpen(false)}>
               For Athletes
             </MobileNavLink>
-            <MobileNavLink href="/brands" onClick={() => setMobileMenuOpen(false)}>
+            <MobileNavLink href="/pros" onClick={() => setMobileMenuOpen(false)}>
               For Brands
             </MobileNavLink>
-            <MobileNavLink href="/solutions" onClick={() => setMobileMenuOpen(false)}>
+            <MobileNavLink href="/why-receipts" onClick={() => setMobileMenuOpen(false)}>
               Solutions
             </MobileNavLink>
-            <MobileNavLink href="/resources" onClick={() => setMobileMenuOpen(false)}>
+            <MobileNavLink href="/connections" onClick={() => setMobileMenuOpen(false)}>
               Resources
             </MobileNavLink>
             <MobileNavLink href="#pricing" onClick={() => setMobileMenuOpen(false)}>
@@ -180,7 +180,7 @@ function StickyHeader() {
 
             <div className="mt-6 pt-6 border-t border-white/10">
               <Link
-                to="/signup"
+                to="/onboarding"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-center gap-2 rounded-lg bg-[#FFD700] px-6 py-3 text-base font-semibold text-black shadow-lg"
               >
