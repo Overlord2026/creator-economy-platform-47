@@ -402,9 +402,9 @@ function AnnouncementBar() {
 
 function Hero() {
   return (
-    <section id="main-content" className="relative border-b border-white/10 py-20 sm:py-28" aria-labelledby="hero-heading">
-      {/* Subtle gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/50 to-transparent pointer-events-none" />
+    <section id="main-content" className="relative bg-gradient-to-b from-[#0B2239] via-[#0a1929] to-black border-b border-white/10 py-20 sm:py-28" aria-labelledby="hero-heading">
+      {/* Subtle overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[var(--gold)]/5 via-transparent to-transparent pointer-events-none" />
 
       <div className="relative mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 md:grid-cols-2">
         <div className="flex flex-col justify-center">
@@ -472,79 +472,126 @@ function HeroTile({
   );
 }
 
-/* --------------------------------- Logos ------------------------------------ */
+/* --------------------------------- Trust Section ------------------------------------ */
 
 function LogoStrip() {
   return (
-    <section className="border-b border-white/10 bg-white/5 py-6" aria-label="Trusted partners">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-6 px-4 opacity-80">
-        <span className="text-xs text-white/70">Trusted by creators, programs & brands</span>
-        <div className="flex flex-wrap items-center gap-5 text-white/60" role="list">
-          <span className="text-xs" role="listitem">🏫 State U</span>
-          <span className="text-xs" role="listitem">🏆 ProBrand</span>
-          <span className="text-xs" role="listitem">🎤 PodNet</span>
-          <span className="text-xs" role="listitem">📰 Sports Daily</span>
+    <section className="bg-white py-16" aria-label="Trusted partners">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">Trusted by 500+ Athletes & Brands</h2>
+          <p className="text-lg text-gray-600">
+            Join leading creators, programs, and brands using Creator NIL Platform
+          </p>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+          <div className="text-center">
+            <div className="text-4xl font-bold text-[var(--gold)] mb-2">500+</div>
+            <div className="text-sm text-gray-600 font-medium">Athletes</div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl font-bold text-[var(--gold)] mb-2">$10M+</div>
+            <div className="text-sm text-gray-600 font-medium">Deals Processed</div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl font-bold text-[var(--gold)] mb-2">99.9%</div>
+            <div className="text-sm text-gray-600 font-medium">Compliance Rate</div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl font-bold text-[var(--gold)] mb-2">50+</div>
+            <div className="text-sm text-gray-600 font-medium">Partner Schools</div>
+          </div>
+        </div>
+
+        {/* Partner Logos */}
+        <div className="flex flex-wrap items-center justify-center gap-12 opacity-60">
+          <div className="text-xl font-bold text-gray-800">🏫 State University</div>
+          <div className="text-xl font-bold text-gray-800">🏆 ProBrand</div>
+          <div className="text-xl font-bold text-gray-800">🎤 PodNet</div>
+          <div className="text-xl font-bold text-gray-800">📰 Sports Daily</div>
         </div>
       </div>
     </section>
   );
 }
 
-/* --------------------------- Why We're Different ---------------------------- */
+/* --------------------------- Why We're Different (WHITE SECTION) ---------------------------- */
 
 function WhyDifferent() {
   const cards = [
-    { icon: Shield, title: "Policy-first automation", desc: "Actions run through Policy Gates before execution." },
-    { icon: BadgeCheck, title: "Content-free receipts", desc: "Offer → Contract → Settlement → Dispute; live verifier." },
-    { icon: Lock, title: "WORM vault & legal hold", desc: "Write-once retention; exportable packs for audits." },
+    { icon: Shield, title: "Policy-first automation", desc: "Actions run through Policy Gates before execution. Stay compliant automatically." },
+    { icon: BadgeCheck, title: "Content-free receipts", desc: "Private proof of every step. Offer → Contract → Settlement → Dispute verification." },
+    { icon: Lock, title: "OfferLock protection", desc: "Terms locked before work begins. No bait-and-switch, no surprise changes." },
   ];
   return (
-    <Section id="why" title="Why we're different">
-      <div className="grid gap-4 md:grid-cols-3">
-        {cards.map((c, i) => (
-          <div key={i} className="rounded-xl border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/10">
-            <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
-              <c.icon className="h-5 w-5 text-[var(--gold)]" aria-hidden="true" />
+    <section id="why" className="bg-white py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Why We're Different</h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Built-in protections that other platforms don't have
+          </p>
+        </div>
+        <div className="grid gap-8 md:grid-cols-3">
+          {cards.map((c, i) => (
+            <div key={i} className="group rounded-2xl border-2 border-[var(--gold)]/30 bg-white p-8 shadow-lg transition-all duration-300 hover:border-[var(--gold)] hover:scale-105 hover:shadow-2xl hover:shadow-[var(--gold)]/20">
+              <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-[var(--gold)]/10 transition-colors group-hover:bg-[var(--gold)]/20">
+                <c.icon className="h-7 w-7 text-[var(--gold)]" aria-hidden="true" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">{c.title}</h3>
+              <p className="text-gray-700 leading-relaxed">{c.desc}</p>
             </div>
-            <h3 className="text-lg font-semibold">{c.title}</h3>
-            <p className="mt-1 text-sm text-white/75">{c.desc}</p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </Section>
+    </section>
   );
 }
 
-/* ------------------------------ How it works -------------------------------- */
+/* ------------------------------ How it works (DARK SECTION) -------------------------------- */
 
 function HowItWorks() {
   const steps = [
-    { icon: Search, title: "Brief", desc: "Share scope & disclosures." },
-    { icon: FileSignature, title: "OfferLock → e-Sign", desc: "Prevent overlap, approvals on rails, sign the same contract." },
-    { icon: Banknote, title: "Settlement", desc: "Payouts & deliverables packaged for audits." },
+    { icon: Search, number: "01", title: "Post Brief", desc: "Share scope, budget, and disclosure requirements. Match with verified athletes." },
+    { icon: FileSignature, number: "02", title: "OfferLock → E-Sign", desc: "Lock terms before work begins. Everyone signs the same contract with built-in approvals." },
+    { icon: Banknote, number: "03", title: "Settlement & Proof", desc: "Instant payouts once approved. Private receipts for every step, audit-ready." },
   ];
   return (
-    <Section id="how" title="How it works">
-      <div className="grid gap-4 md:grid-cols-3">
-        {steps.map((s, i) => (
-          <div key={i} className="rounded-xl border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/10">
-            <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
-              <s.icon className="h-5 w-5 text-[var(--gold)]" aria-hidden="true" />
+    <section id="how" className="bg-gradient-to-b from-black to-[#0B2239] py-20 border-t border-white/10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-white mb-4">How It Works</h2>
+          <p className="text-xl text-white/70 max-w-2xl mx-auto">
+            From brief to payout in three simple steps
+          </p>
+        </div>
+        <div className="grid gap-8 md:grid-cols-3">
+          {steps.map((s, i) => (
+            <div key={i} className="relative group rounded-2xl border-2 border-[var(--gold)]/30 bg-white/5 backdrop-blur-sm p-8 transition-all duration-300 hover:border-[var(--gold)] hover:bg-white/10 hover:scale-105">
+              <div className="absolute -top-4 -left-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--gold)] text-black text-xl font-bold">
+                {s.number}
+              </div>
+              <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-[var(--gold)]/20">
+                <s.icon className="h-7 w-7 text-[var(--gold)]" aria-hidden="true" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">{s.title}</h3>
+              <p className="text-white/75 leading-relaxed">{s.desc}</p>
             </div>
-            <h3 className="text-lg font-semibold">{s.title}</h3>
-            <p className="mt-1 text-sm text-white/75">{s.desc}</p>
-            {i === 2 && (
-              <p className="mt-3 text-xs text-white/70">
-                Micro-proof: Every important action leaves a private receipt.
-              </p>
-            )}
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="mt-12 text-center">
+          <Link
+            to="/demo/offerlock"
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--gold)] px-8 py-4 text-lg font-bold text-black shadow-xl shadow-[var(--gold)]/20 transition-all hover:bg-[var(--gold-light)] hover:scale-105"
+          >
+            See It In Action
+            <ArrowRight className="h-5 w-5" />
+          </Link>
+        </div>
       </div>
-      <div className="mt-6">
-        <GhostCTA to="/demo/offerlock">Start a deal</GhostCTA>
-      </div>
-    </Section>
+    </section>
   );
 }
 
