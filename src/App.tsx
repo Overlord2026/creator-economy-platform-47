@@ -13,6 +13,28 @@ import ProsDetailPage from '@/pages/marketing/ProsDetailPage';
 import ConnectionsPage from '@/pages/marketing/ConnectionsPage';
 import WhyReceiptsPage from '@/pages/marketing/WhyReceiptsPage';
 
+// Athlete pages
+import AthletesPage from '@/pages/marketing/AthletesPage';
+import AthletesVerifiedPage from '@/pages/marketing/AthletesVerifiedPage';
+import AthletesBrandKitPage from '@/pages/marketing/AthletesBrandKitPage';
+
+// Brand pages
+import BrandsPage from '@/pages/marketing/BrandsPage';
+import BrandsBriefsNewPage from '@/pages/marketing/BrandsBriefsNewPage';
+import BrandsSolutionsPage from '@/pages/marketing/BrandsSolutionsPage';
+
+// Solution pages
+import SolutionsIndexPage from '@/pages/marketing/SolutionsIndexPage';
+
+// Resource pages
+import ResourcesGuidesPage from '@/pages/marketing/ResourcesGuidesPage';
+import ResourcesRulesPage from '@/pages/marketing/ResourcesRulesPage';
+import BlogPage from '@/pages/marketing/BlogPage';
+import HelpPage from '@/pages/marketing/HelpPage';
+
+// Customer/social proof
+import CustomersPage from '@/pages/marketing/CustomersPage';
+
 // Demo flows
 import DemoOfferLock from '@/pages/DemoOfferLock';
 import DemoContract from '@/pages/DemoContract';
@@ -44,6 +66,28 @@ export default function App() {
             <Route path="/connections" element={<ConnectionsPage />} />
             <Route path="/why-receipts" element={<WhyReceiptsPage />} />
 
+            {/* Athlete routes */}
+            <Route path="/athletes" element={<AthletesPage />} />
+            <Route path="/athletes/verified" element={<AthletesVerifiedPage />} />
+            <Route path="/athletes/brand-kit" element={<AthletesBrandKitPage />} />
+
+            {/* Brand routes */}
+            <Route path="/brands" element={<BrandsPage />} />
+            <Route path="/brands/briefs/new" element={<BrandsBriefsNewPage />} />
+            <Route path="/brands/solutions" element={<BrandsSolutionsPage />} />
+
+            {/* Solutions routes */}
+            <Route path="/solutions" element={<SolutionsIndexPage />} />
+
+            {/* Resource routes */}
+            <Route path="/resources/guides" element={<ResourcesGuidesPage />} />
+            <Route path="/resources/rules" element={<ResourcesRulesPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/help" element={<HelpPage />} />
+
+            {/* Customer/social proof */}
+            <Route path="/customers" element={<CustomersPage />} />
+
             {/* Demo routes */}
             <Route path="/demo/offerlock" element={<DemoOfferLock />} />
             <Route path="/demo/contract" element={<DemoContract />} />
@@ -52,11 +96,11 @@ export default function App() {
             {/* App area */}
             <Route path="/dashboard" element={<DashboardPage />} />
 
-            {/* Fallback */}
             {/* Deals */}
             <Route path="/deals" element={<DealsList />} />
             <Route path="/deals/:id" element={<DealDetail />} />
-      
+
+            {/* Fallback */}
             <Route path="*" element={<LandingPage />} />
           </Routes>
         </div>

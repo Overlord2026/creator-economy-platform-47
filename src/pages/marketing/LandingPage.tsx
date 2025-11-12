@@ -1,10 +1,11 @@
 import React, { useState, lazy, Suspense, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight, Check, Shield, BadgeCheck, Lock,
   Zap, FileSignature, Banknote, Search, Quote, Sparkles, Hash, ExternalLink,
-  Menu, X, ChevronRight
+  Menu, X, ChevronRight, ChevronDown
 } from "lucide-react";
+import PersonaChooserModal from "@/components/marketing/PersonaChooserModal";
 
 // Lazy load framer-motion for better initial load performance
 const motion = {
@@ -22,10 +23,21 @@ const motion = {
  * - Faster Time to Interactive (TTI)
  * - Professional black header with serif logo
  * - Mobile hamburger menu with full-screen drawer
+ * - Full dropdown navigation with analytics tracking
+ * - Persona chooser modal for Get Started CTA
  */
 
 const NAVY = "#0B2239";
 const GOLD = "#D4AF37";
+
+// Analytics tracking helper
+const trackEvent = (eventType: string, data: Record<string, any>) => {
+  console.log(`[Analytics] ${eventType}:`, data);
+  // In production, this would send to your analytics service (PostHog, etc.)
+  if (typeof window !== 'undefined' && (window as any).posthog) {
+    (window as any).posthog.capture(eventType, data);
+  }
+};
 
 export default function LandingPage() {
   // Set meta tags using native DOM API instead of react-helmet-async
@@ -88,6 +100,26 @@ export default function LandingPage() {
 
 function StickyHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [athletesDropdownOpen, setAthletesDropdownOpen] = useState(false);
+  const [brandsDropdownOpen, setBrandsDropdownOpen] = useState(false);
+  const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
+  const [showPersonaModal, setShowPersonaModal] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    trackEvent('nav_click', { item: 'logo', destination: '/' });
+    // Default Link behavior handles navigation
+  };
+
+  const handleGetStartedClick = () => {
+    trackEvent('cta_click', { id: 'get_started', location: 'header' });
+    setShowPersonaModal(true);
+  };
+
+  const handlePersonaChoose = (persona: string) => {
+    trackEvent('cta_click', { id: 'get_started', persona });
+    navigate(`/onboarding?persona=${persona}`);
+  };
 
   return (
     <>
@@ -99,8 +131,9 @@ function StickyHeader() {
           {/* Logo with Serif Font */}
           <Link
             to="/"
-            className="flex items-center"
-            aria-label="Creator NIL Platform Home"
+            onClick={handleLogoClick}
+            className="flex items-center focus:outline-none focus:ring-2 focus:ring-[var(--gold)] focus:ring-offset-2 focus:ring-offset-black rounded"
+            aria-label="Creator NIL Platform — Home"
           >
             <span
               className="text-xl font-bold text-[var(--gold)] tracking-wide"
@@ -112,34 +145,81 @@ function StickyHeader() {
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center gap-8 text-[15px] lg:flex" aria-label="Main navigation">
-            <DropdownLink href="/personas" label="For Athletes" />
-            <DropdownLink href="/pros" label="For Brands" />
-            <a href="/why-receipts" className="text-white hover:text-[var(--gold)] transition-colors font-medium">
+            <DropdownNav
+              label="For Athletes"
+              isOpen={athletesDropdownOpen}
+              onToggle={() => setAthletesDropdownOpen(!athletesDropdownOpen)}
+              items={[
+                { label: 'Overview', href: '/athletes', group: 'athletes' },
+                { label: 'Get Verified (NIL training)', href: '/athletes/verified', group: 'athletes' },
+                { label: 'OfferLock Demo', href: '/demo/offerlock?persona=creator', group: 'athletes' },
+                { label: 'Build Brand Kit', href: '/athletes/brand-kit', group: 'athletes' },
+                { separator: true },
+                { label: 'High School', href: '/onboarding?persona=creator&level=hs', group: 'athletes' },
+                { label: 'College', href: '/onboarding?persona=creator&level=college', group: 'athletes' },
+                { label: 'Pro', href: '/onboarding?persona=creator&level=pro', group: 'athletes' },
+              ]}
+              cta={{ label: 'Start free workspace', href: '/onboarding?persona=creator', group: 'athletes' }}
+            />
+
+            <DropdownNav
+              label="For Brands"
+              isOpen={brandsDropdownOpen}
+              onToggle={() => setBrandsDropdownOpen(!brandsDropdownOpen)}
+              items={[
+                { label: 'Overview', href: '/brands', group: 'brands' },
+                { label: 'Post a Brief (start a campaign)', href: '/brands/briefs/new', group: 'brands' },
+                { label: 'UGC / Appearances / Events', href: '/brands/solutions', group: 'brands' },
+                { label: 'Approvals & FTC', href: '/solutions#disclosures', group: 'brands' },
+                { label: 'Receipts & Reporting', href: '/why-receipts', group: 'brands' },
+              ]}
+              cta={{ label: 'Create brand workspace', href: '/onboarding?persona=pro', group: 'brands' }}
+            />
+
+            <a
+              href="/solutions"
+              onClick={() => trackEvent('nav_click', { group: 'solutions' })}
+              className="text-white hover:text-[var(--gold)] transition-colors font-medium"
+            >
               Solutions
             </a>
-            <a href="/connections" className="text-white hover:text-[var(--gold)] transition-colors font-medium">
-              Resources
-            </a>
-            <a href="#pricing" className="text-white hover:text-[var(--gold)] transition-colors font-medium">
+
+            <DropdownNav
+              label="Resources"
+              isOpen={resourcesDropdownOpen}
+              onToggle={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
+              items={[
+                { label: 'Guides & Playbooks', href: '/resources/guides', group: 'resources' },
+                { label: 'NIL Rules by State/School', href: '/resources/rules', group: 'resources' },
+                { label: 'Blog', href: '/blog', group: 'resources' },
+                { label: 'Help Center / FAQ', href: '/help', group: 'resources' },
+              ]}
+            />
+
+            <a
+              href="#pricing"
+              onClick={() => trackEvent('nav_click', { group: 'pricing' })}
+              className="text-white hover:text-[var(--gold)] transition-colors font-medium"
+            >
               Pricing
             </a>
           </nav>
 
           {/* Desktop CTA */}
           <div className="hidden lg:flex">
-            <Link
-              to="/onboarding"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#FFD700] px-6 py-2.5 text-[15px] font-semibold text-black shadow-lg hover:bg-[#FFC700] transition-all hover:shadow-xl"
+            <button
+              onClick={handleGetStartedClick}
+              className="inline-flex items-center gap-2 rounded-lg bg-[#FFD700] px-6 py-2.5 text-[15px] font-semibold text-black shadow-lg hover:bg-[#FFC700] transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[var(--gold)] focus:ring-offset-2 focus:ring-offset-black"
             >
               Get Started
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
+            </button>
           </div>
 
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-white hover:text-[var(--gold)] transition-colors"
+            className="lg:hidden p-2 text-white hover:text-[var(--gold)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--gold)] rounded"
             aria-label="Toggle mobile menu"
             aria-expanded={mobileMenuOpen}
           >
@@ -162,51 +242,109 @@ function StickyHeader() {
           aria-label="Mobile navigation menu"
         >
           <nav className="flex flex-col gap-1 p-6 pt-20" aria-label="Mobile navigation">
-            <MobileNavLink href="/personas" onClick={() => setMobileMenuOpen(false)}>
+            <MobileNavLink href="/athletes" onClick={() => { trackEvent('nav_click', { group: 'athletes', item: 'overview' }); setMobileMenuOpen(false); }}>
               For Athletes
             </MobileNavLink>
-            <MobileNavLink href="/pros" onClick={() => setMobileMenuOpen(false)}>
+            <MobileNavLink href="/brands" onClick={() => { trackEvent('nav_click', { group: 'brands', item: 'overview' }); setMobileMenuOpen(false); }}>
               For Brands
             </MobileNavLink>
-            <MobileNavLink href="/why-receipts" onClick={() => setMobileMenuOpen(false)}>
+            <MobileNavLink href="/solutions" onClick={() => { trackEvent('nav_click', { group: 'solutions' }); setMobileMenuOpen(false); }}>
               Solutions
             </MobileNavLink>
-            <MobileNavLink href="/connections" onClick={() => setMobileMenuOpen(false)}>
+            <MobileNavLink href="/resources/guides" onClick={() => { trackEvent('nav_click', { group: 'resources', item: 'guides' }); setMobileMenuOpen(false); }}>
               Resources
             </MobileNavLink>
-            <MobileNavLink href="#pricing" onClick={() => setMobileMenuOpen(false)}>
+            <MobileNavLink href="#pricing" onClick={() => { trackEvent('nav_click', { group: 'pricing' }); setMobileMenuOpen(false); }}>
               Pricing
             </MobileNavLink>
 
             <div className="mt-6 pt-6 border-t border-white/10">
-              <Link
-                to="/onboarding"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-lg bg-[#FFD700] px-6 py-3 text-base font-semibold text-black shadow-lg"
+              <button
+                onClick={() => { setMobileMenuOpen(false); handleGetStartedClick(); }}
+                className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#FFD700] px-6 py-3 text-base font-semibold text-black shadow-lg"
               >
                 Get Started
                 <ArrowRight className="h-5 w-5" aria-hidden="true" />
-              </Link>
+              </button>
             </div>
           </nav>
         </div>
       )}
+
+      {/* Persona Chooser Modal */}
+      <PersonaChooserModal
+        isOpen={showPersonaModal}
+        onClose={() => setShowPersonaModal(false)}
+        onChoose={handlePersonaChoose}
+      />
     </>
   );
 }
 
-function DropdownLink({ href, label }: { href: string; label: string }) {
+interface DropdownNavItem {
+  label: string;
+  href: string;
+  group: string;
+  separator?: boolean;
+}
+
+interface DropdownNavProps {
+  label: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  items: (DropdownNavItem | { separator: true })[];
+  cta?: { label: string; href: string; group: string };
+}
+
+function DropdownNav({ label, isOpen, onToggle, items, cta }: DropdownNavProps) {
   return (
-    <Link
-      to={href}
-      className="flex items-center gap-1 text-white hover:text-[var(--gold)] transition-colors font-medium group"
-    >
-      {label}
-      <ChevronRight
-        className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
-        aria-hidden="true"
-      />
-    </Link>
+    <div className="relative" onMouseLeave={() => setTimeout(() => onToggle(), 100)}>
+      <button
+        onClick={onToggle}
+        onMouseEnter={onToggle}
+        className="flex items-center gap-1 text-white hover:text-[var(--gold)] transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-[var(--gold)] rounded px-1 py-1"
+        aria-expanded={isOpen}
+      >
+        {label}
+        <ChevronDown
+          className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          aria-hidden="true"
+        />
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-2 w-64 rounded-lg border border-white/10 bg-black/95 backdrop-blur-sm shadow-2xl py-2">
+          {items.map((item, idx) => {
+            if ('separator' in item && item.separator) {
+              return <div key={idx} className="my-2 border-t border-white/10" />;
+            }
+            const navItem = item as DropdownNavItem;
+            return (
+              <a
+                key={idx}
+                href={navItem.href}
+                onClick={() => trackEvent('nav_click', { group: navItem.group, item: navItem.label })}
+                className="block px-4 py-2 text-sm text-white hover:text-[var(--gold)] hover:bg-white/5 transition-colors"
+              >
+                {navItem.label}
+              </a>
+            );
+          })}
+          {cta && (
+            <>
+              <div className="my-2 border-t border-white/10" />
+              <a
+                href={cta.href}
+                onClick={() => trackEvent('nav_click', { group: cta.group, item: cta.label, cta: true })}
+                className="block mx-2 px-4 py-2 text-sm text-center font-semibold rounded-lg bg-[var(--gold)] text-black hover:bg-[var(--gold)]/90 transition-colors"
+              >
+                {cta.label}
+              </a>
+            </>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -220,14 +358,14 @@ function MobileNavLink({
   children: React.ReactNode;
 }) {
   return (
-    <Link
-      to={href}
+    <a
+      href={href}
       onClick={onClick}
-      className="flex items-center justify-between px-4 py-3 text-lg text-white hover:text-[var(--gold)] hover:bg-white/5 rounded-lg transition-all"
+      className="flex items-center justify-between px-4 py-3 text-lg text-white hover:text-[var(--gold)] hover:bg-white/5 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[var(--gold)]"
     >
       {children}
       <ChevronRight className="h-5 w-5" aria-hidden="true" />
-    </Link>
+    </a>
   );
 }
 
@@ -237,10 +375,22 @@ function AnnouncementBar() {
   return (
     <div className="border-b border-white/5 bg-black/90">
       <div className="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-center gap-3 text-sm">
-          <span className="text-[var(--gold)] font-semibold">🔒 NIL Compliance Made Simple</span>
-          <span className="text-white/40">•</span>
-          <span className="text-white/80">Trusted by 500+ Athletes</span>
+        <div className="flex items-center justify-center gap-3 text-sm flex-wrap">
+          <a
+            href="/solutions#compliance"
+            onClick={() => trackEvent('banner_click', { slot: 'left' })}
+            className="text-[var(--gold)] font-semibold hover:underline focus:outline-none focus:ring-2 focus:ring-[var(--gold)] rounded px-1"
+          >
+            🔒 NIL Compliance Made Simple
+          </a>
+          <span className="text-white/40 hidden sm:inline">•</span>
+          <a
+            href="/customers"
+            onClick={() => trackEvent('banner_click', { slot: 'right' })}
+            className="text-white/80 hover:text-[var(--gold)] hover:underline focus:outline-none focus:ring-2 focus:ring-[var(--gold)] rounded px-1"
+          >
+            Trusted by 500+ Athletes
+          </a>
         </div>
       </div>
     </div>
