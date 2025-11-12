@@ -12,7 +12,7 @@ const motion = {
 };
 
 /**
- * OPTIMIZED NIL Landing (Navy + Gold)
+ * OPTIMIZED NIL Landing - Professional Black Theme
  * Performance improvements:
  * - Lazy loaded animations
  * - Reduced initial bundle size
@@ -20,6 +20,8 @@ const motion = {
  * - Better SEO with meta tags
  * - Improved accessibility
  * - Faster Time to Interactive (TTI)
+ * - Professional black header with serif logo
+ * - Mobile hamburger menu with full-screen drawer
  */
 
 const NAVY = "#0B2239";
