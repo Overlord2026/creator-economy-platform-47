@@ -265,7 +265,7 @@ function HowItWorks() {
 function TrustRails() {
   const bullets = [
     "Enterprise Policy Gates — approve/deny with reasons before actions run.",
-    "Content-Free Receipts — hash-backed proofs; verify "Included ✓" locally.",
+    "Content-Free Receipts — hash-backed proofs; verify \"Included ✓\" locally.",
     "WORM Vault & Legal Hold — write-once retention; audit exports.",
     "Anchors (K-of-N) — multiple anchors for durable verification.",
   ];
@@ -583,7 +583,7 @@ function Pricing() {
 function FAQ() {
   const items = [
     { q: "What is OfferLock?", a: "A quick pre-agreement so everyone aligns before signing — no ghost edits." },
-    { q: "What's a "receipt"?", a: "A small, private proof of what happened and why — helpful for oversight and disputes." },
+    { q: "What's a \"receipt\"?", a: "A small, private proof of what happened and why — helpful for oversight and disputes." },
     { q: "Can my school or parent see my deals?", a: "Only what you share; amounts can remain private." },
     { q: "Is this NCAA compliant?", a: "Yes—policy gates ensure actions are reviewed for compliance before execution." },
     { q: "Do I need an agent?", a: "Not required—brands can reach out directly; agents can manage deals for you." },
@@ -591,7 +591,7 @@ function FAQ() {
     { q: "Can I export receipts?", a: "Yes—multi-anchor packs are exportable for audits and disputes." },
     { q: "Does this work for minors?", a: "Guardian co-sign workflows support under-18 athletes." },
     { q: "What's the cost?", a: "Free for creators; Pro adds analytics & priority support; Enterprise is custom." },
-    { q: "How do I start?", a: "Click "Try the OfferLock demo" or "Start Workspace" to see it in action." },
+    { q: "How do I start?", a: "Click \"Try the OfferLock demo\" or \"Start Workspace\" to see it in action." },
   ];
   return (
     <Section id="faq" title="Frequently asked">
