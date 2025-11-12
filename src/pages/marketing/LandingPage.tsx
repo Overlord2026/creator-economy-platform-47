@@ -1,6 +1,5 @@
-import React, { useState, lazy, Suspense } from "react";
+import React, { useState, lazy, Suspense, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import {
   ArrowRight, Check, Shield, BadgeCheck, Lock,
   Zap, FileSignature, Banknote, Search, Quote, Sparkles, Hash, ExternalLink
@@ -26,29 +25,36 @@ const NAVY = "#0B2239";
 const GOLD = "#D4AF37";
 
 export default function LandingPage() {
+  // Set meta tags using native DOM API instead of react-helmet-async
+  useEffect(() => {
+    document.title = "Creator NIL Platform - Deals and Projects, Minus the Drama";
+
+    const metaTags = [
+      { name: "description", content: "One place for creators and athletes to lock offers, e-sign with confidence, and keep private proof of every step. Policy-first automation with content-free receipts." },
+      { name: "keywords", content: "NIL, creator economy, athlete deals, e-signature, compliance, offer lock, brand deals" },
+      { property: "og:title", content: "Creator NIL Platform - Deals and Projects, Minus the Drama" },
+      { property: "og:description", content: "Lock offers, e-sign with confidence, and keep private proof of every step." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Creator NIL Platform" },
+      { name: "twitter:description", content: "Deals and projects, minus the drama" },
+    ];
+
+    metaTags.forEach(({ name, property, content }) => {
+      const selector = name ? `meta[name="${name}"]` : `meta[property="${property}"]`;
+      let meta = document.querySelector(selector);
+      if (!meta) {
+        meta = document.createElement('meta');
+        if (name) meta.setAttribute('name', name);
+        if (property) meta.setAttribute('property', property);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    });
+  }, []);
+
   return (
-    <>
-      <Helmet>
-        <title>Creator NIL Platform - Deals and Projects, Minus the Drama</title>
-        <meta name="description" content="One place for creators and athletes to lock offers, e-sign with confidence, and keep private proof of every step. Policy-first automation with content-free receipts." />
-        <meta name="keywords" content="NIL, creator economy, athlete deals, e-signature, compliance, offer lock, brand deals" />
-
-        {/* Open Graph */}
-        <meta property="og:title" content="Creator NIL Platform - Deals and Projects, Minus the Drama" />
-        <meta property="og:description" content="Lock offers, e-sign with confidence, and keep private proof of every step." />
-        <meta property="og:type" content="website" />
-
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Creator NIL Platform" />
-        <meta name="twitter:description" content="Deals and projects, minus the drama" />
-
-        {/* Performance hints */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-      </Helmet>
-
-      <div className="min-h-screen text-white" style={{ backgroundColor: NAVY }}>
+    <div className="min-h-screen text-white" style={{ backgroundColor: NAVY }}>
         <StickyHeader />
         <Hero />
         <LogoStrip />
@@ -64,7 +70,6 @@ export default function LandingPage() {
         <FAQ />
         <Footer />
       </div>
-    </>
   );
 }
 
