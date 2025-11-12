@@ -27,8 +27,9 @@ const motion = {
  * - Persona chooser modal for Get Started CTA
  */
 
-const NAVY = "#0B2239";
+const BLACK = "#000000";
 const GOLD = "#D4AF37";
+const GOLD_LIGHT = "#FFD700";
 
 // Analytics tracking helper
 const trackEvent = (eventType: string, data: Record<string, any>) => {
@@ -69,7 +70,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen text-white" style={{ backgroundColor: NAVY }}>
+    <div className="min-h-screen bg-black text-white">
         {/* Accessibility skip link */}
         <a
           href="#main-content"
@@ -401,41 +402,56 @@ function AnnouncementBar() {
 
 function Hero() {
   return (
-    <section id="main-content" className="relative border-b border-white/10 py-14 sm:py-18" aria-labelledby="hero-heading">
-      {/* Removed animated overlay for better performance */}
-      <div className="relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 md:grid-cols-2">
-        <div>
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs text-white/80">
-            <span>AI with guardrails</span>
-            <span className="h-3 w-px bg-white/20" aria-hidden="true" />
-            <span>content-free receipts</span>
-          </div>
+    <section id="main-content" className="relative border-b border-white/10 py-20 sm:py-28" aria-labelledby="hero-heading">
+      {/* Subtle gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/50 to-transparent pointer-events-none" />
 
+      <div className="relative mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 md:grid-cols-2">
+        <div className="flex flex-col justify-center">
           <motion.h1
             id="hero-heading"
-            className="text-4xl font-extrabold sm:text-5xl md:text-6xl leading-tight"
+            className="text-5xl font-extrabold sm:text-6xl md:text-7xl leading-[1.1] mb-6"
           >
-            "Deals and projects, minus the drama."
+            <span className="text-white/90">Deals and projects,</span>{' '}
+            <span className="relative inline-block">
+              <span className="relative z-10 text-white">minus the drama</span>
+              <span className="absolute bottom-2 left-0 right-0 h-3 bg-[var(--gold)]/30 -skew-y-1" aria-hidden="true" />
+            </span>
           </motion.h1>
 
-          <p className="mt-4 max-w-2xl text-lg text-white/80">
+          <p className="mt-6 max-w-2xl text-xl text-white/80 leading-relaxed">
             One place for creators and athletes to lock offers, e-sign with confidence,
             and keep private proof of every step.
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <PrimaryCTA to="/demo/offerlock">Try the OfferLock demo</PrimaryCTA>
-            <GhostCTA to="/personas">Explore personas</GhostCTA>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Link
+              to="/onboarding"
+              className="group inline-flex items-center gap-2 rounded-xl bg-[var(--gold)] px-8 py-4 text-lg font-bold text-black shadow-xl shadow-[var(--gold)]/20 transition-all hover:bg-[var(--gold-light)] hover:scale-105 hover:shadow-2xl hover:shadow-[var(--gold)]/30"
+            >
+              Get Started Free
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              to="/demo/offerlock"
+              className="inline-flex items-center gap-2 rounded-xl border-2 border-white/20 bg-white/5 px-8 py-4 text-lg font-semibold text-white backdrop-blur-sm transition-all hover:border-white/40 hover:bg-white/10"
+            >
+              Watch Demo
+            </Link>
           </div>
 
-          <p className="mt-6 text-sm text-white/70">Built by compliance nerds. Designed for humans.</p>
+          <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-[var(--gold)]/30 bg-[var(--gold)]/10 px-4 py-2 text-sm text-white/90">
+            <span>AI with guardrails</span>
+            <span className="h-3 w-px bg-white/30" aria-hidden="true" />
+            <span>content-free receipts</span>
+          </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <HeroTile icon={Zap} title="OfferLock" desc="Write down what was discussed. No surprises." />
-          <HeroTile icon={FileSignature} title="E-Sign" desc="Everyone signs the same deal, the right way." />
-          <HeroTile icon={Banknote} title="Settlement" desc="Payouts with a private receipt. No oversharing." />
-          <HeroTile icon={BadgeCheck} title="Verifier" desc="Status-only checks. No private payloads." />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <HeroTile icon={Lock} title="OfferLock" desc="Lock terms before work begins. No bait-and-switch." />
+          <HeroTile icon={FileSignature} title="E-Sign" desc="State-specific contracts. Parent approval flows." />
+          <HeroTile icon={Banknote} title="Instant Payouts" desc="Same-day ACH once deliverables approved." />
+          <HeroTile icon={BadgeCheck} title="Compliance" desc="Automatic state, school, FTC checks." />
         </div>
       </div>
     </section>
@@ -446,12 +462,12 @@ function HeroTile({
   icon: Icon, title, desc,
 }: { icon: React.ComponentType<{ className?: string }>; title: string; desc: string }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10">
-      <div className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
-        <Icon className="h-5 w-5 text-[var(--gold)]" aria-hidden="true" />
+    <div className="group rounded-xl border-2 border-[var(--gold)]/30 bg-white/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-[var(--gold)] hover:bg-white/10 hover:scale-105 hover:shadow-xl hover:shadow-[var(--gold)]/20">
+      <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--gold)]/20 transition-colors group-hover:bg-[var(--gold)]/30">
+        <Icon className="h-6 w-6 text-[var(--gold)]" aria-hidden="true" />
       </div>
-      <div className="text-base font-semibold text-white">{title}</div>
-      <div className="mt-1 text-sm text-white/75">{desc}</div>
+      <div className="text-lg font-bold text-white mb-2">{title}</div>
+      <div className="text-sm text-white/75 leading-relaxed">{desc}</div>
     </div>
   );
 }
