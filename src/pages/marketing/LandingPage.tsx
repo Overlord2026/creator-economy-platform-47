@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight, Check, Shield, BadgeCheck, Lock,
   Zap, FileSignature, Banknote, Search, Quote, Sparkles, Hash, ExternalLink,
-  Menu, X, ChevronRight, ChevronDown
+  Menu, X, ChevronRight, ChevronDown, Star
 } from "lucide-react";
 import PersonaChooserModal from "@/components/marketing/PersonaChooserModal";
 
