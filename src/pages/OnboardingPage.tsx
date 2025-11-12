@@ -12,6 +12,7 @@ import { LinkAccounts } from "./onboarding/steps/LinkAccounts";
 import { UploadDoc } from "./onboarding/steps/UploadDoc";
 import { Goals } from "./onboarding/steps/Goals";
 import { InvitePro } from "./onboarding/steps/InvitePro";
+import { CheckCircle2 } from "lucide-react";
 
 type StepKey =
   | "email-verify" | "profile" | "household" | "link-accounts"
@@ -71,27 +72,36 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold">{copy.hero}</h1>
-        <ul className="mt-4 space-y-2">
-          {copy.bullets.map((bullet, index) => (
-            <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
-              <span className="text-primary">•</span>
-              {bullet}
-            </li>
-          ))}
-        </ul>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Section with White Background */}
+      <header className="bg-white border-b border-gray-200 py-8">
+        <div className="max-w-4xl mx-auto px-6">
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">{copy.hero}</h1>
+          <div className="grid gap-3 md:grid-cols-2 mt-6">
+            {copy.bullets.map((bullet, index) => (
+              <div key={index} className="flex items-start gap-3">
+                <CheckCircle2 className="h-5 w-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
+                <span className="text-base text-gray-600">{bullet}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </header>
 
-      <OnboardingProgress 
-        currentStep={currentStep} 
-        totalSteps={STEPS.length} 
-        steps={STEPS.map(s => s.replace('-', ' '))} 
-        className="mb-6"
-      />
+      {/* Progress Section with White Background */}
+      <div className="bg-white border-b border-gray-200 py-8">
+        <div className="max-w-4xl mx-auto px-6">
+          <OnboardingProgress
+            currentStep={currentStep}
+            totalSteps={STEPS.length}
+            steps={STEPS.map(s => s.replace('-', ' '))}
+          />
+        </div>
+      </div>
 
-      <section className="mt-6">
+      {/* Main Content with Generous Top Padding */}
+      <section className="py-24">
+        <div className="max-w-4xl mx-auto px-6">
         {active === "email-verify" && (
           <EmailVerify 
             onComplete={(data) => markComplete("email-verify", data)}
@@ -141,9 +151,14 @@ export default function OnboardingPage() {
             segment={segment}
           />
         )}
+        </div>
       </section>
 
-      <footer className="mt-6 text-sm opacity-75">{saving ? "Saving…" : null}</footer>
+      {saving && (
+        <footer className="fixed bottom-6 right-6 bg-white px-4 py-2 rounded-lg shadow-lg border border-gray-200 text-sm text-gray-600">
+          Saving…
+        </footer>
+      )}
     </div>
   );
 }

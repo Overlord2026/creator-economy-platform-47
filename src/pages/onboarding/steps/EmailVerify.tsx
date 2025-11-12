@@ -75,21 +75,21 @@ export const EmailVerify: React.FC<EmailVerifyProps> = ({
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="text-center">
-        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Mail className="h-6 w-6 text-primary" />
+    <Card className="w-full max-w-xl mx-auto shadow-xl border-0">
+      <CardHeader className="text-center pb-8 pt-12">
+        <div className="w-16 h-16 bg-gradient-to-br from-[#D4AF37] to-[#C4A027] rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <Mail className="h-8 w-8 text-white" />
         </div>
-        <CardTitle>Verify Your Email</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-3xl font-bold text-gray-900">Verify Your Email</CardTitle>
+        <CardDescription className="text-base text-gray-600 mt-2">
           We'll send you important updates about your onboarding progress
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pb-12 px-12">
         {!verificationSent ? (
           <>
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email Address</Label>
               <Input
                 id="email"
                 type="email"
@@ -98,6 +98,7 @@ export const EmailVerify: React.FC<EmailVerifyProps> = ({
                 placeholder="your@email.com"
                 disabled={isVerifying}
                 autoFocus
+                className="h-12 text-base border-gray-300 focus:border-[#D4AF37] focus:ring-[#D4AF37]"
                 aria-describedby={error ? "email-error" : undefined}
               />
               {error && (
@@ -107,16 +108,16 @@ export const EmailVerify: React.FC<EmailVerifyProps> = ({
               )}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-3 pt-2">
               <Button
                 onClick={handleSendVerification}
                 disabled={isVerifying || !email}
-                className="flex-1"
+                className="flex-1 h-12 text-base bg-[#D4AF37] hover:bg-[#C4A027] text-black font-semibold hover:scale-[1.02] transition-transform"
               >
-                {isVerifying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isVerifying && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
                 Send Verification
               </Button>
-              <Button variant="outline" onClick={handleSkip}>
+              <Button variant="ghost" onClick={handleSkip} className="px-6 text-gray-600 hover:text-gray-900 h-12">
                 Skip
               </Button>
             </div>
