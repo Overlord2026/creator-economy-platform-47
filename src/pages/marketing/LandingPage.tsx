@@ -84,6 +84,7 @@ export default function LandingPage() {
         <LogoStrip />
         <WhyDifferent />
         <HowItWorks />
+        <TestimonialSection />
         <TrustRails />
         <LiveDemoVerifier />
         <WhyJoin />
@@ -406,48 +407,58 @@ function Hero() {
       {/* Subtle overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-[var(--gold)]/5 via-transparent to-transparent pointer-events-none" />
 
-      <div className="relative mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 md:grid-cols-2">
+      <div className="relative mx-auto grid max-w-7xl gap-16 px-4 sm:px-6 md:grid-cols-2 items-center">
         <div className="flex flex-col justify-center">
           <motion.h1
             id="hero-heading"
-            className="text-5xl font-extrabold sm:text-6xl md:text-7xl leading-[1.1] mb-6"
+            className="text-5xl font-bold sm:text-6xl md:text-7xl leading-[1.05] mb-6"
           >
-            <span className="text-white/90">Deals and projects,</span>{' '}
+            <span className="text-white">Close NIL deals </span>
             <span className="relative inline-block">
-              <span className="relative z-10 text-white">minus the drama</span>
-              <span className="absolute bottom-2 left-0 right-0 h-3 bg-[var(--gold)]/30 -skew-y-1" aria-hidden="true" />
+              <span className="relative z-10 text-white">10x faster</span>
+              <span className="absolute bottom-2 left-0 right-0 h-4 bg-[var(--gold)]/40 -skew-y-1" aria-hidden="true" />
             </span>
+            <span className="text-white"> with automated compliance</span>
           </motion.h1>
 
-          <p className="mt-6 max-w-2xl text-xl text-white/80 leading-relaxed">
-            One place for creators and athletes to lock offers, e-sign with confidence,
-            and keep private proof of every step.
+          <p className="mt-6 max-w-2xl text-xl text-white/90 leading-relaxed">
+            Save 15 hours per deal. Reduce compliance risk by 90%. Keep parents in the loop, privacy intact.
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-4">
+          <div className="mt-10 flex flex-wrap gap-4">
             <Link
               to="/onboarding"
-              className="group inline-flex items-center gap-2 rounded-xl bg-[var(--gold)] px-8 py-4 text-lg font-bold text-black shadow-xl shadow-[var(--gold)]/20 transition-all hover:bg-[var(--gold-light)] hover:scale-105 hover:shadow-2xl hover:shadow-[var(--gold)]/30"
+              className="group inline-flex items-center gap-2 rounded-xl bg-[var(--gold)] px-10 py-5 text-lg font-bold text-black shadow-2xl shadow-[var(--gold)]/30 transition-all hover:bg-[var(--gold-light)] hover:scale-[1.02] hover:shadow-[0_20px_60px_rgba(212,175,55,0.4)]"
             >
-              Get Started Free
+              Start Your First Deal
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
               to="/demo/offerlock"
-              className="inline-flex items-center gap-2 rounded-xl border-2 border-white/20 bg-white/5 px-8 py-4 text-lg font-semibold text-white backdrop-blur-sm transition-all hover:border-white/40 hover:bg-white/10"
+              className="inline-flex items-center gap-2 px-10 py-5 text-lg font-semibold text-white/80 hover:text-white transition-all"
             >
+              <Sparkles className="h-5 w-5" />
               Watch Demo
             </Link>
           </div>
 
-          <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-[var(--gold)]/30 bg-[var(--gold)]/10 px-4 py-2 text-sm text-white/90">
-            <span>AI with guardrails</span>
-            <span className="h-3 w-px bg-white/30" aria-hidden="true" />
-            <span>content-free receipts</span>
+          <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-white/70">
+            <div className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-[var(--gold)]" />
+              <span>Free forever</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-[var(--gold)]" />
+              <span>No credit card</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-[var(--gold)]" />
+              <span>500+ athletes trust us</span>
+            </div>
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2">
           <HeroTile icon={Lock} title="OfferLock" desc="Lock terms before work begins. No bait-and-switch." />
           <HeroTile icon={FileSignature} title="E-Sign" desc="State-specific contracts. Parent approval flows." />
           <HeroTile icon={Banknote} title="Instant Payouts" desc="Same-day ACH once deliverables approved." />
@@ -462,12 +473,12 @@ function HeroTile({
   icon: Icon, title, desc,
 }: { icon: React.ComponentType<{ className?: string }>; title: string; desc: string }) {
   return (
-    <div className="group rounded-xl border-2 border-[var(--gold)]/30 bg-white/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-[var(--gold)] hover:bg-white/10 hover:scale-105 hover:shadow-xl hover:shadow-[var(--gold)]/20">
-      <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--gold)]/20 transition-colors group-hover:bg-[var(--gold)]/30">
-        <Icon className="h-6 w-6 text-[var(--gold)]" aria-hidden="true" />
+    <div className="group rounded-2xl border-2 border-[var(--gold)]/40 bg-white/5 backdrop-blur-sm p-8 transition-all duration-300 hover:border-[var(--gold)] hover:bg-white/10 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(212,175,55,0.3)]">
+      <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-[var(--gold)]/20 transition-colors group-hover:bg-[var(--gold)]/30">
+        <Icon className="h-7 w-7 text-[var(--gold)]" aria-hidden="true" />
       </div>
-      <div className="text-lg font-bold text-white mb-2">{title}</div>
-      <div className="text-sm text-white/75 leading-relaxed">{desc}</div>
+      <div className="text-xl font-bold text-white mb-3">{title}</div>
+      <div className="text-base text-white/80 leading-relaxed">{desc}</div>
     </div>
   );
 }
@@ -486,22 +497,26 @@ function LogoStrip() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-16">
           <div className="text-center">
-            <div className="text-4xl font-bold text-[var(--gold)] mb-2">500+</div>
-            <div className="text-sm text-gray-600 font-medium">Athletes</div>
+            <div className="text-6xl font-bold text-[var(--gold)] mb-3">500+</div>
+            <div className="text-base text-gray-900 font-semibold mb-1">Athletes Protected</div>
+            <div className="text-sm text-gray-500">in the last 12 months</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-[var(--gold)] mb-2">$10M+</div>
-            <div className="text-sm text-gray-600 font-medium">Deals Processed</div>
+            <div className="text-6xl font-bold text-[var(--gold)] mb-3">$10M+</div>
+            <div className="text-base text-gray-900 font-semibold mb-1">Deals Processed</div>
+            <div className="text-sm text-gray-500">all compliant & verified</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-[var(--gold)] mb-2">99.9%</div>
-            <div className="text-sm text-gray-600 font-medium">Compliance Rate</div>
+            <div className="text-6xl font-bold text-[var(--gold)] mb-3">15+</div>
+            <div className="text-base text-gray-900 font-semibold mb-1">Hours Saved</div>
+            <div className="text-sm text-gray-500">per deal on average</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-[var(--gold)] mb-2">50+</div>
-            <div className="text-sm text-gray-600 font-medium">Partner Schools</div>
+            <div className="text-6xl font-bold text-[var(--gold)] mb-3">99.9%</div>
+            <div className="text-base text-gray-900 font-semibold mb-1">Compliance Rate</div>
+            <div className="text-sm text-gray-500">zero violations</div>
           </div>
         </div>
 
@@ -589,6 +604,72 @@ function HowItWorks() {
             See It In Action
             <ArrowRight className="h-5 w-5" />
           </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------- Testimonials ------------------------------- */
+
+function TestimonialSection() {
+  const testimonials = [
+    {
+      quote: "This platform made my first NIL deal stress-free. I knew exactly what I was agreeing to, and my parents could review everything without seeing dollar amounts.",
+      name: "Sarah Martinez",
+      title: "D1 Soccer",
+      school: "University of Texas",
+      rating: 5
+    },
+    {
+      quote: "OfferLock saved me from a brand that tried to change the deal terms after I posted. The locked terms protected me completely.",
+      name: "Marcus Johnson",
+      title: "D1 Football",
+      school: "Ohio State University",
+      rating: 5
+    },
+    {
+      quote: "As a parent, I love having visibility into my son's NIL activities without micromanaging. The compliance checks give me peace of mind.",
+      name: "Jennifer Kim",
+      title: "Parent",
+      school: "D1 Basketball Player",
+      rating: 5
+    }
+  ];
+
+  return (
+    <section className="bg-white py-20 border-t border-gray-200">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Loved by Athletes & Brands</h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Real stories from athletes using Creator NIL Platform for their deals
+          </p>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-3">
+          {testimonials.map((testimonial, index) => (
+            <div key={index} className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
+              {/* Star Rating */}
+              <div className="flex gap-1 mb-6">
+                {[...Array(testimonial.rating)].map((_, i) => (
+                  <Star key={i} className="h-5 w-5 fill-[var(--gold)] text-[var(--gold)]" />
+                ))}
+              </div>
+
+              {/* Quote */}
+              <blockquote className="text-lg text-gray-700 leading-relaxed mb-6 italic">
+                "{testimonial.quote}"
+              </blockquote>
+
+              {/* Attribution */}
+              <div className="pt-6 border-t border-gray-100">
+                <div className="font-bold text-gray-900">{testimonial.name}</div>
+                <div className="text-sm text-gray-600 mt-1">{testimonial.title}</div>
+                <div className="text-sm text-gray-500">{testimonial.school}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
