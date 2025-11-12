@@ -2,7 +2,8 @@ import React, { useState, lazy, Suspense, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight, Check, Shield, BadgeCheck, Lock,
-  Zap, FileSignature, Banknote, Search, Quote, Sparkles, Hash, ExternalLink
+  Zap, FileSignature, Banknote, Search, Quote, Sparkles, Hash, ExternalLink,
+  Menu, X, ChevronRight
 } from "lucide-react";
 
 // Lazy load framer-motion for better initial load performance
@@ -55,7 +56,15 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen text-white" style={{ backgroundColor: NAVY }}>
+        {/* Accessibility skip link */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:text-black focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg"
+        >
+          Skip to main content
+        </a>
         <StickyHeader />
+        <AnnouncementBar />
         <Hero />
         <LogoStrip />
         <WhyDifferent />
@@ -76,57 +85,163 @@ export default function LandingPage() {
 /* ---------------------------------- Header --------------------------------- */
 
 function StickyHeader() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
-    <header
-      className="sticky top-0 z-40 border-b border-white/10 bg-[rgba(11,34,57,0.85)] backdrop-blur"
-      role="banner"
+    <>
+      <header
+        className="sticky top-0 z-40 border-b border-white/5 bg-black/95 backdrop-blur-sm"
+        role="banner"
+      >
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          {/* Logo with Serif Font */}
+          <Link
+            to="/"
+            className="flex items-center"
+            aria-label="Creator NIL Platform Home"
+          >
+            <span
+              className="text-xl font-bold text-[var(--gold)] tracking-wide"
+              style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}
+            >
+              Creator NIL Platform
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden items-center gap-8 text-[15px] lg:flex" aria-label="Main navigation">
+            <DropdownLink href="/athletes" label="For Athletes" />
+            <DropdownLink href="/brands" label="For Brands" />
+            <a href="/solutions" className="text-white hover:text-[var(--gold)] transition-colors font-medium">
+              Solutions
+            </a>
+            <a href="/resources" className="text-white hover:text-[var(--gold)] transition-colors font-medium">
+              Resources
+            </a>
+            <a href="#pricing" className="text-white hover:text-[var(--gold)] transition-colors font-medium">
+              Pricing
+            </a>
+          </nav>
+
+          {/* Desktop CTA */}
+          <div className="hidden lg:flex">
+            <Link
+              to="/signup"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#FFD700] px-6 py-2.5 text-[15px] font-semibold text-black shadow-lg hover:bg-[#FFC700] transition-all hover:shadow-xl"
+            >
+              Get Started
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 text-white hover:text-[var(--gold)] transition-colors"
+            aria-label="Toggle mobile menu"
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" aria-hidden="true" />
+            ) : (
+              <Menu className="h-6 w-6" aria-hidden="true" />
+            )}
+          </button>
+        </div>
+        <style>{`:root{--gold:${GOLD}}`}</style>
+      </header>
+
+      {/* Mobile Menu Drawer */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/95 lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile navigation menu"
+        >
+          <nav className="flex flex-col gap-1 p-6 pt-20" aria-label="Mobile navigation">
+            <MobileNavLink href="/athletes" onClick={() => setMobileMenuOpen(false)}>
+              For Athletes
+            </MobileNavLink>
+            <MobileNavLink href="/brands" onClick={() => setMobileMenuOpen(false)}>
+              For Brands
+            </MobileNavLink>
+            <MobileNavLink href="/solutions" onClick={() => setMobileMenuOpen(false)}>
+              Solutions
+            </MobileNavLink>
+            <MobileNavLink href="/resources" onClick={() => setMobileMenuOpen(false)}>
+              Resources
+            </MobileNavLink>
+            <MobileNavLink href="#pricing" onClick={() => setMobileMenuOpen(false)}>
+              Pricing
+            </MobileNavLink>
+
+            <div className="mt-6 pt-6 border-t border-white/10">
+              <Link
+                to="/signup"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 rounded-lg bg-[#FFD700] px-6 py-3 text-base font-semibold text-black shadow-lg"
+              >
+                Get Started
+                <ArrowRight className="h-5 w-5" aria-hidden="true" />
+              </Link>
+            </div>
+          </nav>
+        </div>
+      )}
+    </>
+  );
+}
+
+function DropdownLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      to={href}
+      className="flex items-center gap-1 text-white hover:text-[var(--gold)] transition-colors font-medium group"
     >
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2" aria-label="Creator NIL Home">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/10" aria-hidden="true">
-            <Sparkles className="h-4 w-4 text-white" />
-          </span>
-          <span className="text-sm font-semibold">Creator • NIL</span>
-        </Link>
-        <nav className="hidden items-center gap-5 text-sm md:flex" aria-label="Main navigation">
-          <a href="#why" className="text-white/90 hover:text-[var(--gold)] transition-colors">Why us</a>
-          <a href="#how" className="text-white/90 hover:text-[var(--gold)] transition-colors">How it works</a>
-          <a href="#trust" className="text-white/90 hover:text-[var(--gold)] transition-colors">Trust Rails</a>
-          <a href="#personas" className="text-white/90 hover:text-[var(--gold)] transition-colors">Personas</a>
-          <a href="#features" className="text-white/90 hover:text-[var(--gold)] transition-colors">Features</a>
-          <a href="#pricing" className="text-white/90 hover:text-[var(--gold)] transition-colors">Pricing</a>
-          <a href="#faq" className="text-white/90 hover:text-[var(--gold)] transition-colors">FAQ</a>
-        </nav>
-        <div className="flex items-center gap-2">
-          <HeaderGhostCTA to="/demo/offerlock">See Demo</HeaderGhostCTA>
-          <HeaderGoldCTA to="/signup">Start Workspace</HeaderGoldCTA>
+      {label}
+      <ChevronRight
+        className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+        aria-hidden="true"
+      />
+    </Link>
+  );
+}
+
+function MobileNavLink({
+  href,
+  onClick,
+  children
+}: {
+  href: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      to={href}
+      onClick={onClick}
+      className="flex items-center justify-between px-4 py-3 text-lg text-white hover:text-[var(--gold)] hover:bg-white/5 rounded-lg transition-all"
+    >
+      {children}
+      <ChevronRight className="h-5 w-5" aria-hidden="true" />
+    </Link>
+  );
+}
+
+/* ------------------------------- Announcement Bar ------------------------------ */
+
+function AnnouncementBar() {
+  return (
+    <div className="border-b border-white/5 bg-black/90">
+      <div className="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-center gap-3 text-sm">
+          <span className="text-[var(--gold)] font-semibold">🔒 NIL Compliance Made Simple</span>
+          <span className="text-white/40">•</span>
+          <span className="text-white/80">Trusted by 500+ Athletes</span>
         </div>
       </div>
-      <style>{`:root{--gold:${GOLD}}`}</style>
-    </header>
-  );
-}
-
-function HeaderGoldCTA({ to, children }: { to: string; children: React.ReactNode }) {
-  return (
-    <Link
-      to={to}
-      className="inline-flex items-center gap-1 rounded-md border border-[var(--gold)] bg-[var(--gold)] px-3 py-1.5 text-sm font-semibold text-black shadow hover:opacity-95 transition-opacity"
-    >
-      {children}
-      <ArrowRight className="h-4 w-4" aria-hidden="true" />
-    </Link>
-  );
-}
-
-function HeaderGhostCTA({ to, children }: { to: string; children: React.ReactNode }) {
-  return (
-    <Link
-      to={to}
-      className="inline-flex items-center gap-1 rounded-md border border-[var(--gold)] px-3 py-1.5 text-sm font-semibold text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black transition-colors"
-    >
-      {children}
-    </Link>
+    </div>
   );
 }
 
@@ -134,7 +249,7 @@ function HeaderGhostCTA({ to, children }: { to: string; children: React.ReactNod
 
 function Hero() {
   return (
-    <section className="relative border-b border-white/10 py-14 sm:py-18" aria-labelledby="hero-heading">
+    <section id="main-content" className="relative border-b border-white/10 py-14 sm:py-18" aria-labelledby="hero-heading">
       {/* Removed animated overlay for better performance */}
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 md:grid-cols-2">
         <div>
