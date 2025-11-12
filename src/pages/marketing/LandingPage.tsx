@@ -402,7 +402,7 @@ function AnnouncementBar() {
 
 function Hero() {
   return (
-    <section id="main-content" className="relative bg-gradient-to-b from-[#0B2239] via-[#0a1929] to-black border-b border-white/10 py-20 sm:py-28" aria-labelledby="hero-heading">
+    <section id="main-content" className="relative bg-gradient-to-b from-gray-900 via-black to-black border-b border-white/10 py-20 sm:py-28" aria-labelledby="hero-heading">
       {/* Subtle overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-[var(--gold)]/5 via-transparent to-transparent pointer-events-none" />
 
@@ -559,7 +559,7 @@ function HowItWorks() {
     { icon: Banknote, number: "03", title: "Settlement & Proof", desc: "Instant payouts once approved. Private receipts for every step, audit-ready." },
   ];
   return (
-    <section id="how" className="bg-gradient-to-b from-black to-[#0B2239] py-20 border-t border-white/10">
+    <section id="how" className="bg-black py-20 border-t border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-white mb-4">How It Works</h2>
