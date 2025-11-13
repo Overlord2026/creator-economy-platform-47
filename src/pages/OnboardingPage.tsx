@@ -44,16 +44,16 @@ export default function OnboardingPage() {
     const user_id = user?.user?.id;
     if (!user_id) { setSaving(false); return; }
 
-    await supabase
+    await sb
       .from('user_onboarding_progress')
       .upsert(
-        { 
-          user_id, 
-          user_type: persona, 
-          step_name: step, 
-          is_completed: true, 
-          completed_at: new Date().toISOString(), 
-          updated_at: new Date().toISOString() 
+        {
+          user_id,
+          user_type: persona,
+          step_name: step,
+          is_completed: true,
+          completed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         },
         { onConflict: 'user_id,user_type,step_name' }
       );
