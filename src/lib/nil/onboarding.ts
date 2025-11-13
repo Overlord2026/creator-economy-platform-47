@@ -22,31 +22,13 @@ export const ONBOARDING_STEPS: Record<NILPersonaType, OnboardingStep[]> = {
       component: 'SportDetailsStep'
     },
     {
-      id: 'banking-connection',
-      title: 'Connect Banking',
-      description: 'Link your bank account for payments',
+      id: 'goals-interests',
+      title: 'Your NIL Goals',
+      description: 'What types of deals are you interested in?',
       required: true,
       completed: false,
       personaTypes: ['athlete'],
-      component: 'PlaidConnectionStep'
-    },
-    {
-      id: 'document-upload',
-      title: 'Upload Documents',
-      description: 'Upload required compliance documents',
-      required: true,
-      completed: false,
-      personaTypes: ['athlete'],
-      component: 'DocumentUploadStep'
-    },
-    {
-      id: 'invite-team',
-      title: 'Invite Your Team',
-      description: 'Invite family members or advisors (optional)',
-      required: false,
-      completed: false,
-      personaTypes: ['athlete'],
-      component: 'InviteTeamStep'
+      component: 'GoalsInterestsStep'
     },
     {
       id: 'dashboard-tour',
@@ -56,6 +38,15 @@ export const ONBOARDING_STEPS: Record<NILPersonaType, OnboardingStep[]> = {
       completed: false,
       personaTypes: ['athlete'],
       component: 'DashboardTourStep'
+    },
+    {
+      id: 'invite-team',
+      title: 'Invite Your Team',
+      description: 'Invite family members or advisors (optional)',
+      required: false,
+      completed: false,
+      personaTypes: ['athlete'],
+      component: 'InviteTeamStep'
     }
   ],
   family: [
@@ -98,15 +89,6 @@ export const ONBOARDING_STEPS: Record<NILPersonaType, OnboardingStep[]> = {
       component: 'AdvisorProfileStep'
     },
     {
-      id: 'credentials-upload',
-      title: 'Upload Credentials',
-      description: 'Upload licensing and compliance documents',
-      required: true,
-      completed: false,
-      personaTypes: ['advisor', 'coach'],
-      component: 'CredentialsUploadStep'
-    },
-    {
       id: 'advisor-permissions',
       title: 'Set Permissions',
       description: 'Configure your access to athlete accounts',
@@ -134,15 +116,6 @@ export const ONBOARDING_STEPS: Record<NILPersonaType, OnboardingStep[]> = {
       completed: false,
       personaTypes: ['advisor', 'coach'],
       component: 'AdvisorProfileStep'
-    },
-    {
-      id: 'credentials-upload',
-      title: 'Upload Credentials',
-      description: 'Upload licensing and compliance documents',
-      required: true,
-      completed: false,
-      personaTypes: ['advisor', 'coach'],
-      component: 'CredentialsUploadStep'
     },
     {
       id: 'advisor-permissions',
@@ -238,14 +211,14 @@ export function createOnboardingFlow(personaType: NILPersonaType): OnboardingFlo
 
 export function getEstimatedTime(personaType: NILPersonaType): number {
   const timeMap: Record<NILPersonaType, number> = {
-    athlete: 15,
-    family: 8,
-    advisor: 12,
-    coach: 12,
+    athlete: 4,  // Reduced from 15 (removed banking & docs)
+    family: 3,    // Reduced from 8
+    advisor: 3,   // Reduced from 12 (removed credentials upload)
+    coach: 3,     // Reduced from 12
     admin: 10,
     brand: 10
   };
-  
+
   return timeMap[personaType];
 }
 

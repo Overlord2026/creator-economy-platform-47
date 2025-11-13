@@ -8,18 +8,15 @@ import { OnboardingProgress } from "@/components/OnboardingProgress";
 import { EmailVerify } from "./onboarding/steps/EmailVerify";
 import { Profile } from "./onboarding/steps/Profile";
 import { Household } from "./onboarding/steps/Household";
-import { LinkAccounts } from "./onboarding/steps/LinkAccounts";
-import { UploadDoc } from "./onboarding/steps/UploadDoc";
 import { Goals } from "./onboarding/steps/Goals";
 import { InvitePro } from "./onboarding/steps/InvitePro";
 import { CheckCircle2 } from "lucide-react";
 
 type StepKey =
-  | "email-verify" | "profile" | "household" | "link-accounts"
-  | "upload-doc" | "goals" | "invite-pro";
+  | "email-verify" | "profile" | "household" | "goals" | "invite-pro";
 
 const STEPS: StepKey[] = [
-  "email-verify","profile","household","link-accounts","upload-doc","goals","invite-pro"
+  "email-verify","profile","household","goals","invite-pro"
 ];
 
 export default function OnboardingPage() {
@@ -150,22 +147,8 @@ export default function OnboardingPage() {
           />
         )}
         {active === "household" && (
-          <Household 
+          <Household
             onComplete={(data) => markComplete("household", data)}
-            persona={persona}
-            segment={segment}
-          />
-        )}
-        {active === "link-accounts" && (
-          <LinkAccounts
-            onComplete={(data) => markComplete("link-accounts", data)}
-            persona={persona}
-            segment={segment}
-          />
-        )}
-        {active === "upload-doc" && (
-          <UploadDoc
-            onComplete={(data) => markComplete("upload-doc", data)}
             persona={persona}
             segment={segment}
           />
