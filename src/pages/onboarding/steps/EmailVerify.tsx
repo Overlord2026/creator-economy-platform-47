@@ -51,6 +51,8 @@ export const EmailVerify: React.FC<EmailVerifyProps> = ({
       });
     } catch (err) {
       setError('Failed to save email. Please try again.');
+    } finally {
+      // Always reset loading state, even on success
       setIsVerifying(false);
     }
   };

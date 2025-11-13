@@ -30,40 +30,73 @@ export default function OnboardingPage() {
   const segment = params.get("segment") ?? "retirees";
   const [active, setActive] = useState<StepKey>(STEPS[0]);
   const [saving, setSaving] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   const copy = useMemo(() => getPersonaCopy(persona, segment), [persona, segment]);
   const currentStep = STEPS.indexOf(active) + 1;
 
   useEffect(() => {
     analytics.trackEvent("onboarding.viewed", { persona, segment });
+
+    // Check authentication status on mount
+    sb.auth.getUser().then(({ data: user }) => {
+      setIsAuthenticated(!!user?.user?.id);
+    });
   }, [persona, segment]);
 
   async function markComplete(step: StepKey, data: Record<string, any> = {}) {
     setSaving(true);
-    const { data: user } = await sb.auth.getUser();
-    const user_id = user?.user?.id;
-    if (!user_id) { setSaving(false); return; }
 
-    await sb
-      .from('user_onboarding_progress')
-      .upsert(
-        {
-          user_id,
-          user_type: persona,
-          step_name: step,
-          is_completed: true,
+    try {
+      // Check if user is authenticated
+      const { data: user } = await sb.auth.getUser();
+      const user_id = user?.user?.id;
+
+      if (user_id) {
+        // User is authenticated - save to database
+        await sb
+          .from('user_onboarding_progress')
+          .upsert(
+            {
+              user_id,
+              user_type: persona,
+              step_name: step,
+              is_completed: true,
+              completed_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            },
+            { onConflict: 'user_id,user_type,step_name' }
+          );
+        console.log('✅ Onboarding progress saved to database');
+      } else {
+        // User not authenticated - save to localStorage
+        const storageKey = `onboarding_progress_${persona}_${segment}`;
+        const progress = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        progress[step] = {
+          completed: true,
           completed_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        { onConflict: 'user_id,user_type,step_name' }
-      );
+          data
+        };
+        localStorage.setItem(storageKey, JSON.stringify(progress));
+        console.log('💾 Onboarding progress saved to localStorage (user not logged in)');
+      }
 
-    analytics.trackEvent("onboarding.step_completed", { step, persona, segment });
-    setSaving(false);
-    const nextIndex = Math.min(STEPS.indexOf(step) + 1, STEPS.length - 1);
-    setActive(STEPS[nextIndex]);
-    if (nextIndex === STEPS.length - 1) {
-      analytics.trackEvent("onboarding.completed", { persona, segment });
+      analytics.trackEvent("onboarding.step_completed", { step, persona, segment, authenticated: !!user_id });
+
+      // Advance to next step
+      const nextIndex = Math.min(STEPS.indexOf(step) + 1, STEPS.length - 1);
+      setActive(STEPS[nextIndex]);
+
+      if (nextIndex === STEPS.length - 1) {
+        analytics.trackEvent("onboarding.completed", { persona, segment, authenticated: !!user_id });
+      }
+    } catch (err) {
+      console.error('❌ Failed to save onboarding progress:', err);
+      // Continue anyway - don't block the user
+      const nextIndex = Math.min(STEPS.indexOf(step) + 1, STEPS.length - 1);
+      setActive(STEPS[nextIndex]);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -156,7 +189,16 @@ export default function OnboardingPage() {
 
       {saving && (
         <footer className="fixed bottom-6 right-6 bg-white px-4 py-2 rounded-lg shadow-lg border border-gray-200 text-sm text-gray-600">
-          Saving…
+          {isAuthenticated ? '💾 Saving to account…' : '💾 Saving locally…'}
+        </footer>
+      )}
+
+      {isAuthenticated === false && (
+        <footer className="fixed bottom-6 left-6 bg-blue-50 px-4 py-3 rounded-lg shadow-lg border border-blue-200 text-sm text-blue-800 max-w-sm">
+          <div className="font-semibold mb-1">Progress saved locally</div>
+          <div className="text-xs text-blue-600">
+            Sign up after completing to save to your account
+          </div>
         </footer>
       )}
     </div>
